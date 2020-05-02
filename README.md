@@ -122,4 +122,5 @@ extern "C" {
 ```
 
 ## Python Coding Guide
-*TODO*
+Follow Pep8 coding guidelines: https://www.python.org/dev/peps/pep-0008/
+Atom package: https://atom.io/packages/linter-python-pep8
