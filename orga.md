@@ -36,6 +36,13 @@
     stuff going. Look into supervisor controller to move the robot to desired points
     -> could help make training simpler.
 
+* Lets get everybody working. We all need to have something todo.
+* Get an agenda / plan ready. So that next week we can plan again / update the plan:
+  * One week plan -> from one week to the next
+  * Next presentation plan -> from presentation to presentation (4 in total)
+  * Hole Project plan / goal -> what is our overall goal?
+* Master students need to work on a concept for QA.
+
 #### Interesting
 * Maybe, to make things easier, simpler and more "greifbar", we should narrow down
   our project to a real world application. That would help to "very naturally"
