@@ -1,6 +1,6 @@
 # EES-PEES Robot Project
 
-**Disclaimer:** The stuff below is **not fixed**. If you have any ideas on how to improve 
+**Disclaimer:** The stuff below is **not fixed**. If you have any ideas on how to improve
 or streamline the workflow let us know. We can then change / adjust our architecture.
 
 ## General
@@ -10,6 +10,9 @@ It is split up into three directories:
 * `webots/`, code that runs in the webots simulator / webots controller (C/C++)
 * `controller/`, code for the external controller (C/C++)
 * `backend/`, code for the backend (Python)
+
+There is an organizational directory (mostly for meeting pre and post documentation):
+* `orga/`
 
 We also have a directory for resources (like papers and similar stuff):
 * `resources/`
