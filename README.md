@@ -30,7 +30,8 @@ copy or merge your changes into one of the corresponding three branches.
 ## C/C++ Coding Guide
 
 #### Whitespace
-* Indent with 1 tab, not spaces. This way everybody can setup their own amount of indentation.
+* Indent with 2 spaces, not tabs. This way we will stay (mostly) consistent with
+  Python and Webots.
 * End file with a new line (as requested per C99 standard).
 * Use empty line to divide code into logical chunks.
 * Put spaces around binary operators : `x <= 2 && y > 10` is way easier to read than `x<=2&&y>10`.
@@ -52,17 +53,17 @@ of the same statement, for example in a `do..while` block or in an `if..else` bl
 
 ```cpp
 if (x == 42) {
-    // do stuff
+  // do stuff
 } else if (x == 34) {
-    // do something else
+  // do something else
 } else {
-    // do yet another thingie
+  // do yet another thingie
 }
 ```
 
 ```cpp
 do {
-    // do stuff
+  // do stuff
 } while (x < 42);
 ```
 
@@ -70,7 +71,7 @@ Function definitions look like this :
 
 ```cpp
 void do_something_useful(void) {
-    // Code goes here
+  // Code goes here
 }
 ```
 
@@ -80,14 +81,14 @@ Don't do this :
 
 ```cpp
 if (x == 42)
-    do_stuff();
+  do_stuff();
 ```
 
 But this :
 
 ```cpp
 if (x == 42) {
-    do_stuff();
+  do_stuff();
 }
 ```
 
@@ -125,5 +126,5 @@ extern "C" {
 ```
 
 ## Python Coding Guide
-Follow Pep8 coding guidelines: https://www.python.org/dev/peps/pep-0008/
+Follow Pep8 coding guidelines: https://www.python.org/dev/peps/pep-0008/ <br>
 Atom package: https://atom.io/packages/linter-python-pep8
