@@ -1,6 +1,10 @@
 
 ## Meeting on 04.05.2020
 #### Agenda
+* In generall, I would split us in 2 Groups:
+  * Rui, Shanshan, Per, Mats -> RL, NN, Controller Concepts, Training  
+  * Wladmir, Jonas, Fabian -> Controller, Communication, Training environment
+
 * All
   * What is a good communication protocol for between the layers? That depends on
     the connection, the sensors, and where the information is encoded / decoded.
@@ -42,6 +46,7 @@
   * Next presentation plan -> from presentation to presentation (4 in total)
   * Hole Project plan / goal -> what is our overall goal?
 * Master students need to work on a concept for QA.
+* Talk about the canban / project on github.
 
 #### Interesting
 * Maybe, to make things easier, simpler and more "greifbar", we should narrow down
