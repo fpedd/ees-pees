@@ -80,7 +80,7 @@ class Environment():
         self.inner = (self.offset, self.offset + self.N)
 
         # set up walls
-        wallsize = 10
+        wallsize = 2
         self.field[0:wallsize] = 1
         self.field[-wallsize:] = 1
         self.field[:,0:wallsize] = 1
@@ -143,7 +143,7 @@ class Environment():
         # self.plot()
         state = (self.pos, self.distance_sensor()[1])
         reward = self.calc_reward(crash)
-        if self.target_distance() < 50:
+        if self.target_distance() < 2:
             done = True
         else:
             done = False
@@ -151,11 +151,11 @@ class Environment():
 
     def random_action(self):
         orientation = np.random.randint(NUM_OF_SENSORS)
-        len_ = np.random.random()*200
+        len_ = np.random.random()*5
         return (orientation, len_)
 
     def calc_reward(self, crash):
-        reward = 1500 - self.target_distance() - crash * 10000
+        reward = 150 - self.target_distance() - crash * 1000
         return reward
 
     def target_distance(self):
@@ -171,8 +171,8 @@ class Environment():
         fig = plt.figure(figsize=(10,10))
         f = self.field.copy()
         rx, ry = self.pos
-        s = 10
-        f[rx-s:rx+2, ry-10:ry+10] = 4
+        s = 1
+        f[rx-s:rx+s, ry-s:ry+s] = 4
         plt.matshow(f)
 
     @property
