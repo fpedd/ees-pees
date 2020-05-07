@@ -61,13 +61,17 @@ def add_tuples(t1, t2):
     arr = arr1 + arr2
     return tuple(arr)
 
+NUM_OF_SENSORS = 10
+
+
 class Environment():
-    def __init__(self, startpos=(100, 900), targetpos=(800, 800), N=1000, rsize=10):
+    def __init__(self, startpos=(100, 200), targetpos=(800, 150), N=1000, rsize=10):
         self.N = N
         self.pos = startpos
         self.rsize = rsize
         self.target = targetpos
         self.offset = int(2*N)
+        self.distances = None
         self.setup_fields()
 
     def setup_fields(self):
@@ -94,7 +98,7 @@ class Environment():
         pos = self.pos
         endpoints = [(0, 0), (N-1, 0), (0, N-1), (N-1, N-1)]
         radius = round(max([euklidian_distance(pos, ep) for ep in endpoints]))
-        phi = np.linspace(0, 2*np.pi, 100)
+        phi = np.linspace(0, 2*np.pi, NUM_OF_SENSORS + 1)[:-1]
         pos = self.pos_outer
         y = (radius * np.cos(phi)).astype(int) + pos[1]
         x = (radius * np.sin(phi)).astype(int) + pos[0]
@@ -103,6 +107,7 @@ class Environment():
         self.anchors = anchors
         for anch in anchors:
             distances.append(self.pts_to_anchor(anch)[1])
+        self.distances = distances
         return anchors, distances
 
     def pts_to_anchor(self, anchor, filterout=True):
@@ -117,15 +122,41 @@ class Environment():
                 pts.append(p)
         return pts, euklidian_distance(self.pos, p)
 
-    def action(self, orientation_idx, len_):
-        self.distance_sensor()
-        pts_on_line = self.pts_to_anchor(self.anchors[orientation_idx], filterout=True)[0]
+    def step(self, action):
+        if self.distances is None:
+            self.distance_sensor()
+
+        orientation_idx, len_ = action
+        pts_on_line = self.pts_to_anchor(self.anchors[orientation_idx], filterout=False)[0]
+        self.pt = pts_on_line
+        crash = False
+        safept = self.pos
         for i, pt in enumerate(pts_on_line[1:]):
             if self.field[pt[0], pt[1]] > 0:
-                print("Field busy -> Accident!")
-            elif euklidian_distance(self.pos, pt) > len_:
-                self.pos = pts_on_line[i-1]
-        self.plot()
+                crash = True
+                break
+            if euklidian_distance(self.pos, pt) > len_:
+                break
+            else:
+                safept = pt
+        self.pos = safept
+        # self.plot()
+        state = (self.pos, self.distance_sensor()[1])
+        reward = self.calc_reward(crash)
+        if self.target_distance() < 50:
+            done = True
+        else:
+            done = False
+        return state, reward, done, {}
+
+    def random_action(self):
+        orientation = np.random.randint(NUM_OF_SENSORS)
+        len_ = np.random.random()*200
+        return (orientation, len_)
+
+    def calc_reward(self, crash):
+        reward = 1500 - self.target_distance() - crash * 10000
+        return reward
 
     def target_distance(self):
         return euklidian_distance(self.pos, self.target)
