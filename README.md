@@ -30,7 +30,7 @@ copy or merge your changes into one of the corresponding three branches.
 ## C/C++ Coding Guide
 
 #### Whitespace
-* Indent with 2 spaces, not tabs. This way we will stay (mostly) consistent with
+* Indent with 4 spaces, not tabs. This way we will stay (mostly) consistent with
   Python and Webots.
 * End file with a new line (as requested per C99 standard).
 * Use empty line to divide code into logical chunks.
