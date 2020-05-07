@@ -1,6 +1,6 @@
 # EES-PEES Robot Project
 
-**Disclaimer:** The stuff below is **not fixed**. If you have any ideas on how to improve 
+**Disclaimer:** The stuff below is **not fixed**. If you have any ideas on how to improve
 or streamline the workflow let us know. We can then change / adjust our architecture.
 
 ## General
@@ -10,6 +10,9 @@ It is split up into three directories:
 * `webots/`, code that runs in the webots simulator / webots controller (C/C++)
 * `controller/`, code for the external controller (C/C++)
 * `backend/`, code for the backend (Python)
+
+There is an organizational directory (mostly for meeting pre and post documentation):
+* `orga/`
 
 We also have a directory for resources (like papers and similar stuff):
 * `resources/`
@@ -27,7 +30,8 @@ copy or merge your changes into one of the corresponding three branches.
 ## C/C++ Coding Guide
 
 #### Whitespace
-* Indent with 1 tab, not spaces. This way everybody can setup their own amount of indentation.
+* Indent with 2 spaces, not tabs. This way we will stay (mostly) consistent with
+  Python and Webots.
 * End file with a new line (as requested per C99 standard).
 * Use empty line to divide code into logical chunks.
 * Put spaces around binary operators : `x <= 2 && y > 10` is way easier to read than `x<=2&&y>10`.
@@ -49,17 +53,17 @@ of the same statement, for example in a `do..while` block or in an `if..else` bl
 
 ```cpp
 if (x == 42) {
-    // do stuff
+  // do stuff
 } else if (x == 34) {
-    // do something else
+  // do something else
 } else {
-    // do yet another thingie
+  // do yet another thingie
 }
 ```
 
 ```cpp
 do {
-    // do stuff
+  // do stuff
 } while (x < 42);
 ```
 
@@ -67,7 +71,7 @@ Function definitions look like this :
 
 ```cpp
 void do_something_useful(void) {
-    // Code goes here
+  // Code goes here
 }
 ```
 
@@ -77,14 +81,14 @@ Don't do this :
 
 ```cpp
 if (x == 42)
-    do_stuff();
+  do_stuff();
 ```
 
 But this :
 
 ```cpp
 if (x == 42) {
-    do_stuff();
+  do_stuff();
 }
 ```
 
@@ -122,4 +126,5 @@ extern "C" {
 ```
 
 ## Python Coding Guide
-*TODO*
+Follow Pep8 coding guidelines: https://www.python.org/dev/peps/pep-0008/ <br>
+Atom package: https://atom.io/packages/linter-python-pep8
