@@ -78,8 +78,8 @@ class Environment():
         self.pos = startpos
         self.target = targetpos
         self.offset = int(2*N)
-        self.distances = None
         self.setup_fields()
+        self.distance_sensor()
 
         self.action_space = 4
         self.observation_space = N**2 # ???
@@ -98,6 +98,8 @@ class Environment():
     def add_obstacle(self, x1x2y1y2):
         x1, x2, y1, y2 = x1x2y1y2
         self.field[x1:x2, y1:y2] = VAL_OBSTACLE
+        self.distance_sensor()
+
 
     def update_outer(self):
         self.grid[self.offset:(self.N+self.offset), self.offset:(self.N+self.offset)] = self.field
@@ -145,17 +147,12 @@ class Environment():
         orientation_idx = action
         pts_on_line = self.pts_to_anchor(self.anchors[orientation_idx], filterout=False)[0]
         self.pt = pts_on_line
-        crash = False
-        safept = self.pos
-        for i, pt in enumerate(pts_on_line[1:]):
-            if self.field[pt[0], pt[1]] > 0:
-                crash = True
-                break
-            if euklidian_distance(self.pos, pt) > len_:
-                break
-            else:
-                safept = pt
-        self.pos = safept
+        if self.field[pts_on_line[1][0], pts_on_line[1][1]] > 0:
+            crash = True
+        else:
+            self.pos = pts_on_line[1]
+            crash = False
+
         state = (xy2id(self.pos[0], self.pos[1]), self.distance_sensor()[1])
         reward = self.calc_reward(crash)
         if self.target_distance() <= target_gap:
@@ -164,9 +161,12 @@ class Environment():
             done = False
         return state, reward, done, {}
 
-    def random_action(self, orientation=None, length=None, maxlen=5):
+    def random_action(self, orientation=None, length=None, maxlen=5, no_crash=False):
         if orientation is None:
-            orientation = np.random.randint(NUM_OF_SENSORS)
+            if no_crash is True:
+                orientation = np.random.choice(np.where(self.distance_arr > 0)[0])
+            else:
+                orientation = np.random.randint(len(self.distance_arr))
         if length is None:
             len_ = np.random.random()*maxlen
         # return (orientation, len_)
@@ -194,6 +194,10 @@ class Environment():
         f[rx-s:rx+s+1, ry-s:ry+s+1] = VAL_ROBBIE
         f[tx:tx+1, ty:ty+1] = VAL_TARGET
         plt.matshow(f)
+
+    @property
+    def distance_arr(self):
+        return np.array(self.distances).ravel()
 
     @property
     def total_len(self):
