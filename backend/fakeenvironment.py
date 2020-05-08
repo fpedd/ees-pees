@@ -61,34 +61,38 @@ def add_tuples(t1, t2):
     arr = arr1 + arr2
     return tuple(arr)
 
-NUM_OF_SENSORS = 10
-
+NUM_OF_SENSORS = 4
+WALLSIZE = 2
+VAL_WALL = 1
+VAL_OBSTACLE = 2
+VAL_ROBBIE = 4
 
 class Environment():
-    def __init__(self, startpos=(100, 200), targetpos=(800, 150), N=1000, rsize=10):
+    def __init__(self, startpos=(100, 200), targetpos=(800, 150), N=1000):
         self.N = N
         self.pos = startpos
-        self.rsize = rsize
         self.target = targetpos
         self.offset = int(2*N)
         self.distances = None
         self.setup_fields()
 
+        self.action_space = 4
+        self.observation_space = 100*2 # ???
+
     def setup_fields(self):
         self.grid = np.zeros((self.total_len, self.total_len))
-        self.field = np.zeros((self.N , self.N))
+        self.field = np.zeros((self.N, self.N))
         self.inner = (self.offset, self.offset + self.N)
 
         # set up walls
-        wallsize = 2
-        self.field[0:wallsize] = 1
-        self.field[-wallsize:] = 1
-        self.field[:,0:wallsize] = 1
-        self.field[:,-wallsize:] = 1
+        self.field[0: WALLSIZE] = VAL_WALL
+        self.field[-WALLSIZE:] = VAL_WALL
+        self.field[:, 0:WALLSIZE] = VAL_WALL
+        self.field[:, -WALLSIZE:] = VAL_WALL
 
     def add_obstacle(self, x1x2y1y2):
         x1, x2, y1, y2 = x1x2y1y2
-        self.field[x1:x2, y1:y2] = 2
+        self.field[x1:x2, y1:y2] = VAL_OBSTACLE
 
     def update_outer(self):
         self.grid[self.offset:(self.N+self.offset), self.offset:(self.N+self.offset)] = self.field
@@ -122,7 +126,7 @@ class Environment():
                 pts.append(p)
         return pts, euklidian_distance(self.pos, p)
 
-    def step(self, action):
+    def step(self, action, target_gap=2):
         if self.distances is None:
             self.distance_sensor()
 
@@ -140,10 +144,9 @@ class Environment():
             else:
                 safept = pt
         self.pos = safept
-        # self.plot()
         state = (self.pos, self.distance_sensor()[1])
         reward = self.calc_reward(crash)
-        if self.target_distance() < 2:
+        if self.target_distance() < target_gap:
             done = True
         else:
             done = False
@@ -155,7 +158,7 @@ class Environment():
         return (orientation, len_)
 
     def calc_reward(self, crash):
-        reward = 150 - self.target_distance() - crash * 1000
+        reward = 150 - self.target_distance() - crash * 150
         return reward
 
     def target_distance(self):
@@ -172,7 +175,7 @@ class Environment():
         f = self.field.copy()
         rx, ry = self.pos
         s = 1
-        f[rx-s:rx+s, ry-s:ry+s] = 4
+        f[rx-s:rx+s, ry-s:ry+s] = VAL_ROBBIE
         plt.matshow(f)
 
     @property
