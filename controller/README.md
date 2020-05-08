@@ -24,3 +24,15 @@ To get a clean start (delete all build files):
 ```
 make clean
 ```
+## Protocol
+
+* IP `127.0.0.1` (local host)
+* Controller Port `6969`
+* Backend Port `6970`
+
+The protocol should (for now) run over UDP. UDP has a checksum build in. So if a
+packet arrives, it is intact. On top of that we have to ensure that:
+* when we have no packet / communication for a certain time we will timeout and
+  go into a failsafe state
+* that packets arrive in order, so old packets get discarded
+* check how much delay we have on the line and handle that accordingly
