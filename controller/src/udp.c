@@ -16,8 +16,8 @@
 #define IP              "127.0.0.1"
 #define CONTROL_PORT    6969
 #define BACKEND_PORT    6970
-#define SEND_TIMEOUT    100
-#define RECV_TIMEOUT    100
+#define SEND_TIMEOUT    100 // in ms
+#define RECV_TIMEOUT    100 // in ms
 
 static int sock_fd;
 static struct sockaddr_in backend_addr;
@@ -32,7 +32,6 @@ int udp_init() {
         return -1;
     }
 
-    /* Create UDP socket */
     sock_fd = socket(AF_INET, SOCK_DGRAM, 0);
     if (sock_fd < 0) {
         fprintf(stderr, "\nERROR: udp init socket '%s'\n", strerror(errno));
@@ -40,8 +39,23 @@ int udp_init() {
     }
 
     if (setsockopt(sock_fd, SOL_SOCKET, SO_REUSEADDR, &(int){1}, sizeof(int)) < 0) {
-        fprintf(stderr, "\nERROR: udp init setsockopt failed '%s'\n", strerror(errno));
+        fprintf(stderr, "\nERROR: udp init setsockopt reuse failed '%s'\n", strerror(errno));
         return -3;
+    }
+
+    struct timeval timeout;
+    timeout.tv_sec = RECV_TIMEOUT / 1000;
+    timeout.tv_usec = RECV_TIMEOUT * 1000;
+    if (setsockopt(sock_fd, SOL_SOCKET, SO_RCVTIMEO, (char *)&timeout, sizeof(timeout)) < 0)  {
+        fprintf(stderr, "\nERROR: udp init setsockopt timeout rcv failed '%s'\n", strerror(errno));
+        return -4;
+    }
+
+    timeout.tv_sec = SEND_TIMEOUT / 1000;
+    timeout.tv_usec = SEND_TIMEOUT * 1000;
+    if (setsockopt(sock_fd, SOL_SOCKET, SO_SNDTIMEO, (char *)&timeout, sizeof(timeout)) < 0) {
+        fprintf(stderr, "\nERROR: udp init setsockopt timeout snd failed '%s'\n", strerror(errno));
+        return -5;
     }
 
     controller_addr.sin_family = AF_INET;
@@ -50,7 +64,7 @@ int udp_init() {
     if (bind(sock_fd, (struct sockaddr *)(&controller_addr),
         sizeof(controller_addr)) < 0) {
         fprintf(stderr, "\nERROR: udp bind socket '%s'\n", strerror(errno));
-        return -4;
+        return -6;
     }
 
     return 0;
