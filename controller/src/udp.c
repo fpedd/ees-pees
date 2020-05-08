@@ -76,7 +76,7 @@ int udp_deinit() {
 }
 
 int udp_send(char *data, int data_len) {
-    // TODO: add timeout
+    
     int len = sendto(sock_fd, data, data_len, 0,
                      (struct sockaddr *)&backend_addr, sizeof(struct sockaddr_in));
     if (len < 0) {
@@ -87,11 +87,6 @@ int udp_send(char *data, int data_len) {
 }
 
 int udp_recv(char *buf, int buf_size) {
-    // TODO: add timeout
-    // struct timeval read_timeout;
-    // read_timeout.tv_sec = 0;
-    // read_timeout.tv_usec = 10;
-    // setsockopt(socketfd, SOL_SOCKET, SO_RCVTIMEO, &read_timeout, sizeof read_timeout);
 
     int len = recvfrom(sock_fd, buf, buf_size, 0, NULL, NULL);
     if (len < 0) {
