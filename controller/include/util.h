@@ -8,8 +8,8 @@ int time_diff_start(double *time);
 
 int time_diff_stop(double *time);
 
-int delay_ms(double s);
+int delay(double s);
 
-int get_time(double *time);
+double get_time();
 
 #endif // UTIL_H
