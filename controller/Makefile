@@ -2,9 +2,9 @@
 
 TARGET := controller
 CC = gcc
-BUILD_DIR := ./build
-SRC_DIR := ./src
-INC_DIR := ./include
+BUILD_DIR := build
+SRC_DIR := src
+INC_DIR := include
 
 SRCS := $(shell find $(SRC_DIR) -name *.c)
 OBJS := $(SRCS:%=$(BUILD_DIR)/%.o)
