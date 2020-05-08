@@ -1,8 +1,10 @@
-
 #include <stdio.h>
+#include <string.h>
 
 #include "udp.h"
 #include "com.h"
+#include "pid.h"
+#include "util.h"
 
 
 int main(int argc, char **argv) {
@@ -10,31 +12,31 @@ int main(int argc, char **argv) {
     (void) argc;
     (void) argv;
 
-
-    if (argc < 2) {
-        fprintf(stderr, "\nERROR: not enough args\n");
-    }
-
     com_init();
-    // udp_init();
-    to_bcknd_msg_t msg;
-    msg.msg_cnt = 123456;
-    msg.time_stmp = 69696969;
-    msg.target_gps[0] = 69.6969;
-    msg.target_gps[1] = 6969.69;
-    msg.target_gps[2] = 6969696.9;
-    udp_send((char *)&msg, 20);
-    // udp_send((char *)&msg, sizeof(to_bcknd_msg_t));
 
-    // udp_send(argv[1], 10);
-    char buf[20];
-    int len = udp_recv(buf, 20);
-    udp_deinit();
+    // testing communication
+    while (1) {
+        to_bcknd_msg_t first_msg;
+        memset(&first_msg, 0, sizeof(to_bcknd_msg_t));
 
-    for(int i=0; i<len; i++) {
-        printf("%c", buf[i]);
+        for (int i=0; i<3; i++) {
+            first_msg.target_gps[i] = i + 0.69;
+        }
+
+        for (int i=0; i<DIST_VECS; i++) {
+            first_msg.distance[i] = i + 0.1;
+        }
+
+        com_send(first_msg);
+        delay(0.2);
+
+        // from_bcknd_msg_t first_msg_resp;
+        // com_recv(&first_msg_resp);
+        //
+        // printf("cnt %lld, time %f, heading %f, speed %f \n",
+        //        first_msg_resp.msg_cnt, first_msg_resp.time_stmp,
+        //        first_msg_resp.heading, first_msg_resp.speed);
     }
-    printf("\n");
 
     return 0;
 }
