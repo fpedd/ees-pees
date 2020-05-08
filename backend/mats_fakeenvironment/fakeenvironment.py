@@ -151,7 +151,7 @@ class Environment():
 
     def random_action(self):
         orientation = np.random.randint(NUM_OF_SENSORS)
-        len_ = np.random.random()*5
+        len_ = np.random.randint(1,3)
         return (orientation, len_)
 
     def calc_reward(self, crash):
