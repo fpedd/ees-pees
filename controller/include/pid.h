@@ -13,8 +13,6 @@ typedef struct {
     float prev_set;
 } pid_ctrl_t;
 
-// TODO: only feed "in" changes into derivative part of controller, not "err"
-
 int pid_init(pid_ctrl_t *pid, float k_p, float k_i, float k_d, float out_min, float out_max);
 
 int pid_run(pid_ctrl_t *pid, float dt, float set, float in, float *out);
