@@ -17,15 +17,25 @@ There is an organizational directory (mostly for meeting pre and post documentat
 We also have a directory for resources (like papers and similar stuff):
 * `resources/`
 
-We have three branches with the same names as the three main directories (`webots`,`controller`,`backend`).
+We have three main branches with the same names as the three main directories
+(`webots`,`controller`,`backend`).
 Although they are not necessary, they simplify and streamline working on the different
 parts of our architecture. If we are ready for a system test, we will pull / merge
-all three branches into the `master` branch. There we can work an getting the interfaces
-running and test the system as a hole.
+all three (or only the needed9 branches into the `master` branch.
+There we can work an getting the interfaces running and test the system as a hole.
+The basic Branch / Merge architecture should look something like this:
+
+![merge concept](resources/image/merge-concept.jpg)
+
+**Please never merge branches between any of the three main "Zones". Only merge
+between branches inside these Zones or between the three main branches and the
+master branch. This way we can reduce the risk of merge conflicts as much as
+possible.**
 
 If you want to test new crazy stuff, please do so in your own test branch. Please use
 your first name as the name for your test branch. After you are done testing you can
 copy or merge your changes into one of the corresponding three branches.
+
 
 ## C/C++ Coding Guide
 
