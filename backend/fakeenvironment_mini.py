@@ -123,8 +123,7 @@ class Environment():
 
     def reset(self):
         self.pos = self.startpos
-        state = (xy2id(self.pos[0], self.pos[1]), self.distance_sensor()[1])
-        return state
+        return self.state
 
     def pts_to_anchor(self, anchor, filterout=True):
         pts = []
@@ -153,13 +152,14 @@ class Environment():
             self.pos = pts_on_line[1]
             crash = False
 
-        state = (xy2id(self.pos[0], self.pos[1]), self.distance_sensor()[1])
+        # state = (xy2id(self.pos[0], self.pos[1]), self.distance_sensor()[1])
+        self.distance_sensor()
         reward = self.calc_reward(crash)
         if self.target_distance() <= target_gap:
             done = True
         else:
             done = False
-        return state, reward, done, {}
+        return self.state, reward, done, {}
 
     def random_action(self, orientation=None, length=None, maxlen=5, no_crash=False):
         if orientation is None:
@@ -186,14 +186,14 @@ class Environment():
         return (pt[0] - self.offset, pt[1] - self.offset)
 
     def plot(self):
-        fig = plt.figure(figsize=(10,10))
+        fig = plt.figure(figsize=(7, 7))
         f = self.field.copy()
         rx, ry = self.pos
         tx, ty = self.target
         s = 0
         f[rx-s:rx+s+1, ry-s:ry+s+1] = VAL_ROBBIE
         f[tx:tx+1, ty:ty+1] = VAL_TARGET
-        plt.matshow(f)
+        plt.imshow(f)
 
     @property
     def distance_arr(self):
@@ -206,3 +206,11 @@ class Environment():
     @property
     def pos_outer(self):
         return self.pt2outer(self.pos)
+
+    @property
+    def pos_arr(self):
+        return np.array(self.pos)
+
+    @property
+    def state(self):
+        return np.hstack((self.pos_arr, self.distance_arr))
