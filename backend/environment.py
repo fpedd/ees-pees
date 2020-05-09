@@ -4,12 +4,14 @@ import abc
 
 import com
 
+
 class Env(abc.ABC):
     @abc.abstractmethod
     def step(self):
         pass
     def reward(self):
         pass
+
 
 class WebotState(object):
     def __init__(self):
@@ -28,6 +30,7 @@ class WebotState(object):
     def get(self):
         # TODO return state as numpy array
         pass
+
 
 class WebotAction(object):
     def __init__(self):
@@ -54,5 +57,29 @@ class WebotsEnv(Env):
         pass
 
     @property
-    def state(self):
+    def state_arr(self):
         return self.state.get()
+
+
+WALLSIZE = 1
+VAL_WALL = 1
+VAL_OBSTACLE = 2
+VAL_ROBBIE = 4
+VAL_TARGET = 6
+
+
+class FakeEnvironment(Env):
+    def __init__(self, N, num_of_sensors=4, startpos=None, target_pos=None):
+        self.N = N
+        self.offset = int(2*N)
+
+    def setup_fields(self):
+        self.grid = np.zeros((self.total_len, self.total_len))
+        self.field = np.zeros((self.N, self.N))
+        self.inner = (self.offset, self.offset + self.N)
+
+        # set up walls
+        self.field[0: WALLSIZE] = VAL_WALL
+        self.field[-WALLSIZE:] = VAL_WALL
+        self.field[:, 0:WALLSIZE] = VAL_WALL
+        self.field[:, -WALLSIZE:] = VAL_WALL
