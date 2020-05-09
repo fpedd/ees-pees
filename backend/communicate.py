@@ -38,7 +38,6 @@ class WebotState(object):
 class Packet(object):
     def __init__(self):
         self.buffer = None
-        self.msg_cnt_in = 0
         self.time_in = None
         self.success = False
 
@@ -79,8 +78,11 @@ class WebotAction(object):
 
 class Com(object):
     def __init__(self):
+        self.msg_cnt_in = 0
+        self.msg_cnt_out = 1
         self.state = WebotState()
         self.packet = Packet()
+
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.sock.bind((IP, BACKEND_PORT))
@@ -89,6 +91,7 @@ class Com(object):
     def recv(self):
         self.packet.success = False
         self.packet.buffer, addr = self.sock.recvfrom(PACKET_SIZE)
+        self.msg_cnt_in += 2
 
         # if PACKET_SIZE < len(self.packet.buffer):
         #     print("ERROR: recv did not get full packet", len(self.packet.buffer))
@@ -98,7 +101,6 @@ class Com(object):
         #     print("ERROR: recv did from wrong address", addr)
         #     return
         #
-        # self.packet.msg_cnt_in += 2
         # if self.packet.count != self.packet.msg_cnt_in:
         #     print("ERROR: recv wrong msg count, is ", self.packet.count, " should ", self.packet.msg_cnt_in)
         #     self.packet.msg_cnt_in = self.packet.count
@@ -113,10 +115,10 @@ class Com(object):
         self.state.fill_from_buffer(self.packet.buffer)
 
     def send(self, action:WebotAction):
-        msg_cnt_out = 1
-        data = struct.pack('Qdff', msg_cnt_out, time.time(), action.heading, action.speed)
+        data = struct.pack('Qdff', self.msg_cnt_out, time.time(),
+                           action.heading, action.speed)
         ret = self.sock.sendto(data, (IP, CONTROL_PORT))
         if ret == len(data):
-            msg_cnt_out += 2
+            self.msg_cnt_out += 2
         else:
             print("ERROR: could not send message, is ", ret, " should ", len(data))
