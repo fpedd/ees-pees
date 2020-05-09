@@ -5,7 +5,7 @@ import time
 ############## Settings ##############
 IP = "127.0.0.1"
 CONTROL_PORT = 6969
-BACKEND_PORT = 6970
+BACKEND_PORT = 6979
 TIME_OFFSET_ALLOWED = 1.0  # in seconds
 PACKET_SIZE = 1496   # (8 + 8 + 3*4 + 3*4 + 3*4 + DIST_VECS*4 + 4)
 DIST_VECS = 360
@@ -41,17 +41,37 @@ class Packet(object):
 
     @property
     def count(self):
-        return struct.unpack('Q', self.buffer_in[0:8])[0]
+        return struct.unpack('Q', self.buffer[0:8])[0]
 
     @property
     def time(self):
-        return struct.unpack('d', self.buffer_in[8:16])[0]
+        return struct.unpack('d', self.buffer[8:16])[0]
 
 
 class WebotAction(object):
     def __init__(self):
-        self.heading = None
-        self.speed = None
+        self._heading = None
+        self._speed = None
+
+    @property
+    def heading(self):
+        return self._heading
+
+    @heading.setter
+    def heading(self, value):
+        if value < 0 or value > 360:
+            raise ValueError("Value invalid", value)
+        self._heading = value
+
+    @property
+    def speed(self):
+        return self._speed
+
+    @speed.setter
+    def speed(self, value):
+        if value < -100 or value > 100:
+            raise ValueError("Value invalid", value)
+        self._speed = value
 
 
 class Com(object):
@@ -62,11 +82,13 @@ class Com(object):
         self.sock.bind((IP, BACKEND_PORT))
 
     def recv(self):
+        print("receiving......")
         self.packet.success = False
-        self.packet.buffer_in, addr = sock.recvfrom(PACKET_SIZE)
+        self.packet.buffer, addr = self.sock.recvfrom(PACKET_SIZE)
+        print("checking......")
 
-        if PACKET_SIZE < len(self.packet.buffer_in):
-            print("ERROR: recv did not get full packet", len(self.packet.buffer_in))
+        if PACKET_SIZE < len(self.packet.buffer):
+            print("ERROR: recv did not get full packet", len(self.packet.buffer))
             return
 
         if IP != addr[0]:
@@ -84,9 +106,13 @@ class Com(object):
                   self.packet.time, " diff ", abs(time.time() - self.packet.time))
             return
         self.packet.success = True
-        self.state.fill_from_buffer(self.state.buffer_in)
+        self.state.fill_from_buffer(self.packet.buffer)
 
     def send(self, action:WebotAction):
-        #TODO
-        self.action.send()
-        pass
+        msg_cnt_out = 1
+        data = struct.pack('Qdff', msg_cnt_out, time.time(), action.heading, action.speed)
+        ret = sock.sendto(data, (IP, CONTROL_PORT))
+        if ret == len(data):
+            msg_cnt_out += 2
+        else:
+            print("ERROR: could not send message, is ", ret, " should ", len(data))
