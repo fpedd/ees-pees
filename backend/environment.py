@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import abc
 
-import com
+import communicate
 
 
 class Env(abc.ABC):
@@ -13,52 +13,28 @@ class Env(abc.ABC):
         pass
 
 
-class WebotState(object):
-    def __init__(self):
-        self.buffer = None
-        # self.msg_cnt_in = 0
-        # self.time_in = None
-        self.gps_target = None
-        self.gps_actual = None
-        self.compass = None
-        self.distance = None
-        self.touching = None
-
-    def fill_from_buffer(self):
-        pass
-
-    def get(self):
-        # TODO return state as numpy array
-        pass
-
-
-class WebotAction(object):
-    def __init__(self):
-        self.heading = None
-        self.speed = None
-
-    def send(self):
-        # TODO: com.send(stuff)
-        pass
-
-
 class WebotsEnv(Env):
     def __init__(self):
-        self.state = None
-        self.action = None
+        self.com = communicate.Com()
 
-    def step(self, action):
-        pass
+    def step(self, action=None):
+        a = self.random_action()
+        self.com.send(a)
+        self.com.recv()
+        return self.state, 0, False, {}
 
     def random_action(self):
-        pass
+        action = communicate.WebotAction()
+        action.heading = np.random.randint(360)
+        action.speed = np.random.random() * 200 - 100
+        return action
 
     def reward(self):
         pass
 
     @property
-    def state_arr(self):
-        return self.state.get()
+    def state(self):
+        return self.com.state.get()
 
 
 WALLSIZE = 1
