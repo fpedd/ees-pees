@@ -30,7 +30,9 @@ int com_init() {
 }
 
 int com_run(from_bcknd_msg_t *data) {
+    (void) data;
     // TODO
+    return 0;
 }
 
 int com_send(to_bcknd_msg_t data) {
