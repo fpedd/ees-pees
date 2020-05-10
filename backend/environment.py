@@ -18,8 +18,9 @@ class WebotsEnv(Env):
         self.com = communicate.Com()
 
     def step(self, action=None):
-        a = self.random_action()
-        self.com.send(a)
+        if action is None:
+            action = self.random_action()
+        self.com.send(action)
         self.com.recv()
         return self.state, 0, False, {}
 
