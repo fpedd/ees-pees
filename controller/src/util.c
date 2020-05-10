@@ -1,6 +1,8 @@
 #include "util.h"
 
 #include <time.h>
+#include <stdio.h>
+
 
 
 int time_diff_start(double *time) {
@@ -25,4 +27,8 @@ double get_time() {
     struct timespec time_raw;
     clock_gettime(CLOCK_REALTIME, &time_raw);
     return (double)time_raw.tv_sec + ((double)time_raw.tv_nsec / (double)1000000000);
+}
+
+void error(char* reason){
+	printf("ERROR: %s\n", reason);
 }
