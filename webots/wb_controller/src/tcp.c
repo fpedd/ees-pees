@@ -8,6 +8,7 @@
 #include <sys/socket.h>
 #include <sys/time.h>
 #include <unistd.h> /* definition of close */
+#include <errno.h>
 
 #include "tcp.h"
 #include "util.h"
@@ -32,7 +33,7 @@ int tcp_connect() {
 	}
 
 	//set up socket for client
-	int tcp_socket_fd = socket(server_info->ai_family, server_info->ai_socktype, server_info->ai_protocol);
+	tcp_socket_fd = socket(server_info->ai_family, server_info->ai_socktype, server_info->ai_protocol);
 	if (tcp_socket_fd < 0) {
 		error("error on client socket startup");
 	}
@@ -41,6 +42,7 @@ int tcp_connect() {
 	int connect_stat = connect(tcp_socket_fd, server_info->ai_addr, server_info->ai_addrlen);
 	if (connect_stat != 0) {
 		error("error on connect client to server");
+		perror(NULL);
 	}
 
 	freeaddrinfo(server_info);    //not needed anymore
@@ -53,6 +55,7 @@ int tcp_send (char* data, int data_len) {
 	int len = send(tcp_socket_fd, data, data_len, 0);
 	if (len < 0) {
 		error("error on tcp_send");
+		perror(NULL);
 	}
 	return len;
 }
@@ -62,6 +65,7 @@ int tcp_recv (char* buf, int buf_size) {
 	int received = recv(tcp_socket_fd, buf, buf_size, 0);
 	if (received < 0) {
 		error("error on tcp_recv");
+		perror(NULL);
 	}
 	return received;
 }
