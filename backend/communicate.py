@@ -61,8 +61,12 @@ class WebotAction(object):
 
     @heading.setter
     def heading(self, value):
-        if value < 0 or value > 360:
-            raise ValueError("Value invalid", value)
+        if value < 0:
+            value = 0
+        if value > 360:
+            value = 360
+        # if value < 0 or value > 360:
+        #     raise ValueError("Value invalid", value)
         self._heading = value
 
     @property
@@ -71,8 +75,12 @@ class WebotAction(object):
 
     @speed.setter
     def speed(self, value):
-        if value < -100 or value > 100:
-            raise ValueError("Value invalid", value)
+        if value < -100:
+            value = -100
+        if value > 100:
+            value = 100
+        # if value < -100 or value > 100:
+        #     raise ValueError("Value invalid", value)
         self._speed = value
 
 
