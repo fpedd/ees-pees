@@ -2,26 +2,73 @@ import socket
 import struct
 import time
 import numpy as np
+import configparser
 
-############## Settings ##############
-IP = "127.0.0.1"
-CONTROL_PORT = 6969
-BACKEND_PORT = 6970
-TIME_OFFSET_ALLOWED = 1.0  # in seconds
-PACKET_SIZE = 1496   # (8 + 8 + 3*4 + 3*4 + 3*4 + DIST_VECS*4 + 4)
-DIST_VECS = 360
-sock = None
+
+class Config(configparser.ConfigParser):
+    def __init__(self, config_file="config_com.ini"):
+        super(Config, self).__init__()
+        self.read(config_file)
+
+    @property
+    def success(self):
+        if len(self.sections()) > 0:
+            return True
+        return False
+
+    @property
+    def IP(self):
+        if self.success is True:
+            return self.get('Network', 'IP')
+        else:
+            return "127.0.0.1"
+
+    @property
+    def CONTROL_PORT(self):
+        if self.success is True:
+            return int(self.get('Network', 'CONTROL_PORT'))
+        else:
+            return 6969
+
+    @property
+    def BACKEND_PORT(self):
+        if self.success is True:
+            return int(self.get('Network', 'BACKEND_PORT'))
+        else:
+            return 6970
+
+    @property
+    def TIME_OFFSET_ALLOWED(self):
+        if self.success is True:
+            return float(self.get('Packet', 'TIME_OFFSET_ALLOWED'))
+        else:
+            return 1.0
+
+    @property
+    def PACKET_SIZE(self):
+        if self.success is True:
+            return int(self.get('Packet', 'PACKET_SIZE'))
+        else:
+            return 1496
+
+    @property
+    def DIST_VECS(self):
+        if self.success is True:
+            return int(self.get('Packet', 'DIST_VECS'))
+        else:
+            return 360
 
 
 class WebotState(object):
     def __init__(self):
+        self.config = Config()
         self.gps_target = None
         self.gps_actual = None
         self.compass = None
         self.distance = None
         self.touching = None
 
-    def fill_from_buffer(self, buffer):
+    def fill_from_buffer(self, buffer, DIST_VECS):
         self.gps_target = struct.unpack('3f', buffer[16:28])
         self.gps_actual = struct.unpack('3f', buffer[28:40])
         self.compass = struct.unpack('3f', buffer[40:52])
@@ -90,6 +137,7 @@ class WebotAction(object):
 
 class Com(object):
     def __init__(self):
+        self.conf = Config()
         self.msg_cnt_in = 0
         self.msg_cnt_out = 1
         self.latency = None
@@ -99,7 +147,7 @@ class Com(object):
 
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.sock.bind((IP, BACKEND_PORT))
+        self.sock.bind((self.conf.IP, self.conf.BACKEND_PORT))
         self.recv()
 
     def _update_history(self):
@@ -109,7 +157,7 @@ class Com(object):
         self.packet.success = False
 
         t1 = time.time()
-        self.packet.buffer, addr = self.sock.recvfrom(PACKET_SIZE)
+        self.packet.buffer, addr = self.sock.recvfrom(self.conf.PACKET_SIZE)
         self.latency = t1 - time.time()
 
         self._update_history()
@@ -134,12 +182,12 @@ class Com(object):
         #     return
 
         self.packet.success = True
-        self.state.fill_from_buffer(self.packet.buffer)
+        self.state.fill_from_buffer(self.packet.buffer, self.conf.DIST_VECS)
 
     def send(self, action:WebotAction):
         data = struct.pack('Qdff', self.msg_cnt_out, time.time(),
                            action.heading, action.speed)
-        ret = self.sock.sendto(data, (IP, CONTROL_PORT))
+        ret = self.sock.sendto(data, (self.conf.IP, self.conf.CONTROL_PORT))
         if ret == len(data):
             self.msg_cnt_out += 2
         else:
