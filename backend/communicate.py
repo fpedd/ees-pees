@@ -61,7 +61,6 @@ class Config(configparser.ConfigParser):
 
 class WebotState(object):
     def __init__(self):
-        self.config = Config()
         self.gps_target = None
         self.gps_actual = None
         self.compass = None
@@ -80,6 +79,25 @@ class WebotState(object):
         for v in self.__dict__.values():
             arr = np.hstack((arr, np.array(v)))
         return arr
+
+    @property
+    def num_of_sensors(self):
+        if self.distance is None:
+            return None
+        return len(self.distance)
+
+    @property
+    def gps_size(self):
+        if self.gps_actual is None:
+            return None
+        return len(self.gps_actual)
+
+    @property
+    def compass_size(self):
+        if self.compass is None:
+            return None
+        return len(self.compass)
+
 
 
 class Packet(object):
