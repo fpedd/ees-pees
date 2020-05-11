@@ -21,8 +21,7 @@ class RndWebotAgent(Agent):
 
     def action(self):
         action = communicate.WebotAction()
-        action.heading = np.random.randint(360)
-        action.speed = np.random.random() * 200 - 100
+        action._init_randomly()
         return action
 
 
@@ -35,8 +34,7 @@ class WebotCtrAgent(Agent):
 
     def _init_action(self):
         self.act = communicate.WebotAction()
-        self.act.heading = np.random.randint(360)
-        self.act.speed = np.random.random() * 200 - 100
+        self.act._init_randomly()
 
     def action(self):
         with keyboard.Listener(on_press=self.on_press, on_release=self.on_release) as listener:
@@ -46,16 +44,12 @@ class WebotCtrAgent(Agent):
         condition = False
         if key == keyboard.Key.up:
             self.act.speed += self.dspeed
-            condition = True
         if key == keyboard.Key.down:
             self.act.speed -= self.dspeed
-            condition = True
         if key == keyboard.Key.left:
             self.act.heading -= self.dheading
-            condition = True
         if key == keyboard.Key.right:
             self.act.heading += self.dheading
-            condition = True
         if condition is True:
             self.env.step(self.act)
 
