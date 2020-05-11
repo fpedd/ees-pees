@@ -55,6 +55,10 @@ class WebotAction(object):
         self._heading = None
         self._speed = None
 
+    def _init_randomly(self):
+        self.heading = np.random.randint(360)
+        self.speed = np.random.random() * 200 - 100
+
     @property
     def heading(self):
         return self._heading
@@ -88,17 +92,27 @@ class Com(object):
     def __init__(self):
         self.msg_cnt_in = 0
         self.msg_cnt_out = 1
+        self.latency = None
         self.state = WebotState()
         self.packet = Packet()
+        self.history = []
 
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.sock.bind((IP, BACKEND_PORT))
         self.recv()
 
+    def _update_history(self):
+        self.history.append([self.packet.time, self.packet])
+
     def recv(self):
         self.packet.success = False
+
+        t1 = time.time()
         self.packet.buffer, addr = self.sock.recvfrom(PACKET_SIZE)
+        self.latency = t1 - time.time()
+
+        self._update_history()
         self.msg_cnt_in += 2
 
         # if PACKET_SIZE < len(self.packet.buffer):
