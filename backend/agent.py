@@ -41,17 +41,17 @@ class WebotCtrAgent(Agent):
             listener.join()
 
     def on_press(self, key):
-        condition = False
         if key == keyboard.Key.up:
             self.act.speed += self.dspeed
-        if key == keyboard.Key.down:
+        elif key == keyboard.Key.down:
             self.act.speed -= self.dspeed
-        if key == keyboard.Key.left:
+        elif key == keyboard.Key.left:
             self.act.heading -= self.dheading
-        if key == keyboard.Key.right:
+        elif key == keyboard.Key.right:
             self.act.heading += self.dheading
-        if condition is True:
-            self.env.step(self.act)
+        else:
+            return
+        self.env.step(self.act)
 
     def on_release(self, key):
         if key == keyboard.Key.esc:
