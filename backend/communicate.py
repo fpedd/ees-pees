@@ -131,7 +131,11 @@ class Com(object):
         self.state = WebotState()
         self.packet = Packet()
         self.history = []
+        self.sock = None
 
+    def _set_sock(self):
+        if self.sock is not None:
+            self.sock.close()
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         # reuse socket
         self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -139,12 +143,12 @@ class Com(object):
         self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_SNDBUF,
                              self.conf.PACKET_SIZE)
         self.sock.bind((self.conf.IP, self.conf.BACKEND_PORT))
-        self.recv()
 
     def _update_history(self):
         self.history.append([self.packet.time, self.packet])
 
     def recv(self):
+        self._set_sock()
         self.packet.buffer, addr = self.sock.recvfrom(self.conf.PACKET_SIZE)
         self.state.fill_from_buffer(self.packet.buffer, self.conf.DIST_VECS)
         # if PACKET_SIZE < len(self.packet.buffer):
