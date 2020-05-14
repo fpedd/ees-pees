@@ -72,24 +72,37 @@ VAL_TARGET = 6
 
 
 class FakeEnvironmentAbstract(Env):
-    def __init__(self, N, startpos, targetpos, num_of_sensors=4):
+    def __init__(self, N, startpos=None, targetpos=None, num_of_sensors=4, obstacles_each=4):
         self.N = N
         self.offset = int(2 * N)
+        self.setup_fields()
         self.num_of_sensors = num_of_sensors
+        if startpos is None:
+            startpos = self.random_position()
+        if targetpos is None:
+            targetpos = self.random_position()
         self.startpos = startpos
         self.pos = startpos
         self.target = targetpos
         self.plotpadding = 1
-        self.setup_fields()
+        self.place_random_obstacle(dx=1, dy=int(N/3), N=obstacles_each)
+        self.place_random_obstacle(int(N/3), 1, N=obstacles_each)
+
         self.distance_sensor()
 
     def reset(self):
-        self.pos = self.startpos
-        self.distance_sensor()
+        self.__init__(self.N, self.num_of_sensors)
         reward = self.reward(crash=False)
         return self.state, reward, False, {}
 
-    def step(self, action=None, target_gap=2, step_len=1):
+    def random_position(self):
+        x = np.random.randint(self.N)
+        y = np.random.randint(self.N)
+        if self.field[x, y] > 0:
+            x, y = self.random_position()
+        return (x, y)
+
+    def step(self, action=None, target_gap=0, step_len=1):
         if self.distances is None:
             self.distance_sensor()
         if action is None:
@@ -139,8 +152,24 @@ class FakeEnvironmentAbstract(Env):
 
     def add_obstacle(self, x1x2y1y2):
         x1, x2, y1, y2 = x1x2y1y2
-        self.field[x1:x2, y1:y2] = VAL_OBSTACLE
+        field_tmp = self.field.copy()
+        field_tmp[x1:x2, y1:y2] = VAL_OBSTACLE
+        if field_tmp[self.pos[0], self.pos[1]] != 0:
+            return None
+        if field_tmp[self.target[0], self.target[1]] != 0:
+            return None
+        self.field = field_tmp
         self.distance_sensor()
+
+    def place_random_obstacle(self, dx, dy, N=1):
+        if N == 1:
+            x, y = self.random_position()
+            xmax = min(x + dx, self.N - 1)
+            ymax = min(y + dy, self.N - 1)
+            self.add_obstacle((x, xmax, y, ymax))
+        else:
+            for _ in range(N):
+                self.place_random_obstacle(dx, dy)
 
     def pts_to_anchor(self, anchor, filterout=True):
         pts = []
@@ -179,8 +208,18 @@ class FakeEnvironmentAbstract(Env):
         rx, ry = self.pos
         tx, ty = self.target
         s = self.plotpadding
-        f[(rx - s):(rx + s + 1), (ry - s):(ry + s + 1)] = VAL_ROBBIE
-        f[(tx - s):(tx + s + 1), (ty - s):(ty + s + 1)] = VAL_TARGET
+        r_minx = max(0, (rx - s))
+        r_maxx = min(rx + s + 1, self.N)
+        r_miny = max(0, (ry - s))
+        r_maxy = min(ry + s + 1, self.N)
+
+        t_minx = max(0, (tx - s))
+        t_maxx = min(tx + s + 1, self.N)
+        t_miny = max(0, (ty - s))
+        t_maxy = min(ty + s + 1, self.N)
+
+        f[r_minx:r_maxx, r_miny:r_maxy] = VAL_ROBBIE
+        f[t_minx:t_maxx, t_miny:t_maxy] = VAL_TARGET
         plt.matshow(f)
 
     def target_distance(self):
@@ -213,48 +252,18 @@ class FakeEnvironmentAbstract(Env):
 
 
 class FakeEnvironmentMini(FakeEnvironmentAbstract):
-    def __init__(self):
-        super(FakeEnvironmentMini, self).__init__(N=10, startpos=(2, 2),
-                                                  targetpos=(8, 8),
-                                                  num_of_sensors=4)
+    def __init__(self, num_of_sensors=4):
+        super(FakeEnvironmentMini, self).__init__(N=10, num_of_sensors=num_of_sensors, obstacles_each=2)
         self.plotpadding = 0
-
-    def step(self, action=None, target_gap=1, no_crash=False):
-        if self.distances is None:
-            self.distance_sensor()
-        if action is None:
-            action = self.random_action(no_crash=no_crash)
-
-        orientation_idx = action
-        pts_on_line = self.pts_to_anchor(self.anchors[orientation_idx],
-                                         filterout=False)[0]
-        self.pt = pts_on_line
-        if self.field[pts_on_line[1][0], pts_on_line[1][1]] > 0:
-            crash = True
-        else:
-            self.pos = pts_on_line[1]
-            crash = False
-
-        self.distance_sensor()
-        reward = self.reward(crash)
-        if self.target_distance() <= target_gap:
-            done = True
-        else:
-            done = False
-        return self.state, reward, done, {}
-
-    def random_action(self, orientation=None, no_crash=False):
-        if orientation is None:
-            if no_crash is True:
-                orientation = np.random.choice(np.where(self.distance_arr > 0)[0])
-            else:
-                orientation = np.random.randint(len(self.distance_arr))
-        return orientation
 
 
 class FakeEnvironmentMedium(FakeEnvironmentAbstract):
-    def __init__(self, num_of_sensors=8):
-        super(FakeEnvironmentMedium, self).__init__(
-            N=50, startpos=(8, 8), targetpos=(35, 40),
-            num_of_sensors=num_of_sensors)
-        self.plotpadding = np.floor(self.N / 50)
+    def __init__(self, num_of_sensors=8, obstacles_each=3):
+        super(FakeEnvironmentMedium, self).__init__(N=50, num_of_sensors=num_of_sensors)
+        self.plotpadding = 1
+
+
+class FakeEnvironmentLarge(FakeEnvironmentAbstract):
+    def __init__(self, num_of_sensors=32):
+        super(FakeEnvironmentLarge, self).__init__(N=100, num_of_sensors=num_of_sensors)
+        self.plotpadding = 2
