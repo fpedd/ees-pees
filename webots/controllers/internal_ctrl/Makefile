@@ -65,8 +65,8 @@
 ###
 ###-----------------------------------------------------------------------------
 
-C_SOURCES = internal_ctrl.c tcp.c wb_controller.c util.c
-# INCLUDE = -I"/include"
+C_SOURCES = internal_ctrl.c src/tcp.c src/wb_controller.c src/util.c
+INCLUDE = -I "./include"
 
 ### Do not modify: this includes Webots global Makefile.include
 space :=
