@@ -1,70 +1,11 @@
 import socket
 import struct
+import select
 import time
 import numpy as np
-import configparser
 from enum import Enum
 
-
-class Config(configparser.ConfigParser):
-    def __init__(self, config_file="config.ini"):
-        super(Config, self).__init__()
-        self.read(config_file)
-
-    @property
-    def success(self):
-        if len(self.sections()) > 0:
-            return True
-        return False
-
-    @property
-    def IP(self):
-        if self.success is True:
-            return self.get('Network', 'IP')
-        else:
-            return "127.0.0.1"
-
-    @property
-    def CONTROL_PORT(self):
-        if self.success is True:
-            return int(self.get('Network', 'CONTROL_PORT'))
-        else:
-            return 6969
-
-    @property
-    def BACKEND_PORT(self):
-        if self.success is True:
-            return int(self.get('Network', 'BACKEND_PORT'))
-        else:
-            return 6970
-
-    @property
-    def TIME_OFFSET_ALLOWED(self):
-        if self.success is True:
-            return float(self.get('Packet', 'TIME_OFFSET_ALLOWED'))
-        else:
-            return 1.0
-
-    @property
-    def PACKET_SIZE(self):
-        if self.success is True:
-            return int(self.get('Packet', 'PACKET_SIZE'))
-        else:
-            return 1496
-
-    @property
-    def DIST_VECS(self):
-        if self.success is True:
-            return int(self.get('Packet', 'DIST_VECS'))
-        else:
-            return 360
-
-    @property
-    def MAX_DISTANCE(self):
-        if self.success is True:
-            return float(self.get('Webot', 'MAX_DISTANCE'))
-        else:
-            return 100
+import config
 
 
 class WebotState(object):
@@ -187,7 +128,7 @@ class WebotAction(object):
 
 class Com(object):
     def __init__(self):
-        self.conf = Config()
+        self.conf = config.WebotConfig()
         self.msg_cnt_in = 0
         self.msg_cnt_out = 1
         self.latency = None
@@ -204,9 +145,10 @@ class Com(object):
         self.history.append([self.packet.time, self.packet])
 
     def recv(self):
-        t1 = time.time()
-        self.packet.buffer, addr = self.sock.recvfrom(self.conf.PACKET_SIZE)
-        self.latency = t1 - time.time()
+        conn, addr = self.sock.accept()
+        while True:
+            pack = conn.recvfrom(self.conf.PACKET_SIZE)
+            print(pack)
 
         self._update_history()
         self.msg_cnt_in += 2
