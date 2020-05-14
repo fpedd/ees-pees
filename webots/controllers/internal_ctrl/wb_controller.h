@@ -18,8 +18,8 @@ typedef struct {
 typedef struct {
     unsigned long long msg_cnt;  // total number of messages (odd) (internal)
     double time_stmp;            // time the message got send (internal)
-    float heading;               // the direction the robot should move in next
-    float speed;                 // the speed the robot should drive at
+    double heading;               // the direction the robot should move in next
+    double speed;                 // the speed the robot should drive at
 } __attribute__((packed)) from_bcknd_msg_t;
 
 

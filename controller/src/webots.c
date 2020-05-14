@@ -19,24 +19,33 @@ void wb_test_com(){
 	printf("Starting Coms on ext Controller\n");
 	wb_init_com();
 
-	from_bcknd_msg_t test_msg;
-	memset(&test_msg, 0, sizeof(from_bcknd_msg_t));
 
-	test_msg.heading = 5.55;
-	test_msg.speed = 6.66;
+	while(1) {
 
-	printf("Sending test_msg on ext Controller\n");
-	wb_send(test_msg);
+		to_bcknd_msg_t test_buf;
+		memset(&test_buf, 0, sizeof(to_bcknd_msg_t));
 
-	to_bcknd_msg_t test_buf;
-	memset(&test_buf, 0, sizeof(to_bcknd_msg_t));
+		printf("receiving test_msg on ext Controller\n");
+		wb_recv(&test_buf);
 
-	printf("receiving test_msg on ext Controller\n");
-	wb_recv(&test_buf);
+		printf("===========RECEIVED=========\n");
+		printf("actual_gps: x=%f, y=%f, z=%f\n", test_buf.actual_gps[0], test_buf.actual_gps[1], test_buf.actual_gps[2]);
+		printf("============================\n");
 
-	printf("===========RECEIVED=========\n");
-	printf("Target_gps: x=%f, y=%f, z=%f\n", test_buf.target_gps[0], test_buf.target_gps[1], test_buf.target_gps[2]);
-	printf("============================\n");
+
+
+		from_bcknd_msg_t test_msg;
+		memset(&test_msg, 0, sizeof(from_bcknd_msg_t));
+
+		test_msg.heading = 0.8;
+		test_msg.speed = -0.20;
+
+		printf("Sending test_msg on ext Controller\n");
+		wb_send(test_msg);
+	}
+
+	tcp_close ();
+
 
 
 

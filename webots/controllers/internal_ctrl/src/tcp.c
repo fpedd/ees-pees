@@ -1,0 +1,76 @@
+#include <stdio.h>
+#include <string.h>
+#include <sys/types.h>
+#include <time.h>
+#include <arpa/inet.h>  /* definition of inet_ntoa */
+#include <netdb.h>      /* definition of gethostbyname */
+#include <netinet/in.h> /* definition of struct sockaddr_in */
+#include <sys/socket.h>
+#include <sys/time.h>
+#include <unistd.h> /* definition of close */
+#include <errno.h>
+
+#include "tcp.h"
+#include "util.h"
+
+#define PORT "10200"
+#define ADDR "127.0.0.1"
+
+static int tcp_socket_fd;
+
+//Sets up socket and connects to server with address in met
+//returns socket_fd
+int tcp_connect() {
+
+	struct addrinfo hints, *server_info;		//init structs and add hints for
+	memset(&hints, 0, sizeof(hints));				//getaddrinfo() function
+	hints.ai_family = AF_UNSPEC;
+	hints.ai_socktype = SOCK_STREAM;
+
+	int stat_addrinfo = getaddrinfo(ADDR, PORT, &hints, &server_info);
+	if (stat_addrinfo != 0) {
+		error("cant get addrinfo");
+	}
+
+	//set up socket for client
+	tcp_socket_fd = socket(server_info->ai_family, server_info->ai_socktype, server_info->ai_protocol);
+	if (tcp_socket_fd < 0) {
+		error("error on client socket startup");
+	}
+
+	//connect client to server
+	int connect_stat = connect(tcp_socket_fd, server_info->ai_addr, server_info->ai_addrlen);
+	if (connect_stat != 0) {
+		error("error on connect client to server");
+		perror(NULL);
+	}
+
+	freeaddrinfo(server_info);    //not needed anymore
+
+	return 0;
+}
+
+int tcp_send (char* data, int data_len) {
+
+	int len = send(tcp_socket_fd, data, data_len, 0);
+	if (len < 0) {
+		error("error on tcp_send");
+		perror(NULL);
+	}
+	return len;
+}
+
+int tcp_recv (char* buf, int buf_size) {
+
+	int received = recv(tcp_socket_fd, buf, buf_size, 0);
+	if (received < 0) {
+		error("error on tcp_recv");
+		perror(NULL);
+	}
+	return received;
+}
+
+int tcp_close () {
+	close(tcp_socket_fd);
+	return 0;
+}

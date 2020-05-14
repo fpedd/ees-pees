@@ -9,73 +9,69 @@
 #include <sys/time.h>
 #include <unistd.h> /* definition of close */
 
-#include </snap/webots/14/usr/share/webots/include/controller/c/webots/motor.h>
-#include </snap/webots/14/usr/share/webots/include/controller/c/webots/robot.h>
-
 #include "tcp.h"
 #include "wb_controller.h"
 #include "util.h"
 
 
-#define TIME_STEP 32
 
-int wb_controller(){
-
-	wb_robot_init();
-
-	// get timestep from world info
-	const int timestep = (int) wb_robot_get_basic_time_step();
-
-	//enable devices
-	WbDeviceTag lidar = wb_robot_get_device("LDS-01");
-	WbDeviceTag gps = wb_robot_get_device("gps");
-	WbDeviceTag compass = wb_robot_get_device("compass");
-
-	wb_lidar_enable (lidar, timestep);
-	wb_gps_enable (gps, timestep);
-	wb_compass_enable (compass, timestep);
-
-	//connect to external controller
-	printf("Starting Coms on Webots Controller\n");
-	tcp_connect();
-
-	//run
-	while (wb_robot_step(timestep) != -1) {
-
-		to_bcknd_msg_t robot_data;
-		memset(&robot_data, 0, sizeof(to_bcknd_msg_t));
-
-
-		//get sensor data
-		robot_data.time_stmp = wb_robot_get_time();
-		// robot_data.speed = wb_gps_get_speed(gps);
-		robot_data.actual_gps = wb_gps_get_values(gps);
-		robot_data.compass = wb_compass_get_values(compass);
-		robot_data.distance = wb_lidar_get_range_image(lidar);
-
-		printf("Sending test_msg on Webots Controller\n");
-		wb_send(robot_data);
-
-		from_bcknd_msg_t buf;
-		memset(&buf, 0, sizeof(from_bcknd_msg_t));
-
-		printf("receiving Message on Webots Controller\n");
-
-		wb_recv(&buf);
-
-		printf("===========RECEIVED=========\n");
-		printf("Heading: %f\n", test_buf.heading);
-		printf("Speed: %f\n", test_buf.speed);
-		printf("============================\n");
-
-	}
-
-
-
-	wb_robot_cleanup();
-
-	return 0;
-}
+// int wb_controller(){
+//
+// 	wb_robot_init();
+//
+// 	// get timestep from world info
+// 	const int timestep = (int) wb_robot_get_basic_time_step();
+//
+// 	//enable devices
+// 	WbDeviceTag lidar = wb_robot_get_device("LDS-01");
+// 	WbDeviceTag gps = wb_robot_get_device("gps");
+// 	WbDeviceTag compass = wb_robot_get_device("compass");
+//
+// 	wb_lidar_enable (lidar, timestep);
+// 	wb_gps_enable (gps, timestep);
+// 	wb_compass_enable (compass, timestep);
+//
+// 	//connect to external controller
+// 	printf("Starting Coms on Webots Controller\n");
+// 	tcp_connect();
+//
+// 	//run
+// 	while (wb_robot_step(timestep) != -1) {
+//
+// 		to_bcknd_msg_t robot_data;
+// 		memset(&robot_data, 0, sizeof(to_bcknd_msg_t));
+//
+//
+// 		//get sensor data
+// 		robot_data.time_stmp = wb_robot_get_time();
+// 		// robot_data.speed = wb_gps_get_speed(gps);
+// 		robot_data.actual_gps = wb_gps_get_values(gps);
+// 		robot_data.compass = wb_compass_get_values(compass);
+// 		robot_data.distance = wb_lidar_get_range_image(lidar);
+//
+// 		printf("Sending test_msg on Webots Controller\n");
+// 		wb_send(robot_data);
+//
+// 		from_bcknd_msg_t buf;
+// 		memset(&buf, 0, sizeof(from_bcknd_msg_t));
+//
+// 		printf("receiving Message on Webots Controller\n");
+//
+// 		wb_recv(&buf);
+//
+// 		printf("===========RECEIVED=========\n");
+// 		printf("Heading: %f\n", test_buf.heading);
+// 		printf("Speed: %f\n", test_buf.speed);
+// 		printf("============================\n");
+//
+// 	}
+//
+//
+//
+// 	wb_robot_cleanup();
+//
+// 	return 0;
+// }
 
 
 
