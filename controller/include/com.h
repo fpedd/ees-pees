@@ -7,9 +7,9 @@
 typedef struct {
     unsigned long long msg_cnt;  // total number of messages (even) (internal)
     double time_stmp;            // time the message got send (internal)
-    float target_gps[3];         // coordiantes where the robot needs to go
-    float actual_gps[3];         // coordiantes where the robot is
-    float compass[3];            // direction the front of the robot points in
+    double target_gps[3];         // coordiantes where the robot needs to go
+    double actual_gps[3];         // coordiantes where the robot is
+    double compass[3];            // direction the front of the robot points in
     float distance[DIST_VECS];   // distance to the next object from robot prespective
     unsigned int touching;       // is the robot touching something?
 } __attribute__((packed)) to_bcknd_msg_t;
