@@ -252,18 +252,18 @@ class FakeEnvironmentAbstract(Env):
 
 
 class FakeEnvironmentMini(FakeEnvironmentAbstract):
-    def __init__(self, num_of_sensors=4):
-        super(FakeEnvironmentMini, self).__init__(N=10, num_of_sensors=num_of_sensors, obstacles_each=2)
+    def __init__(self, num_of_sensors=4, obstacles_each=2):
+        super(FakeEnvironmentMini, self).__init__(N=10, num_of_sensors=num_of_sensors, obstacles_each=obstacles_each)
         self.plotpadding = 0
 
 
 class FakeEnvironmentMedium(FakeEnvironmentAbstract):
     def __init__(self, num_of_sensors=8, obstacles_each=3):
-        super(FakeEnvironmentMedium, self).__init__(N=50, num_of_sensors=num_of_sensors)
+        super(FakeEnvironmentMedium, self).__init__(N=50, num_of_sensors=num_of_sensors, obstacles_each=obstacles_each)
         self.plotpadding = 1
 
 
 class FakeEnvironmentLarge(FakeEnvironmentAbstract):
-    def __init__(self, num_of_sensors=32):
-        super(FakeEnvironmentLarge, self).__init__(N=100, num_of_sensors=num_of_sensors)
+    def __init__(self, num_of_sensors=32, obstacles_each=4):
+        super(FakeEnvironmentLarge, self).__init__(N=100, num_of_sensors=num_of_sensors, obstacles_each=obstacles_each)
         self.plotpadding = 2
