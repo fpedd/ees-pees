@@ -1,12 +1,15 @@
 import numpy as np
 import abc
-from pynput import keyboard
 import time
+from pynput import keyboard
 
 import communicate
 import environment
 
 class Agent(abc.ABC):
+    def __init__(self):
+        self.history = []
+
     # @abc.abstractmethod
     # def train(self):
     #     pass
