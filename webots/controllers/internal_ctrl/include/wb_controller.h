@@ -1,5 +1,5 @@
-#ifndef COM_H
-#define COM_H
+#ifndef WB_CONTROLLER_H
+#define WB_CONTROLLER_H
 
 #define DIST_VECS    360
 
@@ -22,10 +22,14 @@ typedef struct {
     double speed;                 // the speed the robot should drive at
 } __attribute__((packed)) from_bcknd_msg_t;
 
-int com_init();
 
-int com_send(to_bcknd_msg_t data);
+int wb_controller();
 
-int com_recv(from_bcknd_msg_t *data);
+int wb_controller_test();
 
-#endif // COM_H
+int wb_send(to_bcknd_msg_t data);
+
+int wb_recv(from_bcknd_msg_t *data);
+
+
+#endif //WB_CONTROLLER_H

@@ -1,0 +1,66 @@
+#VRML_SIM R2020a utf8
+WorldInfo {
+}
+Viewpoint {
+  orientation 0.06125986965313894 0.8493099074540368 0.5243280552006498 3.3277948678676004
+  position -0.4862068240551618 0.7074794547015076 -0.04430006445424528
+  follow "rectangle arena"
+}
+TexturedBackground {
+}
+TexturedBackgroundLight {
+}
+RectangleArena {
+  floorSize 10 10
+}
+TinkerbotsBase {
+  translation -0.42 0.0399858 0.3
+  rotation -0.987168785798863 -0.0008713565246461446 0.15967789165130383 -3.6176520147050033e-07
+  name "Tinkerbots(2)"
+  controller "internal_ctrl"
+  downSlot TinkerbotsPivot {
+    rotation 0 0 1 1.5707996938995747
+    slot TinkerbotsMotor {
+      frontSlot TinkerbotsAxle {
+        endSlot TinkerbotsWheel {
+        }
+      }
+      backSlot TinkerbotsAxle {
+        name "axle(1)"
+        endSlot TinkerbotsWheel {
+        }
+      }
+    }
+  }
+  leftSlot TinkerbotsCube {
+    name "(1)"
+    rightDSlot TinkerbotsCubieBoxWithRoundSlots {
+      axisSlot TinkerbotsAxle {
+        rotation 0 1 0 3.141592653589793
+        endSlot TinkerbotsWheel {
+        }
+      }
+    }
+  }
+  rightSlot TinkerbotsCube {
+    leftDSlot TinkerbotsCubieBoxWithRoundSlots {
+      axisSlot TinkerbotsAxle {
+        rotation 0 1 0 3.141592653589793
+        endSlot TinkerbotsWheel {
+        }
+      }
+    }
+  }
+  extensionSlot [
+    RobotisLds01 {
+      translation 2.06874e-15 0.04 -2.69848e-13
+      rotation -2.346409999993541e-06 0.9999999999972473 1.2478099999965652e-12 -3.1415853071795863
+      name "lidar"
+    }
+    Compass {
+    }
+    GPS {
+      translation 0 0 0.02
+    }
+  ]
+}
