@@ -22,7 +22,7 @@ We have three main branches with the same names as the three main directories
 Although they are not necessary, they simplify and streamline working on the different
 parts of our architecture. If we are ready for a system test, we will pull / merge
 all three (or only the needed) branches into the `master` branch.
-There we can work an getting the interfaces running and test the system as a hole.
+There we can work on getting the interfaces running and test the system as a hole.
 The basic Branch / Merge architecture should look something like this:
 
 ![merge concept](resources/image/merge-concept.jpg)
