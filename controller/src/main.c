@@ -30,12 +30,12 @@ int main(int argc, char **argv) {
         com_send(first_msg);
         delay(0.2);
 
-        // from_bcknd_msg_t first_msg_resp;
-        // com_recv(&first_msg_resp);
-        //
-        // printf("cnt %lld, time %f, heading %f, speed %f \n",
-        //        first_msg_resp.msg_cnt, first_msg_resp.time_stmp,
-        //        first_msg_resp.heading, first_msg_resp.speed);
+        from_bcknd_msg_t first_msg_resp;
+        com_recv(&first_msg_resp);
+
+        printf("cnt %lld, time %f, heading %f, speed %f \n",
+               first_msg_resp.msg_cnt, first_msg_resp.time_stmp,
+               first_msg_resp.heading, first_msg_resp.speed);
     }
 
     return 0;
