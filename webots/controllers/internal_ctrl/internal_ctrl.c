@@ -29,7 +29,7 @@
 #include <time.h>
 
 #include "tcp.h"
-#include "wb_controller.h"
+#include "internal_com.h"
 #include "util.h"
 
 
@@ -78,8 +78,8 @@ int main(int argc, char **argv) {
 	while (wb_robot_step(timestep) != -1) {
 
 
-		to_bcknd_msg_t robot_data;
-		memset(&robot_data, 0, sizeof(to_bcknd_msg_t));
+		wb_to_ext_msg_t robot_data;
+		memset(&robot_data, 0, sizeof(wb_to_ext_msg_t));
 
 		// read values from devices
 		// robot_data.time_stmp = wb_robot_get_time();
@@ -92,14 +92,14 @@ int main(int argc, char **argv) {
 
 		// send data
 		printf("Sending test_msg on Webots Controller\n");
-		wb_send(robot_data);
+		internal_send(robot_data);
 
 		// receive response
-		from_bcknd_msg_t buf;
-		memset(&buf, 0, sizeof(from_bcknd_msg_t));
+		ext_to_wb_msg_t buf;
+		memset(&buf, 0, sizeof(ext_to_wb_msg_t));
 
 		printf("receiving Message on Webots Controller\n");
-		wb_recv(&buf);
+		internal_recv(&buf);
 
 		printf("===========RECEIVED=========\n");
 		printf("Heading: %f\n", buf.heading);
