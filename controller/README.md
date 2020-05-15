@@ -61,7 +61,7 @@ typedef struct {
 		double time_stmp;            // time the message got send (internal)
 		float heading;               // the direction the robot should move in next
 		float speed;                 // the speed the robot should drive at
-		} __attribute__((packed)) from_bcknd_msg_t;
+	} __attribute__((packed)) from_bcknd_msg_t;
 ```
 
 Variables inside the messages with `(internal)` next to them should never be written

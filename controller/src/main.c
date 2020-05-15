@@ -1,11 +1,12 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "udp.h"
-#include "com.h"
+#include "backend/udp.h"
+#include "backend/backend_com.h"
+#include "webots/webots.h"
+#include "webots/wb_com.h"
 #include "pid.h"
 #include "util.h"
-#include "webots.h"
 
 
 int main(int argc, char **argv) {

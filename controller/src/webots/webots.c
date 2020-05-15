@@ -1,9 +1,9 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "com.h"
-#include "webots.h"
-#include "tcp.h"
+#include "webots/wb_com.h"
+#include "webots/webots.h"
+#include "webots/tcp.h"
 #include "util.h"
 
 

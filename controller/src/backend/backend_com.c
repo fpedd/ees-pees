@@ -1,10 +1,10 @@
-#include "com.h"
+#include "backend/backend_com.h"
 
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
 
-#include "udp.h"
+#include "backend/udp.h"
 #include "util.h"
 
 #define TIME_OFFSET_ALLOWED 1.0 // in seconds

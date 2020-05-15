@@ -9,7 +9,7 @@
 #include <sys/time.h>
 #include <unistd.h> /* definition of close */
 
-#include "tcp.h"
+#include "webots/tcp.h"
 #include "util.h"
 
 #define PORT "10200"
