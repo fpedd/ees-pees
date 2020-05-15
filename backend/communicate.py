@@ -155,6 +155,12 @@ class Com(object):
         self._set_sock()
         self.packet.buffer, addr = self.sock.recvfrom(self.conf.PACKET_SIZE)
         self.state.fill_from_buffer(self.packet.buffer, self.conf.DIST_VECS)
+
+        ### TESTING START
+        print(self.state.gps_actual[0])
+        print(self.state.gps_actual[1])
+        ### TESTING END
+
         # if PACKET_SIZE < len(self.packet.buffer):
         #     print("ERROR: recv did not get full packet", len(self.packet.buffer))
         #     return

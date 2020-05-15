@@ -19,8 +19,8 @@ int main(int argc, char **argv) {
 		ext_to_bcknd_msg_t first_msg;
 		memset(&first_msg, 0, sizeof(ext_to_bcknd_msg_t));
 
-		for (int i=0; i<3; i++) {
-			first_msg.target_gps[i] = i + 0.69;
+		for (int i=0; i<2; i++) {
+			first_msg.actual_gps[i] = i + 0.69;
 		}
 
 		for (int i=0; i<DIST_VECS; i++) {
