@@ -57,22 +57,22 @@ int wb_send(from_bcknd_msg_t data) {
 	data.msg_cnt = 0;
 	data.time_stmp = 0;
 
-    int len = tcp_send((char *) &data, sizeof(from_bcknd_msg_t));
+	int len = tcp_send((char *) &data, sizeof(from_bcknd_msg_t));
 	if (len < (int) sizeof(from_bcknd_msg_t)) {
 		error("wb_send: Did not send complete struct");
 	}
 
-    return 0;
+	return 0;
 }
 
 int wb_recv(to_bcknd_msg_t *data) {
 
 	memset(data, 0, sizeof(to_bcknd_msg_t));
 
-    int len = tcp_recv((char *)data, sizeof(to_bcknd_msg_t));
-    if (len < (int) sizeof(to_bcknd_msg_t)) {
-        error("wb_recv: did not receive complete data");
-    }
+	int len = tcp_recv((char *)data, sizeof(to_bcknd_msg_t));
+	if (len < (int) sizeof(to_bcknd_msg_t)) {
+		error("wb_recv: did not receive complete data");
+	}
 
-    return 0;
+	return 0;
 }
