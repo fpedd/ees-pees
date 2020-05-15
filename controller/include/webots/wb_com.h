@@ -5,8 +5,8 @@
 
 // webot --> external controller
 typedef struct {
-	// double sim_time                 // current simulation time [if requested]
-	// double current_speed               // current robot speed [if requested]
+	double sim_time;              // current simulation time [if requested]
+	double current_speed;         // current robot speed [if requested]
 	double actual_gps[3];         // coordiantes where the robot is
 	double compass[3];            // direction the front of the robot points in
 	float distance[DIST_VECS];    // distance to the next object from robot prespective

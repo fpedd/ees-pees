@@ -64,6 +64,7 @@ int tcp_accept() {
 	error("error on listen");
 
 	//accept new connection with client
+	printf("TCP: Waiting for webot to connect...\n");
 	tcp_socket_fd = accept(tcp_socket_fd, (struct sockaddr *)&their_addr, &addr_size);
 	if(tcp_socket_fd < 0)
 	error("error on accept");
