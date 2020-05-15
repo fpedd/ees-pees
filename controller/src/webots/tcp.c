@@ -1,3 +1,5 @@
+#include "webots/tcp.h"
+
 #include <stdio.h>
 #include <string.h>
 #include <sys/types.h>
@@ -9,7 +11,6 @@
 #include <sys/time.h>
 #include <unistd.h> /* definition of close */
 
-#include "webots/tcp.h"
 #include "util.h"
 
 #define PORT "10200"
