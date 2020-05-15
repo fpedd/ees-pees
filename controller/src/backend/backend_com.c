@@ -19,31 +19,31 @@ int com_init() {
 	msg_cnt_out = 0;
 	msg_cnt_in = (unsigned int)-1;
 
-	// to_bcknd_msg_t first_msg;
-	// memset(&first_msg, 0, sizeof(to_bcknd_msg_t));
+	// ext_to_bcknd_msg_t first_msg;
+	// memset(&first_msg, 0, sizeof(ext_to_bcknd_msg_t));
 	// com_send(first_msg);
 	//
-	// from_bcknd_msg_t first_msg_resp;
+	// bcknd_to_ext_msg_t first_msg_resp;
 	// com_recv(&first_msg_resp);
 
 	return 0;
 }
 
-int com_run(from_bcknd_msg_t *data) {
+int com_run(bcknd_to_ext_msg_t *data) {
 	(void) data;
 	// TODO
 	return 0;
 }
 
-int com_send(to_bcknd_msg_t data) {
+int com_send(ext_to_bcknd_msg_t data) {
 
 	data.msg_cnt = msg_cnt_out;
 	data.time_stmp = get_time();
 
-	int len = udp_send((char *)&data, sizeof(to_bcknd_msg_t));
-	if (len < (int)sizeof(to_bcknd_msg_t)) {
+	int len = udp_send((char *)&data, sizeof(ext_to_bcknd_msg_t));
+	if (len < (int)sizeof(ext_to_bcknd_msg_t)) {
 		fprintf(stderr, "ERROR: com send too short, is %d, should %ld\n",
-		len, sizeof(to_bcknd_msg_t));
+		len, sizeof(ext_to_bcknd_msg_t));
 		return -1;
 	}
 
@@ -52,13 +52,13 @@ int com_send(to_bcknd_msg_t data) {
 	return 0;
 }
 
-int com_recv(from_bcknd_msg_t *data) {
-	memset(data, 0, sizeof(from_bcknd_msg_t));
+int com_recv(bcknd_to_ext_msg_t *data) {
+	memset(data, 0, sizeof(bcknd_to_ext_msg_t));
 
-	int len = udp_recv((char *)data, sizeof(from_bcknd_msg_t));
-	if (len < (int)sizeof(from_bcknd_msg_t)) {
+	int len = udp_recv((char *)data, sizeof(bcknd_to_ext_msg_t));
+	if (len < (int)sizeof(bcknd_to_ext_msg_t)) {
 		fprintf(stderr, "ERROR: com recv too short, is %d, should %ld\n",
-		len, sizeof(from_bcknd_msg_t));
+		len, sizeof(bcknd_to_ext_msg_t));
 		return -1;
 	}
 

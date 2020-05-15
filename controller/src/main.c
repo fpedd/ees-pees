@@ -1,9 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "backend/udp.h"
 #include "backend/backend_com.h"
-#include "webots/webots.h"
 #include "webots/wb_com.h"
 #include "pid.h"
 #include "util.h"
@@ -18,8 +16,8 @@ int main(int argc, char **argv) {
 
 	// testing communication
 	while (1) {
-		to_bcknd_msg_t first_msg;
-		memset(&first_msg, 0, sizeof(to_bcknd_msg_t));
+		ext_to_bcknd_msg_t first_msg;
+		memset(&first_msg, 0, sizeof(ext_to_bcknd_msg_t));
 
 		for (int i=0; i<3; i++) {
 			first_msg.target_gps[i] = i + 0.69;
@@ -32,7 +30,7 @@ int main(int argc, char **argv) {
 		com_send(first_msg);
 		delay(0.2);
 
-		from_bcknd_msg_t first_msg_resp;
+		bcknd_to_ext_msg_t first_msg_resp;
 		com_recv(&first_msg_resp);
 
 		printf("cnt %lld, time %f, heading %f, speed %f \n",

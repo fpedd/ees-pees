@@ -9,6 +9,8 @@ import config
 
 class WebotState(object):
     def __init__(self):
+        self.sim_time = None
+        self.sim_speed = None
         self.gps_target = None
         self.gps_actual = None
         self.compass = None
@@ -16,11 +18,13 @@ class WebotState(object):
         self.touching = None
 
     def fill_from_buffer(self, buffer, DIST_VECS):
-        self.gps_target = struct.unpack('3f', buffer[16:28])
-        self.gps_actual = struct.unpack('3f', buffer[28:40])
-        self.compass = struct.unpack('3f', buffer[40:52])
-        self.distance = struct.unpack("{}f".format(DIST_VECS), buffer[52:(52 + DIST_VECS * 4)])
-        self.touching = struct.unpack("I", buffer[(52 + DIST_VECS * 4):(56 + DIST_VECS * 4)])[0]
+        self.sim_time = struct.unpack('f', buffer[16:20])[0]
+        self.sim_speed = struct.unpack('f', buffer[20:24])[0]
+        self.gps_target = struct.unpack('2f', buffer[24:32])
+        self.gps_actual = struct.unpack('2f', buffer[32:40])
+        self.compass = struct.unpack('f', buffer[40:44])[0]
+        self.touching = struct.unpack("I", buffer[44:48])[0]
+        self.distance = struct.unpack("{}f".format(DIST_VECS), buffer[48:(48 + DIST_VECS * 4)])
         self._to_array()
 
     def _to_array(self):
@@ -171,9 +175,11 @@ class Com(object):
 
 
     def send(self, action:WebotAction):
+        self._set_sock()
         data = struct.pack('Qdff', self.msg_cnt_out, time.time(),
                            action.heading, action.speed)
-        ret = self.sock.sendto(data, (IP, CONTROL_PORT))
+        # ret = self.sock.sendto(data, (IP, CONTROL_PORT))
+        ret = self.sock.sendto(data, (self.conf.IP, self.conf.CONTROL_PORT))
         if ret == len(data):
             self.msg_cnt_out += 2
         else:
