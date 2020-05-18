@@ -72,7 +72,8 @@ VAL_TARGET = 6
 
 
 class FakeEnvironmentAbstract(Env):
-    def __init__(self, N, startpos=None, targetpos=None, num_of_sensors=4, obstacles_each=4):
+    def __init__(self, N=100, startpos=None, targetpos=None, num_of_sensors=4, obstacles_each=4):
+        self.inits = (N, num_of_sensors, obstacles_each)
         self.N = N
         self.offset = int(2 * N)
         self.setup_fields()
@@ -91,7 +92,8 @@ class FakeEnvironmentAbstract(Env):
         self.distance_sensor()
 
     def reset(self):
-        self.__init__(self.N, self.num_of_sensors)
+        N, num_of_sensors, obstacles_each = self.inits
+        self.__init__(N=N, num_of_sensors=num_of_sensors, obstacles_each=obstacles_each)
         reward = self.reward(crash=False)
         return self.state, reward, False, {}
 
@@ -252,18 +254,102 @@ class FakeEnvironmentAbstract(Env):
 
 
 class FakeEnvironmentMini(FakeEnvironmentAbstract):
-    def __init__(self, num_of_sensors=4, obstacles_each=2):
+    def __init__(self, N=10, num_of_sensors=4, obstacles_each=2):
         super(FakeEnvironmentMini, self).__init__(N=10, num_of_sensors=num_of_sensors, obstacles_each=obstacles_each)
         self.plotpadding = 0
 
 
 class FakeEnvironmentMedium(FakeEnvironmentAbstract):
-    def __init__(self, num_of_sensors=8, obstacles_each=3):
+    def __init__(self, N=50, num_of_sensors=8, obstacles_each=3):
         super(FakeEnvironmentMedium, self).__init__(N=50, num_of_sensors=num_of_sensors, obstacles_each=obstacles_each)
         self.plotpadding = 1
 
 
 class FakeEnvironmentLarge(FakeEnvironmentAbstract):
-    def __init__(self, num_of_sensors=32, obstacles_each=4):
+    def __init__(self, N=100, num_of_sensors=32, obstacles_each=4):
         super(FakeEnvironmentLarge, self).__init__(N=100, num_of_sensors=num_of_sensors, obstacles_each=obstacles_each)
         self.plotpadding = 2
+
+
+class DQNEnv(FakeEnvironmentMini):
+    def __init__(self):
+        super(DQNEnv, self).__init__()
+
+    def fields_around(self, radius):
+        n_f = radius * 2 + 1
+        fields = np.zeros(shape=(n_f, n_f))
+        pos = self.pos
+        x = 0
+        y = 0
+        d = (0, 0)
+        for i in range(-radius, radius + 1):
+            y = 0
+            for j in range(-radius, radius + 1):
+                d = (i, j)
+                pt = tuple(map(lambda i, j: i + j, pos, d))
+                if pt == pos:
+                    fields[x][y] = -1
+                elif self.field[pt[0]][pt[1]] > 0:
+                    fields[x][y] = 1
+                y += 1
+            x += 1
+
+        return fields
+
+    def step_f(self, action, radius):
+        done = False
+        crash = False
+        o_pos = self.pos
+        direction, len_ = action
+        adj = (0, 0)
+        if direction == 1:
+            adj = (-1, 0)
+        elif direction == 2:
+            adj = (0, 1)
+        elif direction == 3:
+            adj = (1, 0)
+        elif direction == 4:
+            adj = (0, -1)
+        n_p = tuple(map(lambda i, j: i + j, o_pos, adj))
+        if self.field[n_p[0], n_p[1]] > 0:
+            crash = True
+        else:
+            self.pos = n_p
+        if self.pos == self.target:
+            done = True
+        n_pos = self.pos
+        state = (self.pos, self.fields_around(radius))
+        reward = self.calc_reward(crash, done, o_pos, n_pos)
+        return state, reward, done, {}
+
+    def dist_reward(self, o_pos, n_pos):
+        d_reward = 0
+        t_pos = self.target
+        dx_old = abs(o_pos[0] - t_pos[0])
+        dx_new = abs(n_pos[0] - t_pos[0])
+        dy_old = abs(o_pos[1] - t_pos[1])
+        dy_new = abs(n_pos[1] - t_pos[1])
+
+        if dx_old > dx_new:
+            d_reward = 20
+        if dx_old < dx_new:
+            d_reward = -20
+        if dy_old > dy_new:
+            d_reward = 20
+        if dy_old < dy_new:
+            d_reward = -20
+
+        return d_reward
+
+    def calc_reward(self, crash, done, o_pos, n_pos):
+        reward = 0
+        if done is True:
+            reward = reward + 1000
+        if crash is True:
+            reward = reward - 100
+        reward = reward + self.dist_reward(o_pos, n_pos)
+        reward = reward - 10
+        return reward
+
+    def plot(self):
+        self.render()
