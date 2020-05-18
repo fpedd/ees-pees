@@ -57,7 +57,6 @@ void webot_worker(arg_struct_t *arg_struct) {
 		external_ext_to_wb.speed = buffer_bcknd_to_ext.speed /100;
 
 		external_ext_to_wb.heading *= -1;
-		external_ext_to_wb.speed *= -1;
 
 		printf("WEBOT_WORKER: heading to webot: %f \n", external_ext_to_wb.heading);
 		printf("WEBOT_WORKER: speed to webot: %f \n", external_ext_to_wb.speed);
