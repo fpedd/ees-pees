@@ -1,15 +1,16 @@
 #include "webots/tcp.h"
 
-#include <stdio.h>
-#include <string.h>
 #include <sys/types.h>
-#include <time.h>
-#include <arpa/inet.h>  /* definition of inet_ntoa */
-#include <netdb.h>      /* definition of gethostbyname */
-#include <netinet/in.h> /* definition of struct sockaddr_in */
 #include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <netdb.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <string.h>
+#include <stdlib.h>
 #include <sys/time.h>
-#include <unistd.h> /* definition of close */
+#include <errno.h>
 
 #include "util.h"
 
@@ -31,22 +32,25 @@ int tcp_init() {
 	//fill server_info struct with parameters
 	int stat_addrinfo = getaddrinfo(NULL, PORT, &hints, &server_info);
 	if (stat_addrinfo != 0) {
-		error("cant get addrinfo");
+		fprintf(stderr, "ERROR: tcp cant get addrinfo %s\n", strerror(errno));
+		return stat_addrinfo;
 	}
 
 	//set up socket
 	tcp_socket_fd = socket(server_info->ai_family, server_info->ai_socktype, server_info->ai_protocol);
 	if (tcp_socket_fd < 0) {
-		error("error on socket startup");
+		fprintf(stderr, "ERROR: tcp open socket %s\n", strerror(errno));
+		return tcp_socket_fd;
 	}
 
 	//bind socket to address
 	int bind_stat = bind(tcp_socket_fd, server_info->ai_addr, server_info->ai_addrlen);
 	if (bind_stat != 0) {
-		error("error on bind socket");
+		fprintf(stderr, "ERROR: tcp bind %s\n", strerror(errno));
+		return bind_stat;
 	}
 
-	freeaddrinfo(server_info);    //not needed anymore
+	freeaddrinfo(server_info);
 
 	return 0;
 }
@@ -60,14 +64,18 @@ int tcp_accept() {
 
 	//listen for connections
 	int listen_stat = listen(tcp_socket_fd, 5);
-	if(listen_stat != 0)
-	error("error on listen");
+	if(listen_stat != 0) {
+		fprintf(stderr, "ERROR: tcp cant listen %s\n", strerror(errno));
+		return listen_stat;
+	}
 
 	//accept new connection with client
-	printf("TCP: Waiting for webot to connect...\n");
+	// printf("TCP: Waiting for webot to connect...\n");
 	tcp_socket_fd = accept(tcp_socket_fd, (struct sockaddr *)&their_addr, &addr_size);
-	if(tcp_socket_fd < 0)
-	error("error on accept");
+	if(tcp_socket_fd < 0) {
+		fprintf(stderr, "ERROR: tcp cant accept %s\n", strerror(errno));
+		return tcp_socket_fd;
+	}
 
 	return 0;
 }
@@ -76,18 +84,20 @@ int tcp_send (char* data, int data_len) {
 
 	int len = send(tcp_socket_fd, data, data_len, 0);
 	if (len < 0) {
-		error("error on tcp_send");
+		fprintf(stderr, "ERROR: tcp send %s\n", strerror(errno));
+		return len;
 	}
 	return len;
 }
 
 int tcp_recv (char* buf, int buf_size) {
 
-	int received = recv(tcp_socket_fd, buf, buf_size, 0);
-	if (received < 0) {
-		error("error on tcp_send");
+	int len = recv(tcp_socket_fd, buf, buf_size, 0);
+	if (len < 0) {
+		fprintf(stderr, "ERROR: tcp recv '%s'\n", strerror(errno));
+		return len;
 	}
-	return received;
+	return len;
 }
 
 int tcp_close () {

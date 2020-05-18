@@ -3,6 +3,22 @@
 **Disclaimer:** The stuff below is **not fixed**. If you have any ideas on how to improve
 or streamline the workflow let us know. We can then change / adjust our architecture.
 
+## Usage
+To start the communication stack you can run `./run.sh` in the root directory of
+the repository. This should compile the Internal and the External Controller.
+After that is done, it will start the External Controller, then the Webots
+Environment with the Internal Controller and after that the Python Backend.
+
+You will see three corresponding terminal open with the three processes mentioned
+above run from each terminal. Inside the top terminal the Python Backend should
+be running.
+
+To stop all processes, just run `./kill.sh`. This will kill all three processes.
+
+Before you will be able to run the scripts you may need to run:  
+`chmod +x kill.sh`  
+`chmod +x run.sh`
+
 ## General
 This repository contains all relevant information for our EES+PEES project.
 

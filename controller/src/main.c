@@ -21,69 +21,40 @@ int main(int argc, char **argv) {
 	bcknd_to_ext_msg_t bcknd_to_ext_msg;
 	memset(&bcknd_to_ext_msg, 0, sizeof(bcknd_to_ext_msg_t));
 
-	arg_struct_t arg_struct;
-	arg_struct.ext_to_bcknd = &ext_to_bcknd_msg;
-	arg_struct.bcknd_to_ext = &bcknd_to_ext_msg;
+	pthread_mutex_t ext_to_bcknd_lock;
+	pthread_mutex_t bcknd_to_ext_lock;
 
-	printf("Starting threads from main \n");
+	if ((pthread_mutex_init(&ext_to_bcknd_lock, NULL) |
+	     pthread_mutex_init(&bcknd_to_ext_lock, NULL)) != 0) {
+		fprintf(stderr, "MAIN: ERROR on creating mutexes\n");
+		return 1;
+	}
+
+	arg_struct_t arg_struct;
+	arg_struct.ext_to_bcknd      = &ext_to_bcknd_msg;
+	arg_struct.ext_to_bcknd_lock = &ext_to_bcknd_lock;
+	arg_struct.bcknd_to_ext      = &bcknd_to_ext_msg;
+	arg_struct.bcknd_to_ext_lock = &bcknd_to_ext_lock;
 
 	pthread_t webot_worker_thread, backend_worker_thread;
+
+	printf("MAIN: Starting threads from main \n");
+	printf("MAIN: Starting threads from main \n");
 
 	int ret1 = pthread_create(&webot_worker_thread, NULL, (void *) &webot_worker, &arg_struct);
 	int ret2 = pthread_create(&backend_worker_thread, NULL, (void *) &backend_worker, &arg_struct);
 
 	if (ret1 != 0 || ret2 != 0){
 		fprintf(stderr, "MAIN: ERROR on creating threads\n");
-		exit(1);
+		return 2;
 	} else {
 		pthread_join(webot_worker_thread, NULL);
 		pthread_join(backend_worker_thread, NULL);
 	}
 
-
-	// testing communication
 	while (1) {
-		// ext_to_bcknd_msg_t first_msg;
-		// memset(&first_msg, 0, sizeof(ext_to_bcknd_msg_t));
-		//
-		// for (int i=0; i<2; i++) {
-		// 	first_msg.actual_gps[i] = i + 0.69;
-		// }
-		// for (int i=0; i<DIST_VECS; i++) {
-		// 	first_msg.distance[i] = i + 0.1;
-		// }
-		//
-		// com_send(first_msg);
-		// delay(0.2);
-		//
-		// bcknd_to_ext_msg_t first_msg_resp;
-		// com_recv(&first_msg_resp);
-		//
-		// printf("cnt %lld, time %f, heading %f, speed %f \n",
-		//        first_msg_resp.msg_cnt, first_msg_resp.time_stmp,
-		//        first_msg_resp.heading, first_msg_resp.speed);
+		// TODO: put this boi to sleep
 	}
 
 	return 0;
 }
-
-// WB THREAD
-//
-// holen webots <<<<
-// umrechen
-// senden backend (inter prozess)
-// holen backend (inter prozess)
-//
-// pid loops
-// safety
-// motor moves
-//
-// send webots
-//
-//
-// BACKEND THREAD
-//
-// holen webots (inter prozess)
-// senden backend
-// holen backend <<<<
-// senden webots (inter prozess)

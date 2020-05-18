@@ -2,6 +2,10 @@
 # Created by https://www.gitignore.io/api/c,ros,c++,linux,macos,clion,python,pycharm,windows,eclipse,jupyternotebooks
 # Edit at https://www.gitignore.io/?templates=c,ros,c++,linux,macos,clion,python,pycharm,windows,eclipse,jupyternotebooks
 
+### Webots
+*.wbproj
+webots/controllers/internal_ctrl/internal_ctrl
+
 ### C ###
 # Prerequisites
 *.d

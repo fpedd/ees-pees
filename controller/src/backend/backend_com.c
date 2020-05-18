@@ -43,7 +43,7 @@ int com_send(ext_to_bcknd_msg_t data) {
 	int len = udp_send((char *)&data, sizeof(ext_to_bcknd_msg_t));
 	if (len < (int)sizeof(ext_to_bcknd_msg_t)) {
 		fprintf(stderr, "ERROR: com send too short, is %d, should %ld\n",
-		len, sizeof(ext_to_bcknd_msg_t));
+		        len, sizeof(ext_to_bcknd_msg_t));
 		return -1;
 	}
 
@@ -56,15 +56,16 @@ int com_recv(bcknd_to_ext_msg_t *data) {
 	memset(data, 0, sizeof(bcknd_to_ext_msg_t));
 
 	int len = udp_recv((char *)data, sizeof(bcknd_to_ext_msg_t));
+
 	if (len < (int)sizeof(bcknd_to_ext_msg_t)) {
-		fprintf(stderr, "ERROR: com recv too short, is %d, should %ld\n",
-		len, sizeof(bcknd_to_ext_msg_t));
+		// fprintf(stderr, "ERROR: com recv too short, is %d, should %ld\n",
+		//         len, sizeof(bcknd_to_ext_msg_t));
 		return -1;
 	}
 
 	if (fabs(get_time() - data->time_stmp) > TIME_OFFSET_ALLOWED) {
 		fprintf(stderr, "ERROR: com recv time diff to big, local %f, remote %f, diff %f \n",
-		get_time(), data->time_stmp, fabs(get_time() - data->time_stmp));
+		        get_time(), data->time_stmp, fabs(get_time() - data->time_stmp));
 		return -2;
 	}
 
@@ -77,5 +78,5 @@ int com_recv(bcknd_to_ext_msg_t *data) {
 		return -3;
 	}
 
-	return 0;
+	return len;
 }

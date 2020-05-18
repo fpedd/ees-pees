@@ -91,31 +91,33 @@ int main(int argc, char **argv) {
 		// robot_data.target_gps
 
 		// send data
-		printf("Sending test_msg on Webots Controller\n");
+		// printf("Sending test_msg on Webots Controller\n");
 		internal_send(robot_data);
 
 		// receive response
 		ext_to_wb_msg_t buf;
 		memset(&buf, 0, sizeof(ext_to_wb_msg_t));
 
-		printf("receiving Message on Webots Controller\n");
+		// printf("receiving Message on Webots Controller\n");
 		internal_recv(&buf);
 
-		printf("===========RECEIVED=========\n");
+		// printf("===========RECEIVED=========\n");
 		printf("Heading: %f\n", buf.heading);
 		printf("Speed: %f\n", buf.speed);
-		printf("============================\n");
+		// printf("============================\n");
 
 		// TODO set motor and steering as response says
 
 		// TODO functions for a more convenient setting of actuators? with values [-1,1]
 		// Unbounded motors: velocity control.
-		double v = (-1) * buf.speed * wb_motor_get_max_velocity(motor);
+		double v = buf.speed * wb_motor_get_max_velocity(motor);
 		wb_motor_set_velocity(motor, v);
 
 		// position control for steering
-		double p = 0.25 * buf.heading + 0.5; //* (sin(current_time * m_c + m_b) * m_a) + 0.5;
-		p *=  (wb_motor_get_max_position(steer) - wb_motor_get_min_position(steer)) + wb_motor_get_min_position(steer);
+		// double p = 0.25 * buf.heading + 0.5; //* (sin(current_time * m_c + m_b) * m_a) + 0.5;
+		// double p = buf.heading; //* (sin(current_time * m_c + m_b) * m_a) + 0.5;
+		// double p =  buf.heading * (wb_motor_get_max_position(steer) - wb_motor_get_min_position(steer)) + wb_motor_get_min_position(steer);
+		double p =  buf.heading;
 		wb_motor_set_position(steer, p);
 	};
 

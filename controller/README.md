@@ -42,26 +42,26 @@ the external controller to the backend and one that get transmitted from the bac
 to the external controller. They currently look like this:
 
 ```
-#define DIST_VECS    360
-
 // external controller --> backend
 typedef struct {
 	unsigned long long msg_cnt;  // total number of messages (even) (internal)
 	double time_stmp;            // time the message got send (internal)
-	float target_gps[3];         // coordiantes where the robot needs to go
-	float actual_gps[3];         // coordiantes where the robot is
-	float compass[3];            // direction the front of the robot points in
-	float distance[DIST_VECS];   // distance to the next object from robot prespective
+	float sim_time;              // actual simulation time in webots
+	float sim_speed;             // current simulation speed in webots
+	float target_gps[2];         // coordiantes where the robot needs to go
+	float actual_gps[2];         // coordiantes where the robot is
+	float heading;               // direction the front of the robot points in
 	unsigned int touching;       // is the robot touching something?
-	} __attribute__((packed)) to_bcknd_msg_t;
+	float distance[DIST_VECS];   // distance to the next object from robot prespective
+} __attribute__((packed)) ext_to_bcknd_msg_t;
 
-	// external controller <-- backend
-	typedef struct {
-		unsigned long long msg_cnt;  // total number of messages (odd) (internal)
-		double time_stmp;            // time the message got send (internal)
-		float heading;               // the direction the robot should move in next
-		float speed;                 // the speed the robot should drive at
-	} __attribute__((packed)) from_bcknd_msg_t;
+// external controller <-- backend
+typedef struct {
+	unsigned long long msg_cnt;  // total number of messages (odd) (internal)
+	double time_stmp;            // time the message got send (internal)
+	float heading;               // the direction the robot should move in next
+	float speed;                 // the speed the robot should drive at
+} __attribute__((packed)) bcknd_to_ext_msg_t;
 ```
 
 Variables inside the messages with `(internal)` next to them should never be written
