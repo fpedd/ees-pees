@@ -8,10 +8,6 @@ void webot_worker(arg_struct_t *arg_struct) {
 	// Init communication with webot
 	printf("WEBOT_WORKER: Initalizing\n");
 
-	// get pointer to interprocess communication structs
-	ext_to_bcknd_msg_t *internal_ext_to_bcknd = arg_struct->ext_to_bcknd;
-	bcknd_to_ext_msg_t *internal_bcknd_to_ext = arg_struct->bcknd_to_ext;
-
 	// init structs for webot <--> ext controller messages
 	wb_to_ext_msg_t external_wb_to_ext;
 	memset(&external_wb_to_ext, 0, sizeof(wb_to_ext_msg_t));
@@ -29,8 +25,8 @@ void webot_worker(arg_struct_t *arg_struct) {
 		wb_recv(&external_wb_to_ext);
 
 		// printf("========WB_WORKER: RECEIVED=========\n");
-		printf("WEBOT_WORKER: actual_gps: x=%f, y=%f, z=%f\n", external_wb_to_ext.actual_gps[0],
-				external_wb_to_ext.actual_gps[1], external_wb_to_ext.actual_gps[2]);
+		// printf("WEBOT_WORKER: actual_gps: x=%f, y=%f, z=%f\n", external_wb_to_ext.actual_gps[0],
+		// 		external_wb_to_ext.actual_gps[1], external_wb_to_ext.actual_gps[2]);
 		// printf("====================================\n");
 
 		ext_to_bcknd_msg_t buffer_ext_to_bcknd;
@@ -41,23 +37,22 @@ void webot_worker(arg_struct_t *arg_struct) {
 		buffer_ext_to_bcknd.actual_gps[0] = (float) external_wb_to_ext.actual_gps[0];
 		buffer_ext_to_bcknd.actual_gps[1] = (float) external_wb_to_ext.actual_gps[1];
 
-		// TODO: lock mutex internal_ext_to_bcknd
-		memcpy(internal_ext_to_bcknd, &buffer_ext_to_bcknd, sizeof(ext_to_bcknd_msg_t));
-		// TODO: unlock mutex
+		pthread_mutex_lock(arg_struct->ext_to_bcknd_lock);
+		memcpy(arg_struct->ext_to_bcknd, &buffer_ext_to_bcknd, sizeof(ext_to_bcknd_msg_t));
+		pthread_mutex_unlock(arg_struct->ext_to_bcknd_lock);
 
 		bcknd_to_ext_msg_t buffer_bcknd_to_ext;
 		memset(&buffer_bcknd_to_ext, 0, sizeof(bcknd_to_ext_msg_t));
 
-		// TODO: lock mutex internal_bcknd_to_ext
-		memcpy(&buffer_bcknd_to_ext, internal_bcknd_to_ext, sizeof(bcknd_to_ext_msg_t));
-		// TODO: unlock mutex
-
+		pthread_mutex_lock(arg_struct->bcknd_to_ext_lock);
+		memcpy(&buffer_bcknd_to_ext, arg_struct->bcknd_to_ext, sizeof(bcknd_to_ext_msg_t));
+		pthread_mutex_unlock(arg_struct->bcknd_to_ext_lock);
 
 		// TODO: run safety and control loops
 		// TODO: use funtions form the drive.c / drive.h to convert to webots format
 		// TODO: do this inside the conversion function, just some test values here
-		printf("WEBOT_WORKER: heading buffer: %f \n", buffer_bcknd_to_ext.heading);
-		printf("WEBOT_WORKER: speed buffer: %f \n", buffer_bcknd_to_ext.heading);
+		// printf("WEBOT_WORKER: heading buffer: %f \n", buffer_bcknd_to_ext.heading);
+		// printf("WEBOT_WORKER: speed buffer: %f \n", buffer_bcknd_to_ext.heading);
 		external_ext_to_wb.heading = (buffer_bcknd_to_ext.heading - 180) / 180;
 		external_ext_to_wb.speed = buffer_bcknd_to_ext.speed /100;
 

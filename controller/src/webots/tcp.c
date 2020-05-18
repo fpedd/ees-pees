@@ -70,7 +70,7 @@ int tcp_accept() {
 	}
 
 	//accept new connection with client
-	printf("TCP: Waiting for webot to connect...\n");
+	// printf("TCP: Waiting for webot to connect...\n");
 	tcp_socket_fd = accept(tcp_socket_fd, (struct sockaddr *)&their_addr, &addr_size);
 	if(tcp_socket_fd < 0) {
 		fprintf(stderr, "ERROR: tcp cant accept %s\n", strerror(errno));
@@ -94,7 +94,7 @@ int tcp_recv (char* buf, int buf_size) {
 
 	int len = recv(tcp_socket_fd, buf, buf_size, 0);
 	if (len < 0) {
-		fprintf(stderr, "\nERROR: tcp recv '%s'\n", strerror(errno));
+		fprintf(stderr, "ERROR: tcp recv '%s'\n", strerror(errno));
 		return len;
 	}
 	return len;
