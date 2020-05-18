@@ -38,7 +38,7 @@ class WebotCtrAgent(Agent):
     def _init_action(self):
         self.act = communicate.WebotAction()
         self.act.speed = 0
-        self.act.heading = 0
+        self.act.heading = 180
 
     def action(self):
         with keyboard.Listener(on_press=self.on_press, on_release=self.on_release) as listener:
