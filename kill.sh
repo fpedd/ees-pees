@@ -1,8 +1,4 @@
 ### This bash script should help you stop the communication stack.
-### In order to make this script executable on your system, run:
-###
-###   chmod +x kill.sh
-###
 
 #!/bin/sh
 # set -e

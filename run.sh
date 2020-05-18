@@ -1,8 +1,4 @@
 ### This bash script should help you start the communication stack.
-### In order to make this script executable on your system, run:
-###
-###   chmod +x run.sh
-###
 
 #!/bin/sh
 set -e
