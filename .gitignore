@@ -2,6 +2,8 @@
 # Created by https://www.gitignore.io/api/c,ros,c++,linux,macos,clion,python,pycharm,windows,eclipse,jupyternotebooks
 # Edit at https://www.gitignore.io/?templates=c,ros,c++,linux,macos,clion,python,pycharm,windows,eclipse,jupyternotebooks
 
+*.wbproj
+
 ### C ###
 # Prerequisites
 *.d
