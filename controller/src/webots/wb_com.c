@@ -42,19 +42,17 @@ void wb_test_com(){
 	printf("Starting Coms on ext Controller\n");
 	wb_init_com();
 
-
 	while(1) {
 
 		wb_to_ext_msg_t test_buf;
 		memset(&test_buf, 0, sizeof(wb_to_ext_msg_t));
 
-		printf("receiving test_msg on ext Controller\n");
+		// printf("receiving test_msg on ext Controller\n");
 		wb_recv(&test_buf);
 
 		printf("===========RECEIVED=========\n");
 		printf("actual_gps: x=%f, y=%f, z=%f\n", test_buf.actual_gps[0], test_buf.actual_gps[1], test_buf.actual_gps[2]);
 		printf("============================\n");
-
 
 
 		ext_to_wb_msg_t test_msg;
@@ -63,14 +61,10 @@ void wb_test_com(){
 		test_msg.heading = 0.8;
 		test_msg.speed = -0.20;
 
-		printf("Sending test_msg on ext Controller\n");
+		// printf("Sending test_msg on ext Controller\n");
 		wb_send(test_msg);
 	}
 
 	tcp_close ();
-
-
-
-
 
 }

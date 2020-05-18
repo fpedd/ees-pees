@@ -40,50 +40,9 @@ int main(int argc, char **argv) {
 		pthread_join(backend_worker_thread, NULL);
 	}
 
-
-	// testing communication
 	while (1) {
-		// ext_to_bcknd_msg_t first_msg;
-		// memset(&first_msg, 0, sizeof(ext_to_bcknd_msg_t));
-		//
-		// for (int i=0; i<2; i++) {
-		// 	first_msg.actual_gps[i] = i + 0.69;
-		// }
-		// for (int i=0; i<DIST_VECS; i++) {
-		// 	first_msg.distance[i] = i + 0.1;
-		// }
-		//
-		// com_send(first_msg);
-		// delay(0.2);
-		//
-		// bcknd_to_ext_msg_t first_msg_resp;
-		// com_recv(&first_msg_resp);
-		//
-		// printf("cnt %lld, time %f, heading %f, speed %f \n",
-		//        first_msg_resp.msg_cnt, first_msg_resp.time_stmp,
-		//        first_msg_resp.heading, first_msg_resp.speed);
+		// TODO: put this boi to sleep
 	}
 
 	return 0;
 }
-
-// WB THREAD
-//
-// holen webots <<<<
-// umrechen
-// senden backend (inter prozess)
-// holen backend (inter prozess)
-//
-// pid loops
-// safety
-// motor moves
-//
-// send webots
-//
-//
-// BACKEND THREAD
-//
-// holen webots (inter prozess)
-// senden backend
-// holen backend <<<<
-// senden webots (inter prozess)

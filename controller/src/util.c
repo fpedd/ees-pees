@@ -4,7 +4,6 @@
 #include <stdio.h>
 
 
-
 int time_diff_start(double *time) {
 	get_time(time);
 	return 0;
