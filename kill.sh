@@ -11,7 +11,7 @@ echo "Killing webots"
 pkill webots
 
 echo "Killing james"
-pkill james
+pkill python3
 
 echo "Killing controller"
 pkill controller
