@@ -32,31 +32,30 @@ void backend_worker(arg_struct_t *arg_struct) {
 
 		// TODO: unlock internal_ext_to_bcknd mutex
 
-		printf("BACKEND_WORKER: ========WB_WORKER: RECEIVED=========\n");
+		// printf("BACKEND_WORKER: ========WB_WORKER: RECEIVED=========\n");
 		printf("BACKEND_WORKER: actual_gps: x=%f, y=%f\n", external_ext_to_bcknd.actual_gps[0],
 				external_ext_to_bcknd.actual_gps[1]);
-		printf("BACKEND_WORKER: ====================================\n");
+		// printf("BACKEND_WORKER: ====================================\n");
 
 		// transmit data to backend
 		com_send(external_ext_to_bcknd);
 
 		// block to receive data from backend, else time out
-		com_recv(&external_bcknd_to_ext);
-		// TODO: catch time out and react accordingly
+		if (com_recv(&external_bcknd_to_ext) > 0) {
 
+			// TODO: catch time out and react accordingly
 
-		// TODO: lock internal_bcknd_to_ext mutex
+			// printf("BACKEND_WORKER: heading from backend: %f \n", external_bcknd_to_ext.heading);
+			// printf("BACKEND_WORKER: speed from backend: %f \n", external_bcknd_to_ext.speed);
 
-		// move data via internal message struct to external message struct for transmission
-		memcpy(internal_bcknd_to_ext, &external_bcknd_to_ext, sizeof(bcknd_to_ext_msg_t));
+			// TODO: lock internal_bcknd_to_ext mutex
 
-		// TODO: unlock internal_bcknd_to_ext mutex
+			// move data via internal message struct to external message struct for transmission
+			memcpy(internal_bcknd_to_ext, &external_bcknd_to_ext, sizeof(bcknd_to_ext_msg_t));
+
+			// TODO: unlock internal_bcknd_to_ext mutex
+		}
 
 	}
-
-	// while (1) {
-	// 	printf("Hello from Backend Worker\n");
-	// 	delay(0.5);
-	// }
 
 }

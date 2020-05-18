@@ -1,10 +1,11 @@
+#include "webots/wb_com.h"
+
 #include <stdio.h>
 #include <string.h>
+#include <errno.h>
 
-#include "webots/wb_com.h"
 #include "webots/tcp.h"
 #include "util.h"
-
 
 void wb_init_com(){
 
@@ -18,7 +19,8 @@ int wb_send(ext_to_wb_msg_t data) {
 
 	int len = tcp_send((char *) &data, sizeof(ext_to_wb_msg_t));
 	if (len < (int) sizeof(ext_to_wb_msg_t)) {
-		error("wb_send: Did not send complete struct");
+		fprintf(stderr, "\nERROR: wb_send did not send complete data, is %d, should %ld \n",
+		       len, sizeof(ext_to_wb_msg_t));
 	}
 
 	return 0;
@@ -31,7 +33,8 @@ int wb_recv(wb_to_ext_msg_t *data) {
 
 	int len = tcp_recv((char *)data, sizeof(wb_to_ext_msg_t));
 	if (len < (int) sizeof(wb_to_ext_msg_t)) {
-		error("wb_recv: did not receive complete data");
+		fprintf(stderr, "\nERROR: wb_recv did not receive complete data, is %d, should %ld \n",
+		       len, sizeof(ext_to_wb_msg_t));
 	}
 
 	return 0;
@@ -39,7 +42,7 @@ int wb_recv(wb_to_ext_msg_t *data) {
 
 void wb_test_com(){
 
-	printf("Starting Coms on ext Controller\n");
+	// printf("Starting Coms on ext Controller\n");
 	wb_init_com();
 
 	while(1) {

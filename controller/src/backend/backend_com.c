@@ -77,5 +77,5 @@ int com_recv(bcknd_to_ext_msg_t *data) {
 		return -3;
 	}
 
-	return 0;
+	return len;
 }

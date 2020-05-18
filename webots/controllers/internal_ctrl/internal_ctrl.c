@@ -114,8 +114,9 @@ int main(int argc, char **argv) {
 		wb_motor_set_velocity(motor, v);
 
 		// position control for steering
-		double p = 0.25 * buf.heading + 0.5; //* (sin(current_time * m_c + m_b) * m_a) + 0.5;
-		p *=  (wb_motor_get_max_position(steer) - wb_motor_get_min_position(steer)) + wb_motor_get_min_position(steer);
+		// double p = 0.25 * buf.heading + 0.5; //* (sin(current_time * m_c + m_b) * m_a) + 0.5;
+		double p = buf.heading; //* (sin(current_time * m_c + m_b) * m_a) + 0.5;
+		// p *=  (wb_motor_get_max_position(steer) - wb_motor_get_min_position(steer)) + wb_motor_get_min_position(steer);
 		wb_motor_set_position(steer, p);
 	};
 

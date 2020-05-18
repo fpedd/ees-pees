@@ -20,6 +20,4 @@ int delay(double s);
 
 double get_time();
 
-void error(char* reason);
-
 #endif // UTIL_H
