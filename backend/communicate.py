@@ -19,24 +19,20 @@ class WebotState(object):
         self.distance = None
         self.touching = None
 
-    def fill_from_buffer(self, buffer, DIST_VECS):
-        self.sim_time = struct.unpack('f', buffer[16:20])[0]
-        self.sim_speed = struct.unpack('f', buffer[20:24])[0]
-        self.gps_target = struct.unpack('2f', buffer[24:32])
-        self.gps_actual = struct.unpack('2f', buffer[32:40])
-        self.compass = struct.unpack('f', buffer[40:44])[0]
-        self.touching = struct.unpack("I", buffer[44:48])[0]
-        self.distance = struct.unpack("{}f".format(DIST_VECS), buffer[48:(48 + DIST_VECS * 4)])
-        self._to_array()
-
-    def _to_array(self):
-        for v in self.__dict__.values():
-            v = np.array(v)
+    def fill_from_buffer(self, buf, dv):
+        self.sim_time = struct.unpack('f', buf[16:20])[0]
+        self.sim_speed = struct.unpack('f', buf[20:24])[0]
+        self.gps_target = struct.unpack('2f', buf[24:32])
+        self.gps_actual = struct.unpack('2f', buf[32:40])
+        self.compass = struct.unpack('f', buf[40:44])[0]
+        self.touching = struct.unpack("I", buf[44:48])[0]
+        self.distance = struct.unpack("{}f".format(dv), buf[48:(48 + 4 * dv)])
 
     def get(self):
+        """Get webot state as numpy array."""
         arr = np.empty(0)
         for v in self.__dict__.values():
-            arr = np.hstack((arr, v))
+            arr = np.hstack((arr, np.array(v)))
         return arr
 
     @property
