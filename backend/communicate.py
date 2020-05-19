@@ -3,10 +3,12 @@ import struct
 import time
 import numpy as np
 from enum import Enum
+from dataclasses import dataclass
 
 import config
 
 
+@dataclass
 class WebotState(object):
     def __init__(self):
         self.sim_time = None
