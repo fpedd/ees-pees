@@ -1,67 +1,135 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import abc
-
 import communicate
 import utils
+import abc
+import gym
 
 
-class Env(abc.ABC):
+class MyGym(gym.Env):
+    def __init__(self, seed=0):
+        super(MyGym, self).__init__()
+        self.seed(seed)
+        self.reward_range = (-100, 100)
+
+    @abc.abstractmethod
+    def reset(self):
+        pass
+
     @abc.abstractmethod
     def step(self):
         pass
 
-    def reward(self):
+    @abc.abstractmethod
+    def render(self):
         pass
 
+    @abc.abstractmethod
+    def close(self):
+        pass
 
-class WebotsEnv(Env):
+    def seed(self, seed):
+        """Set main seed of env + 1000 other seeds for placements."""
+        self.seeds = [self.main_seed]
+        np.random.seed(self.main_seed)
+        self.seeds.extend(list(set(np.random.randint(0, 10**6, 1000))))
+        self.next_seed_idx = 1
+        return self.seeds
+
+    def get_next_seed(self):
+        """Get next random seed, increment next_seed_idx."""
+        seed = self.seeds[self.next_seed_idx]
+        self.next_seed_idx += 1
+        return seed
+
+    @property
+    def main_seed(self):
+        """Get the main seed of the env, first in seeds (list)."""
+        return self.seeds[0]
+
+
+class WebotsBlue(MyGym):
     def __init__(self):
-        self.com = communicate.Com()
+        super(WebotsBlue, self).__init__()
 
-    def step(self, action=None):
-        if action is None:
-            action = self.random_action()
+    def reset(self):
+        self.com.reset()
+
+    def step(self, action):
         self.com.send(action)
         self.com.recv()
-        return self.state_arr, self.reward, self.done, {}
+        reward = self.calc_reward()
+        done = self.check_done()
+        return self.state, reward, done, {}
 
-    def random_action(self):
-        action = communicate.WebotAction()
-        action._init_randomly()
-        return action
+    def get_target_distance(self):
+        """Calculate euklidian distance to target."""
+        # return utils.euklidian_distance(self.gps_actual[0:2],
+        #                                 self.gps_target[0:2])
+        return utils.euklidian_distance(self.gps_actual, self.gps_target)
+
+    @abc.abstractmethod
+    def calc_reward(self):
+        pass
+
+    @abc.abstractmethod
+    def check_done(self):
+        pass
 
     @property
     def state(self):
+        return self.com.state.get()
+
+    @property
+    def state_object(self):
         return self.com.state
 
     @property
-    def reward(self):
-        r = self.com.conf.MAX_DISTANCE * (1 - self.state.touching) - \
-            self.target_distance
-        return r
-
-    @property
-    def done(self):
-        if self.target_distance < 20:
-            return True
-        return False
-
-    @property
-    def state_arr(self):
-        return self.state.get()
-
-    @property
-    def pos(self):
+    def gps_actual(self):
         return self.com.state.gps_actual
 
     @property
-    def targetpos(self):
+    def gps_target(self):
         return self.com.state.gps_target
 
-    @property
-    def target_distance(self):
-        return utils.euklidian_distance(self.pos[0:2], self.targetpos[0:2])
+
+class WebotsEnv(WebotsBlue):
+    def __init__(self):
+        super(WebotsEnv, self).__init__(fake=False)
+        self.com = communicate.Com(self.seeds)
+
+
+class WebotsFake(WebotsBlue):
+    def __init__(self, N=100, num_of_sensors=4, obstacles_each=4):
+        super(WebotsEnv, self).__init__(fake=True)
+        self.com = FakeCom(self.seeds, N, num_of_sensors, obstacles_each)
+
+    def step(self, action):
+        self.com.send(action)
+        self.com.recv()
+        reward = self.calc_reward()
+        done = self.check_done()
+        return self.state, reward, done, {}
+
+    def render(self):
+        plt.figure(figsize=(10, 10))
+        f = self.com.field.copy()
+        rx, ry = self.gps_actual
+        tx, ty = self.gps_target
+        s = self.com.plotpadding
+        r_minx = max(0, (rx - s))
+        r_maxx = min(rx + s + 1, self.com.N)
+        r_miny = max(0, (ry - s))
+        r_maxy = min(ry + s + 1, self.com.N)
+
+        t_minx = max(0, (tx - s))
+        t_maxx = min(tx + s + 1, self.com.N)
+        t_miny = max(0, (ty - s))
+        t_maxy = min(ty + s + 1, self.com.N)
+
+        f[r_minx:r_maxx, r_miny:r_maxy] = VAL_ROBBIE
+        f[t_minx:t_maxx, t_miny:t_maxy] = VAL_TARGET
+        plt.matshow(f)
 
 
 WALLSIZE = 1
@@ -71,6 +139,129 @@ VAL_ROBBIE = 4
 VAL_TARGET = 6
 
 
+class FakeCom():
+    def __init__(self, seeds, N=100, num_of_sensors=4, obstacles_each=4):
+        self.seeds = seeds
+        self.next_seed_idx = 1
+        self.inits = (N, num_of_sensors, obstacles_each)
+        self.N = N
+        self.offset = int(2 * N)
+        self.num_of_sensors = num_of_sensors
+        self.plotpadding = 1
+        self.setup_fields()
+
+        # place obstacles randomly (horizontal and vertical walls)
+        self.place_random_obstacle(dx=1, dy=int(N / 3), N=obstacles_each)
+        self.place_random_obstacle(int(N / 3), 1, N=obstacles_each)
+
+        # random start and finish positions
+        gps_actual = self.random_position()
+        gps_target = self.random_position()
+
+    # #########################################################################
+    # ###############################   SETUP   ###############################
+    # #########################################################################
+    def setup_fields(self):
+        self.field = np.zeros((self.N, self.N))
+        self.inner = (self.offset, self.offset + self.N)
+        # set up walls
+        self.field[0:WALLSIZE] = VAL_WALL
+        self.field[-WALLSIZE:] = VAL_WALL
+        self.field[:, 0:WALLSIZE] = VAL_WALL
+        self.field[:, -WALLSIZE:] = VAL_WALL
+
+    # #########################################################################
+    # ######################   RANDOM OBJECT PLACEMENT   ######################
+    # #########################################################################
+    def get_next_seed(self):
+        """Get next random seed, increment next_seed_idx."""
+        seed = self.seeds[self.next_seed_idx]
+        self.next_seed_idx += 1
+        return seed
+
+    def random_grid_int(self):
+        seed = self.get_next_seed()
+        np.random.seed(seed)
+        random_grid_int = np.random.randint(self.N)
+        return random_grid_int
+
+    def random_position(self):
+        """Get a random x,y pair."""
+        x = self.random_grid_int()
+        y = self.random_grid_int()
+        if self.field[x, y] > 0:
+            x, y = self.random_position()
+        return (x, y)
+
+    def place_random_obstacle(self, dx, dy, N=1):
+        if N == 1:
+            x, y = self.random_position()
+            xmax = min(x + dx, self.N - 1)
+            ymax = min(y + dy, self.N - 1)
+            self.add_obstacle((x, xmax, y, ymax))
+        else:
+            for _ in range(N):
+                self.place_random_obstacle(dx, dy)
+
+    def pts_to_anchor(self, anchor, filterout=True):
+        pts = []
+        line = utils.get_line(self.pos_outer, anchor)
+        for i, p in enumerate(line):
+            if (self.inner[0] <= p[0] <= self.inner[1]) and \
+               (self.inner[0] <= p[1] <= self.inner[1]):
+                p = self.pt2inner(p)
+                x, y = p
+                if filterout is True and i > 0 and self.field[x, y] > 0:
+                    return pts, utils.euklidian_distance(self.pos, p)
+                pts.append(p)
+        return pts, utils.euklidian_distance(self.pos, p)
+
+    def distance_sensor(self):
+        N = self.N
+        pos = self.pos
+        endpoints = [(0, 0), (N - 1, 0), (0, N - 1), (N - 1, N - 1)]
+        radius = round(max([utils.euklidian_distance(pos, ep) for
+                            ep in endpoints]))
+        phi = np.linspace(0, 2 * np.pi, self.num_of_sensors + 1)[:-1]
+        pos = self.pos_outer
+        y = (radius * np.cos(phi)).astype(int) + pos[1]
+        x = (radius * np.sin(phi)).astype(int) + pos[0]
+        anchors = list(zip(x, y))
+        distances = []
+        self.anchors = anchors
+        for anch in anchors:
+            distances.append(self.pts_to_anchor(anch)[1] - 1)
+        self.distances = distances
+        return anchors, distances
+
+    def apply_action(self, action):
+        if self.distances is None:
+            self.distance_sensor()
+        if action is None:
+            action = self.random_action()
+        orientation_idx, len_ = action
+        pts_on_line = self.pts_to_anchor(self.anchors[orientation_idx],
+                                         filterout=False)[0]
+        self.pt = pts_on_line
+        crash = False
+        safept = self.pos
+        for i, pt in enumerate(pts_on_line):
+            if self.field[pt[0], pt[1]] > 0:
+                crash = True
+                break
+            if utils.euklidian_distance(self.pos, pt) > len_:
+                break
+            else:
+                safept = pt
+        self.pos = safept
+        self.distance_sensor()
+        reward = self.reward(crash)
+        if self.target_distance() < target_gap:
+            done = True
+        else:
+            done = False
+        return self.state, reward, done, {}
+
 class FakeEnvironmentAbstract(Env):
     def __init__(self, N=100, startpos=None, targetpos=None, num_of_sensors=4, obstacles_each=4):
         self.inits = (N, num_of_sensors, obstacles_each)
@@ -79,7 +270,6 @@ class FakeEnvironmentAbstract(Env):
         self.setup_fields()
         self.num_of_sensors = num_of_sensors
         if startpos is None:
-            startpos = self.random_position()
         if targetpos is None:
             targetpos = self.random_position()
         self.startpos = startpos
@@ -88,7 +278,6 @@ class FakeEnvironmentAbstract(Env):
         self.plotpadding = 1
         self.place_random_obstacle(dx=1, dy=int(N/3), N=obstacles_each)
         self.place_random_obstacle(int(N/3), 1, N=obstacles_each)
-
         self.distance_sensor()
 
     def reset(self):
