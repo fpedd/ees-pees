@@ -125,7 +125,8 @@ class WebotAction(object):
 
 
 class Com(object):
-    def __init__(self):
+    def __init__(self, seeds=None):
+        self.seeds = seeds
         self.conf = config.WebotConfig()
         self.msg_cnt_in = 0
         self.msg_cnt_out = 1
@@ -134,6 +135,9 @@ class Com(object):
         self.packet = Packet()
         self.history = []
         self.sock = None
+
+    def reset(self):
+        pass
 
     def _set_sock(self):
         if self.sock is not None:
@@ -182,8 +186,7 @@ class Com(object):
         #           self.packet.time, " diff ", abs(time.time() - self.packet.time))
         #     return
 
-
-    def send(self, action:WebotAction):
+    def send(self, action: WebotAction):
         self._set_sock()
         data = struct.pack('Qdff', self.msg_cnt_out, time.time(),
                            action.heading, action.speed)
