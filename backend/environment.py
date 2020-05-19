@@ -55,10 +55,12 @@ class WebotsBlue(MyGym):
 
     def reset(self):
         self.com.reset()
-        # return state, reward, done, info
+        reward = self.calc_reward()
+        done = self.check_done()
+        return self.state, reward, done, {}
 
     def step(self, action):
-        """Perform action on enironment.
+        """Perform action on environment.
 
         Handled inside com class.
         """
@@ -68,19 +70,20 @@ class WebotsBlue(MyGym):
         done = self.check_done()
         return self.state, reward, done, {}
 
+    def close(self):
+        pass
+
     def get_target_distance(self):
         """Calculate euklidian distance to target."""
-        # return utils.euklidian_distance(self.gps_actual[0:2],
-        #                                 self.gps_target[0:2])
         return utils.euklidian_distance(self.gps_actual, self.gps_target)
 
-    @abc.abstractmethod
     def calc_reward(self):
-        pass
+        return np.random.random()
 
-    @abc.abstractmethod
     def check_done(self):
-        pass
+        if self.gps_actual == self.gps_target:
+            return True
+        return False
 
     @property
     def state(self):
@@ -102,8 +105,7 @@ class WebotsBlue(MyGym):
 class WebotsEnv(WebotsBlue):
     def __init__(self, seed):
         super(WebotsEnv, self).__init__(seed=seed)
-        self.com = communicate.Com()
-        # self.com = communicate.Com(self.seeds)
+        self.com = communicate.Com(self.seeds)
 
 
 class WebotsFake(WebotsBlue):
@@ -112,19 +114,17 @@ class WebotsFake(WebotsBlue):
         self.com = FakeCom(self.seeds, N, num_of_sensors, obstacles_each)
         self.plotpadding = 1
 
+    def calc_reward(self):
+        base_v = np.sqrt(2) * self.com.N
+        distance_penalty = self.get_target_distance()
+        val = base_v * (1 - self.state_object.touching) - distance_penalty
+        return val * 100 / base_v
+
     def reset(self):
         self.com.reset()
         reward = self.calc_reward()
         done = self.check_done()
         return self.state, reward, done, {}
-
-    def calc_reward(self):
-        return np.random.random()
-
-    def check_done(self):
-        if self.gps_actual == self.gps_target:
-            return True
-        return False
 
     def render(self):
         plt.figure(figsize=(10, 10))
