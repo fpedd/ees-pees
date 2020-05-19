@@ -55,6 +55,7 @@ class WebotsBlue(MyGym):
 
     def reset(self):
         self.com.reset()
+        # return state, reward, done, info
 
     def step(self, action):
         """Perform action on enironment.
@@ -110,6 +111,20 @@ class WebotsFake(WebotsBlue):
         super(WebotsFake, self).__init__(seed=seed)
         self.com = FakeCom(self.seeds, N, num_of_sensors, obstacles_each)
         self.plotpadding = 1
+
+    def reset(self):
+        self.com.reset()
+        reward = self.calc_reward()
+        done = self.check_done()
+        return self.state, reward, done, {}
+
+    def calc_reward(self):
+        return np.random.random()
+
+    def check_done(self):
+        if self.gps_actual == self.gps_target:
+            return True
+        return False
 
     def render(self):
         plt.figure(figsize=(10, 10))
@@ -273,8 +288,11 @@ class FakeCom():
         self.N = N
         self.offset = int(2 * N)
         self.num_of_sensors = num_of_sensors
+        self._init(N, obstacles_each)
+
+    def _init(self, N, obstacles_each):
         self.state = FakeState()
-        self.setup_fields()
+        self._setup_fields()
 
         # place obstacles randomly (horizontal and vertical walls)
         self.place_random_obstacle(dx=1, dy=int(N / 3), N=obstacles_each)
@@ -287,10 +305,15 @@ class FakeCom():
         # init distance sensoring
         self.distance_sensor()
 
+    def reset(self):
+        N, num_of_sensors, obstacles_each = self.inits
+        self.next_seed_idx = 1
+        self._init(N, obstacles_each)
+
     # #########################################################################
     # ###############################   SETUP   ###############################
     # #########################################################################
-    def setup_fields(self):
+    def _setup_fields(self):
         self.field = np.zeros((self.N, self.N))
         self.inner = (self.offset, self.offset + self.N)
         # set up walls
