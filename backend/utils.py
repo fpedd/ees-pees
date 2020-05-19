@@ -1,5 +1,12 @@
 import numpy as np
 import pickle
+import time
+
+
+def set_random_seed():
+    """Use current time to set seed to something random."""
+    t = 1000 * time.time()
+    np.random.seed(int(t) % 2**32)
 
 
 def save_object(obj, path):
@@ -7,10 +14,12 @@ def save_object(obj, path):
     filehandler = open(path, 'wb')
     pickle.dump(obj, filehandler)
 
+
 def load_object(path):
     """Load object via pickle."""
     filehandler = open(path, 'rb')
     return (pickle.load(filehandler))
+
 
 def euklidian_distance(source, target):
     xs, ys = source
@@ -19,11 +28,13 @@ def euklidian_distance(source, target):
     dy = yt - ys
     return np.sqrt(dx**2 + dy**2)
 
+
 def add_tuples(t1, t2):
     arr1 = np.array(t1)
     arr2 = np.array(t2)
     arr = arr1 + arr2
     return tuple(arr)
+
 
 def get_line(start, end):
 

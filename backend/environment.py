@@ -305,6 +305,9 @@ class FakeCom():
         # init distance sensoring
         self.distance_sensor()
 
+        # reset seed to something random
+        utils.set_random_seed()
+
     def reset(self):
         N, num_of_sensors, obstacles_each = self.inits
         self.next_seed_idx = 1
