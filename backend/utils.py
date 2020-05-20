@@ -9,6 +9,12 @@ def set_random_seed():
     np.random.seed(int(t) % 2**32)
 
 
+def id_in_range(low, high, num_of_actions, value):
+    """Find index of value between low and high."""
+    bins = np.linspace(low, high, num_of_actions + 1)
+    return np.digitize(value, bins) - 1
+
+
 def save_object(obj, path):
     """Save object via pickle."""
     filehandler = open(path, 'wb')
