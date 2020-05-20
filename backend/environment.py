@@ -3,7 +3,9 @@ import matplotlib.pyplot as plt
 import communicate
 import utils
 import abc
+
 import gym
+from gym import spaces
 
 
 class MyGym(gym.Env):
@@ -49,21 +51,25 @@ class MyGym(gym.Env):
         return int(self.seeds[0])
 
 
+def no_mapping(self, action):
+    return action
+
+
 class WebotsBlue(MyGym):
-    def __init__(self, seed):
+    def __init__(self, seed, action_mapping=no_mapping):
         super(WebotsBlue, self).__init__(seed=seed)
+        self.action_mapping = action_mapping
 
     def reset(self):
         self.com.reset()
-        reward = self.calc_reward()
-        done = self.check_done()
-        return self.state, reward, done, {}
+        return self.state
 
     def step(self, action):
         """Perform action on environment.
 
         Handled inside com class.
         """
+        action = self.action_mapping(action)
         self.com.send(action)
         self.com.recv()
         reward = self.calc_reward()
@@ -102,6 +108,49 @@ class WebotsBlue(MyGym):
         return self.com.state.gps_target
 
 
+class ActionMapper(object):
+    def __init__(self):
+        self.action_space = None
+
+    def action_map(self, action):
+        return action
+
+
+class DiscreteAction(ActionMapper):
+    def __init__(self, num_of_directions, step_range, mode):
+        super(DiscreteAction, self).__init__()
+        self.num_of_directions = num_of_directions
+        self.step_range = step_range
+        self.steps = step_range[1] - step_range[0] + 1
+        self.mode = mode
+
+        if mode == "flatten":
+            self.action_space = spaces.Discrete(num_of_directions * self.steps)
+        elif mode == "tuple":
+            self.action_space = spaces.Tuple((spaces.Discrete(num_of_directions),
+                                              spaces.Discrete(self.steps)))
+        # elif mode == "multi_discrete":
+        #     self.action_space = spaces.MultiDiscrete([num_of_directions, self.steps])
+
+    def action_map(self, action):
+        if self.mode == "flatten":
+            orientation = action % self.num_of_directions
+            step_length = int((action - orientation) / self.num_of_directions)
+        else:
+            orientation, step_length = action
+        return (orientation, step_length + self.step_range[0])
+
+
+# class ContinuousAction(ActionMapper):
+#     def __init__(self, num_of_directions):
+#         super(ContinuousAction, self).__init__()
+#         self.mode = "continous"
+#
+#     def action_map(self, action):
+#         action = (np.randint(action), 1)
+#         return action
+
+
 class WebotsEnv(WebotsBlue):
     def __init__(self, seed):
         super(WebotsEnv, self).__init__(seed=seed)
@@ -109,10 +158,20 @@ class WebotsEnv(WebotsBlue):
 
 
 class WebotsFake(WebotsBlue):
-    def __init__(self, seed, N, num_of_sensors, obstacles_each):
-        super(WebotsFake, self).__init__(seed=seed)
+    def __init__(self, seed, N, num_of_sensors, obstacles_each,
+                 step_range=(1, 7), action_mode="flatten"):
+        self.action_mapper = DiscreteAction(num_of_sensors, step_range,
+                                            action_mode)
+        super(WebotsFake, self).__init__(seed=seed, action_mapping=self.action_mapper.action_map)
         self.com = FakeCom(self.seeds, N, num_of_sensors, obstacles_each)
         self.plotpadding = 1
+
+        # set observation and action space
+        obs_shape = self.state_object.observation_shape
+        self.observation_space = spaces.Box(0, np.inf, shape=obs_shape,
+                                            dtype=np.float32)
+
+        self.action_space = self.action_mapper.action_space
 
     def calc_reward(self):
         base_v = np.sqrt(2) * self.com.N
@@ -122,9 +181,7 @@ class WebotsFake(WebotsBlue):
 
     def reset(self):
         self.com.reset()
-        reward = self.calc_reward()
-        done = self.check_done()
-        return self.state, reward, done, {}
+        return self.state
 
     def render(self):
         plt.figure(figsize=(10, 10))
@@ -142,8 +199,8 @@ class WebotsFake(WebotsBlue):
         t_miny = max(0, (ty - s))
         t_maxy = min(ty + s + 1, self.com.N)
 
-        f[r_minx:r_maxx, r_miny:r_maxy] = VAL_ROBBIE
         f[t_minx:t_maxx, t_miny:t_maxy] = VAL_TARGET
+        f[r_minx:r_maxx, r_miny:r_maxy] = VAL_ROBBIE
         plt.matshow(f)
 
     @property
@@ -152,23 +209,30 @@ class WebotsFake(WebotsBlue):
 
 
 class WebotsFakeMini(WebotsFake):
-    def __init__(self, N=10, num_of_sensors=4, obstacles_each=2, seed=None):
+    def __init__(self, N=10, num_of_sensors=4, obstacles_each=2, seed=None,
+                 step_range=(1, 1), action_mode="flatten"):
         super(WebotsFakeMini, self).__init__(seed, N, num_of_sensors,
-                                             obstacles_each)
+                                             obstacles_each, step_range,
+                                             action_mode)
         self.plotpadding = 0
 
 
 class WebotsFakeMedium(WebotsFake):
-    def __init__(self, N=50, num_of_sensors=8, obstacles_each=3, seed=None):
+    def __init__(self, N=40, num_of_sensors=8, obstacles_each=3, seed=None,
+                 step_range=(1, 8), action_mode="flatten"):
         super(WebotsFakeMedium, self).__init__(seed, N, num_of_sensors,
-                                               obstacles_each)
+                                               obstacles_each, step_range,
+                                               action_mode)
+        self.plotpadding = 0
 
 
 class WebotsFakeLarge(WebotsFake):
-    def __init__(self, N=100, num_of_sensors=32, obstacles_each=4, seed=None):
+    def __init__(self, N=500, num_of_sensors=16, obstacles_each=20, seed=None,
+                 step_range=(1, 50), action_mode="flatten"):
         super(WebotsFakeLarge, self).__init__(seed, N, num_of_sensors,
-                                              obstacles_each)
-        self.plotpadding = 2
+                                              obstacles_each, step_range,
+                                              action_mode)
+        self.plotpadding = 4
 
 
 class DQNEnv(WebotsFakeMini):
@@ -262,22 +326,12 @@ VAL_ROBBIE = 4
 VAL_TARGET = 6
 
 
-class FakeState():
+class FakeState(communicate.WebotState):
     def __init__(self):
         self.gps_actual = None
         self.gps_target = None
         self.distance = None
         self.touching = 0
-
-    def get(self):
-        state = []
-        for obj in [self.gps_actual, self.gps_target, self.distance,
-                    self.touching]:
-            try:
-                state.extend(list(obj))
-            except TypeError:
-                state.append(obj)
-        return np.array(state).ravel()
 
 
 class FakeCom():
@@ -411,7 +465,13 @@ class FakeCom():
     def send(self, action):
         """Pretend to send action to external controller."""
         self.distance_sensor()
+
+        if isinstance(action, tuple) is False or\
+           isinstance(action[0], int) is False or\
+           isinstance(action[1], int) is False:
+            raise TypeError("Action must be of a tuple of 2 integers.")
         orientation_idx, action_length = action
+
         pts_on_line = self.pts_to_anchor(self.anchors[orientation_idx],
                                          filterout=False)[0]
         self.pt = pts_on_line
