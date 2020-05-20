@@ -466,10 +466,10 @@ class FakeCom():
         """Pretend to send action to external controller."""
         self.distance_sensor()
 
-        if isinstance(action, tuple) is False or\
-           isinstance(action[0], int) is False or\
-           isinstance(action[1], int) is False:
-            raise TypeError("Action must be of a tuple of 2 integers.")
+        # if isinstance(action, tuple) is False or\
+        #    isinstance(action[0], int) is False or\
+        #    isinstance(action[1], int) is False:
+        #     raise TypeError("Action must be of a tuple of 2 integers.")
         orientation_idx, action_length = action
 
         pts_on_line = self.pts_to_anchor(self.anchors[orientation_idx],
