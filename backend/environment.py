@@ -141,14 +141,19 @@ class DiscreteAction(ActionMapper):
         return (orientation, step_length + self.step_range[0])
 
 
-# class ContinuousAction(ActionMapper):
-#     def __init__(self, num_of_directions):
-#         super(ContinuousAction, self).__init__()
-#         self.mode = "continous"
-#
-#     def action_map(self, action):
-#         action = (np.randint(action), 1)
-#         return action
+class ContinuousAction(ActionMapper):
+    def __init__(self, num_of_directions, step_range):
+        super(ContinuousAction, self).__init__()
+        self.num_of_directions = num_of_directions
+        self.step_range = step_range
+        self.steps = step_range[1] - step_range[0] + 1
+        self.action_space = spaces.Box(-1, 1, shape=(2,), dtype=np.float32)
+
+    def action_map(self, action):
+        orientation, length = action
+        orientation = utils.id_in_range(-1, 1, self.num_of_directions, orientation)
+        length = utils.id_in_range(-1, 1, self.steps, length) + self.step_range[0]
+        return orientation, length
 
 
 class WebotsEnv(WebotsBlue):
@@ -159,9 +164,14 @@ class WebotsEnv(WebotsBlue):
 
 class WebotsFake(WebotsBlue):
     def __init__(self, seed, N, num_of_sensors, obstacles_each,
-                 step_range=(1, 7), action_mode="flatten"):
-        self.action_mapper = DiscreteAction(num_of_sensors, step_range,
-                                            action_mode)
+                 step_range=(1, 7), action_type="discrete",
+                 discrete_action_shaping="flatten"):
+        if action_type == "continous":
+            self.action_mapper = ContinuousAction(num_of_sensors, step_range)
+        else:
+            self.action_mapper = DiscreteAction(num_of_sensors, step_range,
+                                                discrete_action_shaping)
+
         super(WebotsFake, self).__init__(seed=seed, action_mapping=self.action_mapper.action_map)
         self.com = FakeCom(self.seeds, N, num_of_sensors, obstacles_each)
         self.plotpadding = 1
@@ -210,28 +220,31 @@ class WebotsFake(WebotsBlue):
 
 class WebotsFakeMini(WebotsFake):
     def __init__(self, N=10, num_of_sensors=4, obstacles_each=2, seed=None,
-                 step_range=(1, 1), action_mode="flatten"):
+                 step_range=(1, 1), action_type="discrete",
+                 discrete_action_shaping="flatten"):
         super(WebotsFakeMini, self).__init__(seed, N, num_of_sensors,
                                              obstacles_each, step_range,
-                                             action_mode)
+                                             action_type, discrete_action_shaping)
         self.plotpadding = 0
 
 
 class WebotsFakeMedium(WebotsFake):
     def __init__(self, N=40, num_of_sensors=8, obstacles_each=3, seed=None,
-                 step_range=(1, 8), action_mode="flatten"):
+                 step_range=(1, 8), action_type="discrete",
+                 discrete_action_shaping="flatten"):
         super(WebotsFakeMedium, self).__init__(seed, N, num_of_sensors,
                                                obstacles_each, step_range,
-                                               action_mode)
+                                               action_type, discrete_action_shaping)
         self.plotpadding = 0
 
 
 class WebotsFakeLarge(WebotsFake):
     def __init__(self, N=500, num_of_sensors=16, obstacles_each=20, seed=None,
-                 step_range=(1, 50), action_mode="flatten"):
+                 step_range=(1, 50), action_type="discrete",
+                 discrete_action_shaping="flatten"):
         super(WebotsFakeLarge, self).__init__(seed, N, num_of_sensors,
                                               obstacles_each, step_range,
-                                              action_mode)
+                                              action_type, discrete_action_shaping)
         self.plotpadding = 4
 
 
