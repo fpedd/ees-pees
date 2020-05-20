@@ -3,12 +3,9 @@ import struct
 import time
 import numpy as np
 from enum import Enum
-from dataclasses import dataclass
-
 import config
 
 
-@dataclass
 class WebotState(object):
     def __init__(self):
         self.sim_time = None
@@ -34,6 +31,19 @@ class WebotState(object):
         for v in self.__dict__.values():
             arr = np.hstack((arr, np.array(v)))
         return arr
+
+    @property
+    def observation_shape(self):
+        if self.state_filled:
+            arr = self.get()
+            return arr.shape
+        return None
+
+    @property
+    def state_filled(self):
+        if self.gps_actual is not None:
+            return True
+        return False
 
     @property
     def num_of_sensors(self):
