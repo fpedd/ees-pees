@@ -31,8 +31,8 @@ double get_time() {
 
 double heading_in_degrees(double x, double y, double z) {
 
-	double rad = atan2(z, x);
-	double heading = rad * 180.0  / M_PI;
+	double rad = atan2(x, z);
+	double heading = (rad-M_PI/2) * 180.0  / M_PI;
 
 	if (heading < 0.0) {
 		heading = heading + 360.0;
