@@ -2,6 +2,7 @@
 
 #include <time.h>
 #include <stdio.h>
+#include <math.h>
 
 
 int time_diff_start(double *time) {
@@ -26,4 +27,23 @@ double get_time() {
 	struct timespec time_raw;
 	clock_gettime(CLOCK_REALTIME, &time_raw);
 	return (double)time_raw.tv_sec + ((double)time_raw.tv_nsec / (double)1000000000);
+}
+
+double heading_in_degrees(double x, double y, double z) {
+
+	double rad = atan2(z, x);
+	double heading = rad * 180.0  / M_PI;
+
+	if (heading < 0.0) {
+		heading = heading + 360.0;
+	}
+
+	// Error check
+	if (heading < 0.0 || heading >= 360.0) {
+		printf("UTIL: Error calculating heading. Heading = %f. y= %f\n", heading, y);
+		return -1.0;
+	}
+
+
+	return heading;
 }
