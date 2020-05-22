@@ -82,13 +82,16 @@ int main(int argc, char **argv) {
 		memset(&robot_data, 0, sizeof(wb_to_ext_msg_t));
 
 		// read values from devices
-		// robot_data.time_stmp = wb_robot_get_time();
-		//printf("Time: %f\n", current_time);
-		// robot_data.speed = wb_gps_get_speed(gps);
-		memcpy (robot_data.actual_gps, wb_gps_get_values(gps), sizeof(double) * 3);
-		memcpy (robot_data.compass, wb_compass_get_values(compass), sizeof(double) * 3);
-		memcpy (robot_data.distance, wb_lidar_get_range_image(lidar), sizeof(float) * DIST_VECS);
+		robot_data.sim_time = wb_robot_get_time();
+		printf("Time: %f\n", robot_data.sim_time);
+		robot_data.current_speed = wb_gps_get_speed(gps);
+		memcpy (&robot_data.actual_gps, wb_gps_get_values(gps), sizeof(double) * 3);
+		memcpy (&robot_data.compass, wb_compass_get_values(compass), sizeof(double) * 3);
+		memcpy (&robot_data.distance, wb_lidar_get_range_image(lidar), sizeof(float) * DIST_VECS);
 		// robot_data.target_gps
+
+		print_wb_to_ext(robot_data);
+
 
 		// send data
 		// printf("Sending test_msg on Webots Controller\n");
