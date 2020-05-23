@@ -37,9 +37,9 @@ void webot_worker(arg_struct_t *arg_struct) {
 		// format to internal_ext_to_bcknd_t
 		webot_format_wb_to_bcknd(&buffer_ext_to_bcknd, external_wb_to_ext);
 
-		printf("======== Compare formatted shit=========\n");
-		print_wb_to_ext(external_wb_to_ext);
-		print_ext_to_bcknd(buffer_ext_to_bcknd);
+		printf("WEBOT_WORKER: ======== Compare formatted shit=========\n");
+		print_wb_to_ext(external_wb_to_ext, 1);
+		print_ext_to_bcknd(buffer_ext_to_bcknd, 1);
 		print_diff_distance(external_wb_to_ext, buffer_ext_to_bcknd);
 
 
