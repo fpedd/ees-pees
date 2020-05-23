@@ -32,9 +32,9 @@ int wb_recv(wb_to_ext_msg_t *data) {
 	memset(data, 0, sizeof(wb_to_ext_msg_t));
 
 	int len = tcp_recv((char *)data, sizeof(wb_to_ext_msg_t));
-	if (len < (int) sizeof(wb_to_ext_msg_t)) {
-		// fprintf(stderr, "ERROR: wb_recv did not receive complete data, is %d, should %ld \n",
-		//        len, sizeof(ext_to_wb_msg_t));
+	if (len != (int) sizeof(wb_to_ext_msg_t)) {
+		fprintf(stderr, "ERROR: wb_recv did not receive complete data, is %d, should %ld \n",
+		       len, sizeof(ext_to_wb_msg_t));
 	}
 
 	return 0;
