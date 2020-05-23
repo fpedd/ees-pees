@@ -32,7 +32,7 @@ int internal_recv(ext_to_wb_msg_t *data) {
 
 	int len = tcp_recv((char *)data, sizeof(ext_to_wb_msg_t));
 	if (len < (int) sizeof(ext_to_wb_msg_t)) {
-		fprintf(stderr, "ERROR(internal_com): Did not receive complete data. Bytes send: %d'\n", len);
+		fprintf(stderr, "ERROR(internal_com): Did not receive complete data. Bytes received: %d'\n", len);
 		return -1;
 	}
 
