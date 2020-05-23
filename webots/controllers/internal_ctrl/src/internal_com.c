@@ -17,22 +17,24 @@
 
 int internal_send(wb_to_ext_msg_t data) {
 
-    int len = tcp_send((char *) &data, sizeof(wb_to_ext_msg_t));
+	int len = tcp_send((char *) &data, sizeof(wb_to_ext_msg_t));
 	if (len < (int) sizeof(wb_to_ext_msg_t)) {
-		error("wb_send: Did not send complete struct");
+		fprintf(stderr, "ERROR(internal_com): Did not send complete data. Bytes send: %d'\n", len);
+		return -1;
 	}
 
-    return 0;
+	return 0;
 }
 
 int internal_recv(ext_to_wb_msg_t *data) {
 
 	memset(data, 0, sizeof(ext_to_wb_msg_t));
 
-    int len = tcp_recv((char *)data, sizeof(ext_to_wb_msg_t));
-    if (len < (int) sizeof(ext_to_wb_msg_t)) {
-        error("wb_recv: did not receive complete data");
-    }
+	int len = tcp_recv((char *)data, sizeof(ext_to_wb_msg_t));
+	if (len < (int) sizeof(ext_to_wb_msg_t)) {
+		fprintf(stderr, "ERROR(internal_com): Did not receive complete data. Bytes send: %d'\n", len);
+		return -1;
+	}
 
-    return 0;
+	return 0;
 }

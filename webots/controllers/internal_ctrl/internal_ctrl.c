@@ -68,16 +68,25 @@ int main(int argc, char **argv) {
 	printf("Resolution: %i\n", wb_lidar_get_horizontal_resolution(lidar));
 	printf("SamplPer: %i\n", wb_lidar_get_sampling_period(lidar));
 	*/
+
 	int res = wb_lidar_get_horizontal_resolution(lidar);
 	printf("lidar resolution %i\n", res);
 
 	printf("Starting Coms on Webots Controller\n");
-	tcp_connect();
+	int ret_connect = tcp_connect();
+	if (ret_connect) {
+		printf("INTERNAL_CTRL: Can't establish connection to ext controller\n");
+
+		// TODO: stand and wait to connect again?
+
+		wb_robot_cleanup();
+		return EXIT_SUCCESS;
+	}
 
 	// Loop until the simulator stops the controller.
 	while (wb_robot_step(timestep) != -1) {
 
-	wb_to_ext_msg_t robot_data;
+		wb_to_ext_msg_t robot_data;
 		memset(&robot_data, 0, sizeof(wb_to_ext_msg_t));
 
 		// read values from devices
@@ -87,7 +96,7 @@ int main(int argc, char **argv) {
 		memcpy (&robot_data.compass, wb_compass_get_values(compass), sizeof(double) * 3);
 		memcpy (&robot_data.distance, wb_lidar_get_range_image(lidar), sizeof(float) * DIST_VECS);
 
-		print_wb_to_ext(robot_data);
+		// print_wb_to_ext(robot_data);
 
 
 		// send data
@@ -119,7 +128,7 @@ int main(int argc, char **argv) {
 		// double p =  buf.heading * (wb_motor_get_max_position(steer) - wb_motor_get_min_position(steer)) + wb_motor_get_min_position(steer);
 		double p =  buf.heading;
 		wb_motor_set_position(steer, p);
-	};
+	}
 
 	wb_robot_cleanup();
 
