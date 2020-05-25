@@ -1,4 +1,4 @@
-name: C/C++ CI
+name: controller
 
 on:
   push:
@@ -13,7 +13,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: make_controller
+    - name: make
       run: make clean all
       shell: bash
       working-directory: controller
