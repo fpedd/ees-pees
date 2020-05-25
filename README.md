@@ -1,6 +1,6 @@
 # EES-PEES Robot Project
 
-![C/C++ CI](https://github.com/fabianpedd/ees-pees/workflows/C/C++%20CI/badge.svg)
+![C/C++ CI](https://github.com/fabianpedd/ees-pees/workflows/controller/badge.svg)
 
 
 **Disclaimer:** The stuff below is **not fixed**. If you have any ideas on how to improve
