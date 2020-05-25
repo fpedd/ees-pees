@@ -1,6 +1,6 @@
 # EES-PEES Robot Project
 
-![](https://github.com/fabianpedd/ees-pees/blob/master/.github/workflows/c-cpp/badge.svg)
+![](https://github.com/fabianpedd/ees-pees/workflows/c-cpp/badge.svg)
 
 
 **Disclaimer:** The stuff below is **not fixed**. If you have any ideas on how to improve
