@@ -1,0 +1,133 @@
+#VRML_SIM R2020a utf8
+WorldInfo {
+}
+Viewpoint {
+  orientation 0.12333192157853004 -0.8626863537147228 -0.4904706843779182 3.5556868525228764
+  position 0.10672239238999393 0.5407389378719695 -0.2143926557115251
+  follow "botty"
+  followType "Mounted Shot"
+}
+TexturedBackground {
+}
+TexturedBackgroundLight {
+}
+RectangleArena {
+  floorSize 5 5
+}
+TinkerbotsBase {
+  translation 0 0.03 0
+  name "botty"
+  controller "internal"
+  downSlot TinkerbotsPivot {
+    rotation 0 0 1 1.5707996938995747
+    slot TinkerbotsMotor {
+      frontSlot TinkerbotsAxle {
+        endSlot TinkerbotsWheel {
+        }
+      }
+      backSlot TinkerbotsAxle {
+        name "axle(1)"
+        endSlot TinkerbotsWheel {
+        }
+      }
+    }
+  }
+  leftSlot TinkerbotsCube {
+    name "(1)"
+    rightDSlot TinkerbotsCubieBoxWithRoundSlots {
+      axisSlot TinkerbotsAxle {
+        rotation 0 1 0 3.141592653589793
+        endSlot TinkerbotsWheel {
+        }
+      }
+    }
+  }
+  rightSlot TinkerbotsCube {
+    leftDSlot TinkerbotsCubieBoxWithRoundSlots {
+      axisSlot TinkerbotsAxle {
+        rotation 0 1 0 3.141592653589793
+        endSlot TinkerbotsWheel {
+        }
+      }
+    }
+  }
+  extensionSlot [
+    RobotisLds01_modified {
+      translation 0 0.04 0
+      rotation 0 1 0 -3.1415853071795863
+      name "lidar"
+      noise 0
+    }
+    Compass {
+    }
+    GPS {
+      translation 0 0 0.02
+    }
+  ]
+}
+Robot {
+  name "obstacle_placer"
+  supervisor TRUE
+}
+Solid {
+  translation 0 0.06 0.08
+  scale 2 2 2
+  children [
+    DEF block_shape Shape {
+      appearance RedBricks {
+      }
+      geometry Box {
+        size 0.1 0.05 0.01
+      }
+    }
+  ]
+  name "block"
+  boundingObject USE block_shape
+}
+Solid {
+  translation 0 0.06 -0.12
+  scale 2 2 2
+  children [
+    DEF block_shape Shape {
+      appearance RedBricks {
+      }
+      geometry Box {
+        size 0.1 0.05 0.01
+      }
+    }
+  ]
+  name "block(1)"
+  boundingObject USE block_shape
+}
+Solid {
+  translation 0.1 0.06 -0.03
+  rotation 0 1 0 -1.5707953071795862
+  scale 2 2 2
+  children [
+    DEF block_shape Shape {
+      appearance RedBricks {
+      }
+      geometry Box {
+        size 0.1 0.05 0.01
+      }
+    }
+  ]
+  name "block(2)"
+  boundingObject USE block_shape
+}
+Solid {
+  translation -0.1 0.06 -0.03
+  rotation 0 1 0 -1.5707953071795862
+  scale 2 2 2
+  children [
+    DEF block_shape Shape {
+      appearance RedBricks {
+      }
+      geometry Box {
+        size 0.1 0.05 0.01
+      }
+    }
+  ]
+  name "block(3)"
+  boundingObject USE block_shape
+}

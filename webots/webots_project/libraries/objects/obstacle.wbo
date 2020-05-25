@@ -1,0 +1,16 @@
+#VRML_OBJ R2020a utf8
+Solid {
+  translation 0.125 0.125 0.125
+  scale 2.505 2.505 2.505
+  children [
+    DEF block_shape Shape {
+      appearance RedBricks {
+      }
+      geometry Box {
+        size 0.1 0.1 0.1
+      }
+    }
+  ]
+  name "block1"
+  boundingObject USE block_shape
+}
