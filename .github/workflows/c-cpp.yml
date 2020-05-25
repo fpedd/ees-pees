@@ -13,7 +13,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: make
+    - name: make_controller
       run: make clean all
       shell: bash
       working-directory: controller
