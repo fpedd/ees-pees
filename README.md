@@ -1,10 +1,8 @@
 # EES-PEES Robot Project
+
 ![backend](https://github.com/fabianpedd/ees-pees/workflows/backend/badge.svg)  
 ![controller](https://github.com/fabianpedd/ees-pees/workflows/controller/badge.svg)  
 ![webots](https://github.com/fabianpedd/ees-pees/workflows/webots/badge.svg)  
-
-**Disclaimer:** The stuff below is **not fixed**. If you have any ideas on how to improve
-or streamline the workflow let us know. We can then change / adjust our architecture.
 
 ## Usage
 To start the communication stack you can run `./run.sh` in the root directory of
