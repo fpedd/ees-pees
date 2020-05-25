@@ -1,4 +1,4 @@
-name: controller
+name: controller-ci
 
 on:
   push:
