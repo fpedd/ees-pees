@@ -4,7 +4,8 @@
 
 ### Webots
 *.wbproj
-webots/controllers/internal_ctrl/internal_ctrl
+webots/controllers/internal/internal
+webots/controllers/supervisor/supervisor
 
 ### C ###
 # Prerequisites
