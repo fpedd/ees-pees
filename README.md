@@ -1,6 +1,6 @@
 # EES-PEES Robot Project
 
-![](https://github.com/fabianpedd/ees-pees/workflows/controller/badge.svg)
+![Controller](https://github.com/fabianpedd/ees-pees/workflows/controller/badge.svg)
 
 
 **Disclaimer:** The stuff below is **not fixed**. If you have any ideas on how to improve
