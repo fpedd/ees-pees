@@ -161,6 +161,10 @@ class WebotsEnv(WebotsBlue):
         super(WebotsEnv, self).__init__(seed=seed)
         self.com = communicate.Com(self.seeds)
 
+    def reset(self):
+        #  reset_environment in automate, wait and then grab ext ctrl info
+        pass
+
 
 class WebotsFake(WebotsBlue):
     def __init__(self, seed, N, num_of_sensors, obstacles_each,
