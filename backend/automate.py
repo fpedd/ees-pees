@@ -3,6 +3,26 @@
 # pass als keyword macht nichts ausser meinen typesetter happy
 
 
+# Python ->  Webots
+#
+# - function code [int]
+# - seed [int]
+# - fast_simulation [bool]
+# - num_obstacles [int]
+# - world_size in meter [int]
+#
+#
+
+
+# Webots -> Python
+#
+# return_code [int]
+# lidar min range in meter [float]
+# lidar max range in meter [float]
+# simulation time_step in ms [int]
+
+
+
 class WebotConfig():
     """NO need fuer aktion, fuell ich selber."""
     def __init__(self):
@@ -41,24 +61,32 @@ class WebotCtrl():
     def establish_connection(self):
         # start tcp connection to Webot
         # self.sock = ...
+
+        # s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        # s.connect((TCP_IP, TCP_PORT))
+        # s.send(MESSAGE)
+        # data = s.recv(BUFFER_SIZE)
+        # s.close()
+
         pass
 
     def close_connection(self):
         # close tcp connection to Webot
         pass
 
-    def start_env(self, seed=1, simulations_speed=1, num_obstacles=1):
+    def start_env(self, seed=1, fast_simulation=FALSE, num_obstacles=10, world_size=10):
         # environment mit den settings ueber den supervisor modus starten
         # Infos hol ich mir dann ueber get_metadata, koennt ihr aber gerne
         # aendern wennn ihr ne bessere idee habt
         pass
 
     def get_metadata(self):
-        # num of lidars
-        # lidar settings
-        # lengths/width of environment
-        # number of obstacles
-        # simulations_speed
+        # num of lidars     // always 360!?
+        # lidar settings    // min range, max range, frequency?
+        # lengths/width of environment  // always quadratic, can be set on start_env
+        # number of obstacles // can be set on start_env
+        # simulations_speed // can be set on start_env
+        # // simulation time_step
         # evtl mehr, ich weiss grad nict was
         # (andere settings die wir nutzen?)
 
