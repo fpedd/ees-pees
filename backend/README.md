@@ -3,10 +3,10 @@
 * `import environment`
 * load environment by `env = environment.WebotsEnv()`
 * Main arguments:
-    seed
-    action_class
-    reward_class
-    observation_func
+    * seed
+    * action_class
+    * reward_class
+    * observation_func
 * make a action step by `state_arr, reward, done, {} = env.step(action)`. Gets the current state from the external controller and sends action back. If called with action=None, a random action will be send to the external controller.
 * To get the information of the communication, call appropriate action on `env.com`
 
