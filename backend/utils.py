@@ -9,6 +9,13 @@ def set_random_seed():
     np.random.seed(int(t) % 2**32)
 
 
+def seed_list(seed, n=100, low=0, high=10**6):
+    """Create a list of n seeds."""
+    np.random.seed(seed)
+    seeds = list(set(np.random.randint(low, high, n)))
+    return seeds
+
+
 def id_in_range(low, high, num_of_actions, value):
     """Find index of value between low and high."""
     bins = np.linspace(low, high, num_of_actions + 1)
