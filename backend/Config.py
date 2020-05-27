@@ -13,3 +13,6 @@ class WebotConfig(object):
         self.length = 10
         self.lidar_min = 0.12
         self.lidar_max = 3.5
+
+        # webot settings
+        self.normal_speed = True

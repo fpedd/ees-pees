@@ -28,6 +28,14 @@ class WebotState(object):
             arr = np.hstack((arr, np.array(v)))
         return arr
 
+    # def get_header(self):
+    #     header = np.empty(0)
+    #     header_data = [self.sim_time, self.gps_target, self.gps_actual,
+    #                    self.speed, self.compass, self.distance, self.touching]
+    #     for h in header_data:
+    #         header = np.hstack((header, np.array(h)))
+    #     return header
+
     @property
     def pre_action(self):
         return (self.compass, self.speed)
