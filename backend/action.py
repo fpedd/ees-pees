@@ -11,10 +11,12 @@ class Action(object):
 
 
 class DiscreteAction(Action):
-    def __init__(self, env, mode="flatten"):
+    def __init__(self, mode="flatten"):
         super(DiscreteAction, self).__init__()
-        self.env = env
         self.mode = mode
+
+    def _init(self, env):
+        self.env = env
         self._set_action_space()
 
     def _set_action_space(self):
@@ -27,13 +29,17 @@ class DiscreteAction(Action):
 
 
 class DiscreteFlat4(DiscreteAction):
-    def __init__(self, env):
+    def __init__(self):
+        super(DiscreteFlat4, self).__init__()
+
+    def _init(self, env):
         env.act_tpl = (4, 1)
-        super(DiscreteFlat4, self).__init__(env)
+        self.env = env
+        super()._init()
 
 
 class ContinuousAction(Action):
-    def __init__(self, env):
+    def __init__(self):
         super(ContinuousAction, self).__init__()
         self.action_space = Box(-1, 1, shape=(2,), dtype=np.float32)
 
