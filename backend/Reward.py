@@ -4,7 +4,7 @@ import numpy as np
 class Reward(object):
     def __init__(self, env):
         self.env = env
-        self.range = (-100, 100)
+        self.reward_range = (-100, 100)
 
     def calc(self):
         """Calculate reward."""
@@ -17,4 +17,10 @@ class Reward(object):
         crash = self.env.state_object.touching
 
         val = base_v * (1 - crash) - distance_penalty
-        return val * 100 / base_v
+        return val * self.reward_range[1] / base_v
+
+
+class Reward2(Reward):
+    def __init__(self, env):
+        super(Reward2, self).__init__(env)
+        self.reward_range = (-50, 50)
