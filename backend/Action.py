@@ -25,8 +25,13 @@ class DiscreteAction(Action):
     -
     -
 
-    Tuple: (DIRECTIONS, STEPS)
-    Flat: DIRECTIONS * STEPS
+    Tuple: shape = (DIRECTIONS, STEPS)
+    Flat: shape = DIRECTIONS * STEPS, Index to action:
+        move cols first
+        0: top left in above
+        1: top second to the left
+        ...
+        -1: bottom right
     """
 
     def __init__(self, directions=3, speeds=3, dspeed=0.2, dhead=0.2,
@@ -50,10 +55,10 @@ class DiscreteAction(Action):
     def _set_action_space(self):
         if self.mode == "flatten":
             self.action_space = Discrete(self.action_tuple[0] *
-                                         self.action_tuple[1] + 1)
+                                         self.action_tuple[1])
         elif self.mode == "tuple":
             self.action_space = Tuple((Discrete(self.action_tuple[0]),
-                                       Discrete(self.action_tuple[1] + 1)))
+                                       Discrete(self.action_tuple[1])))
 
     def _set_mapping_space(self):
         each_dir = (self.directions - 1) / 2
@@ -70,7 +75,7 @@ class DiscreteAction(Action):
             if not isinstance(action, int):
                 raise TypeError("Action must be int.")
             dir_idx = action % len(self.dirspace)
-            speed_idx = int((action - dir_idx) / len(self.speedspace))
+            speed_idx = int((action - dir_idx) / len(self.dirspace))
         elif self.mode == "tuple":
             dir_idx = action[0]
             speed_idx = action[1]
@@ -78,7 +83,9 @@ class DiscreteAction(Action):
         # get action difference and add to base action = latest state info
         action_dx = (self.dirspace[dir_idx], self.speedspace[speed_idx])
         action = utils.add_tuples(state.pre_action, action_dx)
-        return WebotAction(action)
+        action = WebotAction(action)
+        action.print()
+        return action
 
 
 class ContinuousAction(Action):
@@ -89,4 +96,6 @@ class ContinuousAction(Action):
         # TODO: relative, absolute
         action_dx = tuple(action_dx)
         action = utils.add_tuples(state.pre_action, action_dx)
-        return WebotAction(action)
+        action = WebotAction(action)
+        action.print()
+        return action
