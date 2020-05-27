@@ -5,7 +5,7 @@ import numpy as np
 class WebotState(object):
     def __init__(self):
         self.sim_time = None
-        self.sim_speed = None
+        self.speed = None
         self.gps_target = None
         self.gps_actual = None
         self.compass = None
@@ -14,7 +14,7 @@ class WebotState(object):
 
     def fill_from_buffer(self, buf, dv):
         self.sim_time = struct.unpack('f', buf[16:20])[0]
-        self.sim_speed = struct.unpack('f', buf[20:24])[0]
+        self.speed = struct.unpack('f', buf[20:24])[0]
         self.gps_target = struct.unpack('2f', buf[24:32])
         self.gps_actual = struct.unpack('2f', buf[32:40])
         self.compass = struct.unpack('f', buf[40:44])[0]
@@ -68,7 +68,7 @@ class WebotAction(object):
     def __init__(self, action=None):
         self._heading = None
         self._speed = None
-        if isinstance(action, tuple):
+        if isinstance(action, (np.ndarray, list, tuple)):
             self.heading = action[0]
             self.speed = action[1]
 
