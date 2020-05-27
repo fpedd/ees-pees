@@ -6,16 +6,12 @@ from webot import WebotState, WebotAction
 
 
 class Action(object):
-    def __init__(self):
-        self.action_space = None
-
-    def map(self, action):
-        return action
+    pass
 
 
 class DiscreteAction(Action):
     """
-    Steps, Directions must be of the form 2k + 1, k>=1
+    Steps, Directions must be of the form 2k + 1, k >= 1
     ----------------------DIRECTIONS--------------------
     -    [0]                 [1]               [2]
     - [0] heading -= 0.2     ....              ....
@@ -35,7 +31,6 @@ class DiscreteAction(Action):
 
     def __init__(self, directions=3, speeds=3, dspeed=0.2, dhead=0.2,
                  mode="flatten"):
-        super(DiscreteAction, self).__init__()
         self.mode = mode
         self.directions = directions
         self.speeds = speeds
@@ -88,7 +83,6 @@ class DiscreteAction(Action):
 
 class ContinuousAction(Action):
     def __init__(self):
-        super(ContinuousAction, self).__init__()
         self.action_space = Box(-1, 1, shape=(2,), dtype=np.float32)
 
     def map(self, action_dx, state: WebotState):
