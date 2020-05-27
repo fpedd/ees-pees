@@ -146,6 +146,8 @@ class WebotsEnv(WebotsBlue):
                                         reward_class=reward_class,
                                         observation_func=observation_func)
         self.com = communicate.Com(self.seeds)
+        self.com.recv()
+        # TODO: include in com call?
         self.config = self.com.config
         self._init_act_rew_obs(self)
 
