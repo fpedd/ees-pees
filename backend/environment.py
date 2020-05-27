@@ -8,6 +8,7 @@ import communicate
 
 from Action import DiscreteAction, ContinuousAction
 from Reward import Reward
+from Observation import observation_std
 
 
 class MyGym(gym.Env):
@@ -53,16 +54,17 @@ class MyGym(gym.Env):
 
 
 class WebotsBlue(MyGym):
-    def __init__(self, seed, action_class, reward_class, obs_class):
+    def __init__(self, seed, action_class, reward_class, observation_func):
         super(WebotsBlue, self).__init__(seed=seed)
         self.action_class = action_class
         self.reward_class = reward_class
-        self.obs_class = obs_class
+        self.observation_func = observation_func
         self.i = 0
         self.history = {}
 
     def _update_history(self):
         self.history[self.i] = self.state
+        self.i += 1
 
     def _init_act_rew_obs(self, env):
         # type to instance
@@ -70,8 +72,6 @@ class WebotsBlue(MyGym):
             self.action_class = (self.action_class)()
         if type(self.reward_class) == type:
             self.reward_class = (self.reward_class)(env)
-        # if type(self.obs_class) == type:
-        #     self.obs_class = (self.obs_class)(env)
 
         self.action_space = self.action_class.action_space
         self.reward_range = self.reward_class.reward_range
@@ -86,12 +86,22 @@ class WebotsBlue(MyGym):
         Handled inside com class.
         """
         action = self.action_class.map(action, self.state_object)
-        self.com.send(action)
-        self.com.recv()
-        self.i += 1
+        self.send(action)
+        self.recv()
         reward = self.calc_reward()
         done = self.check_done()
+
         return self.state, reward, done, {}
+
+    def send(self, action):
+        self.com.send(action)
+
+    def recv(self):
+        self.com.recv()
+        self._update_history()
+
+    def observation(self):
+        return self.observation_func(self)
 
     def close(self):
         pass
@@ -127,11 +137,11 @@ class WebotsBlue(MyGym):
 
 class WebotsEnv(WebotsBlue):
     def __init__(self, seed=None, action_class=DiscreteAction,
-                 reward_class=Reward, obs_class=None):
+                 reward_class=Reward, observation_func=observation_std):
         super(WebotsEnv, self).__init__(seed=seed,
                                         action_class=action_class,
                                         reward_class=reward_class,
-                                        obs_class=obs_class)
+                                        observation_func=observation_func)
         self.com = communicate.Com(self.seeds)
         self.config = self.com.config
         self._init_act_rew_obs(self)
