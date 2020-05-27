@@ -78,7 +78,8 @@ class WebotsBlue(MyGym):
 
     def reset(self):
         self.com.reset()
-        return self.state
+        # return self.state
+        return self.observation
 
     def step(self, action):
         """Perform action on environment.
@@ -91,7 +92,8 @@ class WebotsBlue(MyGym):
         reward = self.calc_reward()
         done = self.check_done()
 
-        return self.state, reward, done, {}
+        # return self.state, reward, done, {}
+        return self.observation, reward, done, {}
 
     def send(self, action):
         self.com.send(action)
@@ -99,9 +101,6 @@ class WebotsBlue(MyGym):
     def recv(self):
         self.com.recv()
         self._update_history()
-
-    def observation(self):
-        return self.observation_func(self)
 
     def close(self):
         pass
@@ -117,6 +116,10 @@ class WebotsBlue(MyGym):
         if self.gps_actual == self.gps_target:
             return True
         return False
+
+    @property
+    def observation(self):
+        return self.observation_func(self)
 
     @property
     def state(self):
