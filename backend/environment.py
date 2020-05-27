@@ -14,9 +14,6 @@ class MyGym(gym.Env):
     def __init__(self, seed):
         super(MyGym, self).__init__()
         self.seeds = self.set_seed(seed)
-        self.reward_range = (-100, 100)
-        # empty action tuple
-        self.action_tuple = ("e", "e")
 
     @abc.abstractmethod
     def reset(self):
@@ -40,7 +37,6 @@ class MyGym(gym.Env):
             seed = utils.set_random_seed()
         seeds = [seed]
         np.random.seed(seed)
-        # TODO: utils.seed_list(seed)
         seeds.extend(utils.seed_list(seed, n=1000))
         return seeds
 
@@ -62,6 +58,11 @@ class WebotsBlue(MyGym):
         self.action_class = action_class
         self.reward_class = reward_class
         self.obs_class = obs_class
+        self.i = 0
+        self.history = {}
+
+    def _update_history(self):
+        self.history[self.i] = self.state
 
     def _init_act_rew_obs(self, env):
         # type to instance
@@ -73,6 +74,7 @@ class WebotsBlue(MyGym):
         #     self.obs_class = (self.obs_class)(env)
 
         self.action_space = self.action_class.action_space
+        self.reward_range = self.reward_class.reward_range
 
     def reset(self):
         self.com.reset()
@@ -86,6 +88,7 @@ class WebotsBlue(MyGym):
         action = self.action_class.map(action, self.state_object)
         self.com.send(action)
         self.com.recv()
+        self.i += 1
         reward = self.calc_reward()
         done = self.check_done()
         return self.state, reward, done, {}
@@ -98,7 +101,7 @@ class WebotsBlue(MyGym):
         return utils.euklidian_distance(self.gps_actual, self.gps_target)
 
     def calc_reward(self):
-        return np.random.random()
+        return self.reward_class.calc()
 
     def check_done(self):
         if self.gps_actual == self.gps_target:
@@ -125,9 +128,12 @@ class WebotsBlue(MyGym):
 class WebotsEnv(WebotsBlue):
     def __init__(self, seed=None, action_class=DiscreteAction,
                  reward_class=Reward, obs_class=None):
-        super(WebotsEnv, self).__init__(seed, action_class, reward_class,
-                                        obs_class)
+        super(WebotsEnv, self).__init__(seed=seed,
+                                        action_class=action_class,
+                                        reward_class=reward_class,
+                                        obs_class=obs_class)
         self.com = communicate.Com(self.seeds)
+        self.config = self.com.config
         self._init_act_rew_obs(self)
 
     def reset(self):
