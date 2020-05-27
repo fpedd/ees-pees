@@ -1,15 +1,18 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import utils
 import abc
 import gym
 
 import fakecom
+import utils
+from Action import DiscreteFlat4
+from Reward import Reward
+
 
 class MyGym(gym.Env):
     def __init__(self, seed):
         super(MyGym, self).__init__()
-        self.seeds = self.seed(seed)
+        self.seeds = self.set_seed(seed)
         self.reward_range = (-100, 100)
 
     @abc.abstractmethod
@@ -28,14 +31,14 @@ class MyGym(gym.Env):
     def close(self):
         pass
 
-    def seed(self, seed):
+    def set_seed(self, seed):
         """Set main seed of env + 1000 other seeds for placements."""
         if seed is None:
-            seed = np.random.randint(0, 10**6, 1)
+            seed = utils.set_random_seed()
         seeds = [seed]
         np.random.seed(seed)
         # TODO: utils.seed_list(seed)
-        seeds.extend(list(set(np.random.randint(0, 10**6, 1000))))
+        seeds.extend(utils.seed_list(seed, n=1000))
         return seeds
 
     def get_next_seed(self):
@@ -58,9 +61,17 @@ class WebotsBlue(MyGym):
         self.observation = observation
 
     def _init_act_rew_obs(self, env):
-        self.action
-        self.reward
-        self.observation
+        # init if types
+        if type(self.action) == type:
+            self.action.__init__(self.action, env)
+        if type(self.reward) == type:
+            self.reward.__init__(self.reward, env)
+        if type(self.observation) == type:
+            self.observation.__init__(self.observation, env)
+
+        # init with environment
+        self.action._init(env)
+        self.action_space = self.action.action_space
 
     def reset(self):
         self.com.reset()
@@ -121,27 +132,23 @@ class WebotsBlue(MyGym):
 
 
 class WebotsFake(WebotsBlue):
-    def __init__(self, seed, N, num_of_sensors, obstacles_each,
-                 action, reward, observation, step_range=(1, 7)):
+    def __init__(self, seed, N, num_of_sensors, obstacles_each, action, reward,
+                 observation):
+        super(WebotsFake, self).__init__(seed=seed,
+                                         action=action,
+                                         reward=reward,
+                                         observation=observation)
         self.com = fakecom.FakeCom(self.seeds, N, num_of_sensors, obstacles_each)
-        super(WebotsFake, self).__init__(seed=seed, action=action,
-                                         reward=reward, observation=observation)
-        self.num_of_sensors = num_of_sensors
-
-
-
-        # set observation and action space
-        self.plotpadding = 1
-
-    @property
-    def steps(self):
-        """Get the amount of possible discrete steps."""
-        return self.step_range[1] - self.step_range[0] + 1
-
-
-    def reset(self):
-        self.com.reset()
-        return self.state
+    #     self.num_of_sensors = num_of_sensors
+    #
+    #
+    #
+    #     # set observation and action space
+    #     self.plotpadding = 1
+    #
+    # def reset(self):
+    #     self.com.reset()
+    #     return self.state
 
     def render(self):
         plt.figure(figsize=(10, 10))
@@ -163,19 +170,24 @@ class WebotsFake(WebotsBlue):
         f[r_minx:r_maxx, r_miny:r_maxy] = 6
         plt.matshow(f)
 
-    @property
-    def field(self):
-        return self.com.field
+    # @property
+    # def field(self):
+    #     return self.com.field
 
 
 class WebotsFakeMini(WebotsFake):
     def __init__(self, N=10, num_of_sensors=4, obstacles_each=2, seed=None,
-                 step_range=(1, 1), action_type="discrete",
-                 discrete_action_shaping="flatten"):
-        super(WebotsFakeMini, self).__init__(seed, N, num_of_sensors,
-                                             obstacles_each, step_range,
-                                             action_type, discrete_action_shaping)
+                 action=DiscreteFlat4):
+        super(WebotsFakeMini, self).__init__(seed=seed,
+                                             N=N,
+                                             num_of_sensors=num_of_sensors,
+                                             obstacles_each=obstacles_each,
+                                             action=action,
+                                             reward=Reward,
+                                             observation=None)
         self.plotpadding = 0
+        self.act_tpl = (4, 1)
+
 
 
 # class WebotsFakeMedium(WebotsFake):
