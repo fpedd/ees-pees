@@ -4,64 +4,7 @@ import time
 import numpy as np
 from enum import Enum
 import config
-
-
-class WebotState(object):
-    def __init__(self):
-        self.sim_time = None
-        self.sim_speed = None
-        self.gps_target = None
-        self.gps_actual = None
-        self.compass = None
-        self.distance = None
-        self.touching = None
-
-    def fill_from_buffer(self, buf, dv):
-        self.sim_time = struct.unpack('f', buf[16:20])[0]
-        self.sim_speed = struct.unpack('f', buf[20:24])[0]
-        self.gps_target = struct.unpack('2f', buf[24:32])
-        self.gps_actual = struct.unpack('2f', buf[32:40])
-        self.compass = struct.unpack('f', buf[40:44])[0]
-        self.touching = struct.unpack("I", buf[44:48])[0]
-        self.distance = struct.unpack("{}f".format(dv), buf[48:(48 + 4 * dv)])
-
-    def get(self):
-        """Get webot state as numpy array."""
-        arr = np.empty(0)
-        for v in self.__dict__.values():
-            arr = np.hstack((arr, np.array(v)))
-        return arr
-
-    @property
-    def observation_shape(self):
-        if self.state_filled:
-            arr = self.get()
-            return arr.shape
-        return None
-
-    @property
-    def state_filled(self):
-        if self.gps_actual is not None:
-            return True
-        return False
-
-    @property
-    def num_of_sensors(self):
-        if self.distance is None:
-            return None
-        return len(self.distance)
-
-    @property
-    def gps_size(self):
-        if self.gps_actual is None:
-            return None
-        return len(self.gps_actual)
-
-    @property
-    def compass_size(self):
-        if self.compass is None:
-            return None
-        return len(self.compass)
+from webot import WebotState, WebotAction
 
 
 class PacketError(Enum):
@@ -94,44 +37,6 @@ class Packet(object):
         elif self.error == PacketError.NO_ERROR:
             return True
         return False
-
-
-class WebotAction(object):
-    def __init__(self):
-        self._heading = None
-        self._speed = None
-
-    def _init_randomly(self):
-        self.heading = np.random.randint(360)
-        self.speed = np.random.random() * 200 - 100
-
-    @property
-    def heading(self):
-        return self._heading
-
-    @heading.setter
-    def heading(self, value):
-        if value < 0:
-            value = 0
-        if value > 360:
-            value = 360
-        # if value < 0 or value > 360:
-        #     raise ValueError("Value invalid", value)
-        self._heading = value
-
-    @property
-    def speed(self):
-        return self._speed
-
-    @speed.setter
-    def speed(self, value):
-        if value < -100:
-            value = -100
-        if value > 100:
-            value = 100
-        # if value < -100 or value > 100:
-        #     raise ValueError("Value invalid", value)
-        self._speed = value
 
 
 class Com(object):
