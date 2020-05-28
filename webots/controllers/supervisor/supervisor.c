@@ -49,11 +49,39 @@ int main() {
 	wb_robot_init();
 	int timestep = wb_robot_get_basic_time_step();
 
+	/**************** COMMUNICATION***************************/
+	/*********** comment out if testing without backend*******/
+
 	// establish coms to backend
-	
+	int ret_connect = sv_connect();
+	if(ret_connect) {
+		fprintf(stderr, "SUPERVISOR: Can't connect to backend\n");
+	}
+
+	// recv test message
+	bcknd_to_sv_msg_t test_buf;
+	sv_recv(&test_buf);
+
+	printf("=========== Received Test msg ===========\n");
+	printf("function_code: %d\n", test_buf.function_code);
+	printf("seed: %d\n", test_buf.seed);
+	printf("fast_simulation: %d\n", test_buf.fast_simulation);
+	printf("num_obstacles: %d\n", test_buf.num_obstacles);
+	printf("world_size: %d\n", test_buf.world_size);
+	printf("=========================================\n");
+
+	// send test message
+	sv_to_bcknd_msg_t test_msg;
+	test_msg.return_code = 1;
+	test_msg.lidar_min_range = 2.0;
+	test_msg.lidar_max_range = 3.0;
+	test_msg.sim_time_step = timestep;
+
+	sv_send(test_msg);
+	printf("=========== Sending Test msg  successful ===========\n");
 
 
-
+	/**************** COMMUNICATION END **********************/
 
 
 
