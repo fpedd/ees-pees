@@ -81,6 +81,21 @@ int main(int argc, char **argv) {
 		wb_robot_cleanup();
 		return EXIT_SUCCESS;
 	}
+	
+
+	// Send init information
+	init_to_ext_msg_t init_data;
+	init_data.timestep = timestep;
+	init_data.robot_maxspeed = wb_motor_get_max_velocity(motor);
+	init_data.lidar_min_range = wb_lidar_get_min_range(lidar);
+	init_data.lidar_max_range = wb_lidar_get_max_range(lidar);
+	// Todo: how to get target gps from supervisor?
+	init_data.target_gps[0] = 1.0;
+	init_data.target_gps[1] = 0.0;
+	init_data.target_gps[2] = 1.0;
+
+	internal_send_init(init_data);
+
 
 	// Loop until the simulator stops the controller.
 	while (wb_robot_step(timestep) != -1) {

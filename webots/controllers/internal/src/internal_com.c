@@ -19,6 +19,16 @@ int internal_connect(){
 	return ret_connect;
 }
 
+int internal_send_init(init_to_ext_msg_t data) {
+	int len = tcp_send((char *) &data, sizeof(init_to_ext_msg_t));
+	if (len < (int) sizeof(init_to_ext_msg_t)) {
+		fprintf(stderr, "ERROR(internal_com): Did not send complete init data. Bytes send: %d'\n", len);
+		return -1;
+	}
+
+	return 0;
+}
+
 int internal_send(wb_to_ext_msg_t data) {
 
 	int len = tcp_send((char *) &data, sizeof(wb_to_ext_msg_t));
