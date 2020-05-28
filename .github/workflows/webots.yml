@@ -16,4 +16,4 @@ jobs:
     - name: make
       run: echo test # make clean all
       shell: bash
-      working-directory: webots/controllers/internal_ctrl
+      working-directory: webots/controllers/internal
