@@ -28,7 +28,6 @@
 #include <string.h>
 #include <time.h>
 
-#include "tcp.h"
 #include "internal_com.h"
 #include "util.h"
 
@@ -73,7 +72,7 @@ int main(int argc, char **argv) {
 	printf("lidar resolution %i\n", res);
 
 	printf("Starting Coms on Webots Controller\n");
-	int ret_connect = tcp_connect();
+	int ret_connect = internal_connect();
 	if (ret_connect) {
 		printf("INTERNAL_CTRL: Can't establish connection to ext controller\n");
 

@@ -18,6 +18,7 @@ typedef struct {
 	double speed;                 // the speed the robot should drive at; between -1 and 1
 } __attribute__((packed)) ext_to_wb_msg_t;
 
+int internal_connect();
 
 int internal_send(wb_to_ext_msg_t data);
 
