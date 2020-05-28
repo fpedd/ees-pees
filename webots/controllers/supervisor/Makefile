@@ -65,6 +65,10 @@
 ###
 ###-----------------------------------------------------------------------------
 
+C_SOURCES = supervisor.c src/tcp.c src/supervisor_com.c src/util.c
+INCLUDE = -I "./include"
+
+
 ### Do not modify: this includes Webots global Makefile.include
 space :=
 space +=
