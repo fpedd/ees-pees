@@ -66,6 +66,9 @@
 ###-----------------------------------------------------------------------------
 
 C_SOURCES = internal.c src/tcp.c src/internal_com.c src/util.c
+C_SOURCES += src/tcp.c
+C_SOURCES += src/internal_com.c
+C_SOURCES += src/util.c
 INCLUDE = -I "./include"
 
 ### Do not modify: this includes Webots global Makefile.include

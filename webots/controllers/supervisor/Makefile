@@ -65,7 +65,11 @@
 ###
 ###-----------------------------------------------------------------------------
 
-C_SOURCES = supervisor.c src/tcp.c src/supervisor_com.c src/util.c
+C_SOURCES = supervisor.c
+C_SOURCES += src/tcp.c
+C_SOURCES += src/sv_com.c
+C_SOURCES += src/util.c
+C_SOURCES += src/sv_functions.c
 INCLUDE = -I "./include"
 
 
