@@ -19,13 +19,13 @@
 * `WebotAction` - blueprint for Webots actions to be used in other modules. Attributes: `heading`, `speed`.
 
 ## Interface to external controller - current configurations
-IP = "127.0.0.1"
-CONTROL_PORT = 6969
-BACKEND_PORT = 6970
-PACKET_SIZE = 1496
-DIST_VECS = 360
-TIME_OFFSET_ALLOWED = 1.0
-MAX_DISTANCE = 100
+`IP = "127.0.0.1"`
+`CONTROL_PORT = 6969`
+`BACKEND_PORT = 6970`
+`PACKET_SIZE = 1496`
+`DIST_VECS = 360`
+`TIME_OFFSET_ALLOWED = 1.0`
+`MAX_DISTANCE = 100`
 
 <!-- ## Fake environment - environment.py
 * `import environment`
