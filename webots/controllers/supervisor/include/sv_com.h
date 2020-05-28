@@ -1,5 +1,5 @@
-#ifndef SUPERVISOR_COM_H
-#define SUPERVISOR_COM_H
+#ifndef SV_COM_H
+#define SV_COM_H
 
 #define DIST_VECS    360
 
@@ -26,4 +26,4 @@ int sv_send(sv_to_bcknd_msg_t data);
 int sv_recv(bcknd_to_sv_msg_t *data);
 
 
-#endif //SUPERVISOR_COM_H
+#endif //SV_COM_H
