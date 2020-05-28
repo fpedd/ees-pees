@@ -48,6 +48,16 @@ int main() {
 
 	wb_robot_init();
 	int timestep = wb_robot_get_basic_time_step();
+
+	// establish coms to backend
+	
+
+
+
+
+
+
+
 	const int seed = time(NULL);
 	srand(seed);
 

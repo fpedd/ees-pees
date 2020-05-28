@@ -20,6 +20,7 @@ typedef struct {
 	int world_size;       // world_size in meter [int]
 } __attribute__((packed)) bcknd_to_sv_msg_t;
 
+int sv_connect();
 
 int sv_send(sv_to_bcknd_msg_t data);
 

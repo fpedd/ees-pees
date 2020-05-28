@@ -15,6 +15,12 @@
 #include "../include/util.h"
 
 
+int sv_connect(){
+	
+	int ret_connect = tcp_connect();
+	return ret_connect;
+}
+
 int sv_send(sv_to_bcknd_msg_t data) {
 
 	int len = tcp_send((char *) &data, sizeof(sv_to_bcknd_msg_t));

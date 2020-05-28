@@ -14,6 +14,10 @@
 #include "../include/tcp.h"
 #include "../include/util.h"
 
+int internal_connect(){
+	int ret_connect = tcp_connect();
+	return ret_connect;
+}
 
 int internal_send(wb_to_ext_msg_t data) {
 
