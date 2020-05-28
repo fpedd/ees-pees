@@ -18,12 +18,22 @@ typedef struct {
 	double speed;                 // the speed the robot should drive at; between -1 and 1
 } __attribute__((packed)) ext_to_wb_msg_t;
 
+// init msg --> external controller
+typedef struct {
+	int timestep;             // timestep (in ms) of the simulation
+	double robot_maxspeed;    // maximum speed of the Robot in m/s
+	double lidar_min_range;   // minimum detection range of lidar. Obstacles closer will be shown at max range
+	double lidar_max_range;   // maximum detection range of lidar
+	double target_gps[3];     // coodinates of the target
+}__attribute__((packed)) init_to_ext_msg_t;
 
 void wb_init_com();
 
-int wb_send(ext_to_wb_msg_t data) ;
+int wb_send(ext_to_wb_msg_t data);
 
-int wb_recv(wb_to_ext_msg_t *data) ;
+int wb_recv_init(init_to_ext_msg_t *data);
+
+int wb_recv(wb_to_ext_msg_t *data);
 
 void wb_test_com();
 

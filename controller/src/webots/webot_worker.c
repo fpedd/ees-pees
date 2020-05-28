@@ -20,6 +20,17 @@ void webot_worker(arg_struct_t *arg_struct) {
 
 	wb_init_com();
 
+	init_to_ext_msg_t init_data;
+	wb_recv_init(&init_data);
+
+	printf("init_data.timestep: %d\n", init_data.timestep);
+	printf("init_data.robot_maxspeed: %f\n", init_data.robot_maxspeed);
+	printf("init_data.lidar_min_range: %f\n", init_data.lidar_min_range);
+	printf("init_data.lidar_max_range: %f\n", init_data.lidar_max_range);
+	printf("init_data.target_gps[0]: %f\n", init_data.target_gps[0]);
+	printf("init_data.target_gps[1]: %f\n", init_data.target_gps[1]);
+	printf("init_data.target_gps[2]: %f\n", init_data.target_gps[2]);
+
 	printf("WEBOT_WORKER: Running\n");
 
 	while (1) {
@@ -37,10 +48,10 @@ void webot_worker(arg_struct_t *arg_struct) {
 		// format to internal_ext_to_bcknd_t
 		webot_format_wb_to_bcknd(&buffer_ext_to_bcknd, external_wb_to_ext);
 
-		printf("WEBOT_WORKER: ======== Compare formatted shit=========\n");
-		print_wb_to_ext(external_wb_to_ext, 1);
-		print_ext_to_bcknd(buffer_ext_to_bcknd, 1);
-		print_diff_distance(external_wb_to_ext, buffer_ext_to_bcknd);
+		// printf("WEBOT_WORKER: ======== Compare formatted shit=========\n");
+		// print_wb_to_ext(external_wb_to_ext, 1);
+		// print_ext_to_bcknd(buffer_ext_to_bcknd, 1);
+		// print_diff_distance(external_wb_to_ext, buffer_ext_to_bcknd);
 
 
 		pthread_mutex_lock(arg_struct->ext_to_bcknd_lock);
