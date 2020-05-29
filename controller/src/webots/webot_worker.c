@@ -86,7 +86,7 @@ int webot_format_wb_to_bcknd(ext_to_bcknd_msg_t* ext_to_bcknd, wb_to_ext_msg_t w
 
 	// cast sim time and robot speed to float
 	ext_to_bcknd->sim_time = (float) wb_to_ext.sim_time;
-	ext_to_bcknd->speed = (float) wb_to_ext.current_speed;
+	ext_to_bcknd->speed = (float) wb_to_ext.current_speed / init_data.maxspeed;
 
 	// TODO where does the target come from?
 
@@ -112,7 +112,7 @@ int webot_format_bcknd_to_wb(ext_to_wb_msg_t* ext_to_wb, bcknd_to_ext_msg_t bckn
 	ext_to_wb->heading = (bcknd_to_ext.heading - 180) / 180;
 	ext_to_wb->heading *= -1;
 
-	ext_to_wb->speed = bcknd_to_ext.speed /100;
+	ext_to_wb->speed = bcknd_to_ext.speed * init_data.maxspeed;
 
 	return 0;
 }
