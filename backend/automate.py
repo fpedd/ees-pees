@@ -3,7 +3,7 @@ import socket
 import struct
 import time
 import numpy as np
-from enum import Enum
+from enum import IntEnum
 import psutil
 
 import config
@@ -13,22 +13,25 @@ import config
 #     def __init__(self):
 #         pass
 
-class FunctionCode(Enum):
+class FunctionCode(IntEnum):
     UNDEFINED = -1
-    NONE = 0
+    NO_FUNCTION = 0
     START = 1
     RESET = 2
     CLOSE = 3
 
 
-class ReturnCode(Enum):
+class ReturnCode(IntEnum):
     UNDEFINED = -1
-    NONE = 0
+    SUCCESS = 0
+    ERROR = 1
 
 class WebotCtrl():
     def __init__(self):
         self.sock = None
-        self.return_code = ReturnCode.NONE
+        self.client_sock = None
+        self.address = None
+        self.return_code = ReturnCode.SUCCESS
         self.lidar_min_range = -1.0
         self.lidar_max_range = -1.0
         self.sim_time_step = 0
@@ -42,7 +45,7 @@ class WebotCtrl():
         # nothing to do here
         self.compile_program()
         self.start_program()
-        time.sleep(5.0)
+        # time.sleep(5.0)
         self.establish_connection()
 
     def close(self):
@@ -83,7 +86,14 @@ class WebotCtrl():
         # set buffer size to packet size to store only latest package
         self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_SNDBUF,
                              self.s_config.PACKET_SIZE)
-        return self.sock.connect((self.s_config.IP, self.s_config.PORT))
+        # return self.sock.connect((self.s_config.IP, self.s_config.PORT))
+        self.sock.bind((self.s_config.IP, self.s_config.PORT))
+        self.sock.listen(5)
+        print("Accepting on Port: ", self.s_config.PORT)
+        (self.client_sock, self.address) = self.sock.accept()
+        # print("Accepting done")
+        # data = struct.pack('iiiii', 0, 1, 2, 3, 4)
+        # self.client_sock.send(data)
 
     def close_connection(self):
         # close tcp connection to webot supervisor
@@ -96,24 +106,19 @@ class WebotCtrl():
                            int(fast_simulation),
                            num_obstacles,
                            world_size)
-        self.sock.send(data)
+        self.client_sock.send(data)
 
     def get_metadata(self):
-        buffer = self.sock.recv(self.s_conf.PACKET_SIZE)
-        self.return_code = struct.unpack('i', buffer[0:3])[0]
-        self.lidar_min_range = struct.unpack('f', buffer[4:7])[0]
-        self.lidar_max_range = struct.unpack('f', buffer[8:11])[0]
-        self.sim_time_step = struct.unpack('i', buffer[12:15])[0]
+        buffer = self.client_sock.recv(self.s_config.PACKET_SIZE)
+        self.return_code = struct.unpack('i', buffer[0:4])[0]
+        self.lidar_min_range = struct.unpack('f', buffer[4:8])[0]
+        self.lidar_max_range = struct.unpack('f', buffer[8:12])[0]
+        self.sim_time_step = struct.unpack('i', buffer[12:16])[0]
 
     def reset_environment(self):
         # environment sollte sein wie beim start der simulation
         data = struct.pack('iiiii', FunctionCode.RESET, 0, 0, 0, 0)
-        self.sock.send(data)
-
-    def close_environment(self):
-        # evlt notwendig, eher nicht
-        data = struct.pack('iiiii', FunctionCode.CLOSE, 0, 0, 0, 0)
-        self.sock.send(data)
+        self.client_sock.send(data)
 
     def print(self):
         print("===== WebotCtrl =====")

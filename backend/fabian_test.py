@@ -26,9 +26,23 @@
 
 import time
 import automate
+import subprocess
+
+
 
 w = automate.WebotCtrl()
+print("init")
 w.init()
+print("send data")
+w.start_env()
+print("recv data")
+time.sleep(1)
+w.get_metadata()
+print("print data")
+w.print()
+print("sleeping")
+time.sleep(5.0)
+print("exit")
 
 # e = automate.ExtCtrl()
 # e.compile()

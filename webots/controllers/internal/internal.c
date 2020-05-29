@@ -74,7 +74,7 @@ int main(int argc, char **argv) {
 	printf("Starting Coms on Webots Controller\n");
 	int ret_connect = internal_connect();
 	if (ret_connect) {
-		printf("INTERNAL_CTRL: Can't establish connection to ext controller\n");
+		printf("INTERNAL: Can't establish connection to ext controller\n");
 
 		// TODO: stand and wait to connect again?
 
