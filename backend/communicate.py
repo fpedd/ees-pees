@@ -10,8 +10,7 @@ import config
 class WebotState(object):
     def __init__(self):
         self.sim_time = None
-        self.sim_speed = None
-        self.gps_target = None
+        self.speed = None
         self.gps_actual = None
         self.compass = None
         self.distance = None
@@ -19,12 +18,11 @@ class WebotState(object):
 
     def fill_from_buffer(self, buffer, DIST_VECS):
         self.sim_time = struct.unpack('f', buffer[16:20])[0]
-        self.sim_speed = struct.unpack('f', buffer[20:24])[0]
-        self.gps_target = struct.unpack('2f', buffer[24:32])
-        self.gps_actual = struct.unpack('2f', buffer[32:40])
-        self.compass = struct.unpack('f', buffer[40:44])[0]
-        self.touching = struct.unpack("I", buffer[44:48])[0]
-        self.distance = struct.unpack("{}f".format(DIST_VECS), buffer[48:(48 + DIST_VECS * 4)])
+        self.speed = struct.unpack('f', buffer[20:24])[0]
+        self.gps_actual = struct.unpack('2f', buffer[24:32])
+        self.compass = struct.unpack('f', buffer[32:46])[0]
+        self.touching = struct.unpack("I", buffer[36:40])[0]
+        self.distance = struct.unpack("{}f".format(DIST_VECS), buffer[40:(40 + DIST_VECS * 4)])
         self._to_array()
 
     def _to_array(self):
