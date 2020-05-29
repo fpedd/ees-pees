@@ -21,9 +21,7 @@ typedef struct {
 // init msg --> external controller
 typedef struct {
 	int timestep;             // timestep (in ms) of the simulation
-	double robot_maxspeed;    // maximum speed of the Robot in m/s
-	double robot_minsteer;    // minimum steer value of the Robot
-	double robot_maxsteer;    // maximum steer value the Robot
+	double maxspeed;          // maximum speed of the Robot in m/s
 	double lidar_min_range;   // minimum detection range of lidar. Obstacles closer will be shown at max range
 	double lidar_max_range;   // maximum detection range of lidar
 	double target_gps[3];     // coodinates of the target
