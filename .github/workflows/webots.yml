@@ -14,6 +14,6 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: make
-      run: echo test # make clean all
+      run: make clean all
       shell: bash
       working-directory: webots/controllers/internal
