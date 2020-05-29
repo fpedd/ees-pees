@@ -16,19 +16,24 @@
 * `Com` - Main communication class, used to receive (`recv()`) and `send(action:WebotAction)` data from the external controller.
 
 ## Interface for automated testing - automate.py
-Python ->  Webots
-* function code [int]
-* seed [int]
-* fast simulation [int]
-* num_obstacles [int]
-* world_size in meter [int]
+```
+// supervisor --> backend
+typedef struct {
+	int return_code;         // return_code [int]
+	float lidar_min_range;   // lidar min range in meter [float]
+	float lidar_max_range;   // lidar max range in meter [float]
+	int sim_time_step;       // simulation time_step in ms [int]
+} __attribute__((packed)) sv_to_bcknd_msg_t;
 
-Webots -> Python
-* return code [int]
-* lidar_min range in meter [float]
-* lidar_max range in meter [float]
-* simulation time_step in ms [int]
-
+// supervisor <-- backend
+typedef struct {
+	int function_code;    // function code [int]
+	int seed;             // seed [int]
+	int fast_simulation;  // fast_simulation [int]
+	int num_obstacles;    // num_obstacles [int]
+	int world_size;       // world_size in meter [int]
+} __attribute__((packed)) bcknd_to_sv_msg_t;
+```
 
 
 ## Webots environment

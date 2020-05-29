@@ -1,42 +1,48 @@
-# KLassen aendern sich wahrscheinlich nochmal, aber wenn ihr mir die
-# funktionalitaet stellt, aender ich das mir selber <3
-# pass als keyword macht nichts ausser meinen typesetter happy
+import subprocess
+import socket
+import struct
+import time
+import numpy as np
+from enum import Enum
+import psutil
+
+import config
+
+# class WebotConfig():
+#     """NO need fuer aktion, fuell ich selber."""
+#     def __init__(self):
+#         pass
+
+class FunctionCode(Enum):
+    UNDEFINED = -1
+    NONE = 0
+    START = 1
+    RESET = 2
+    CLOSE = 3
 
 
-# Python ->  Webots
-#
-# - function code [int]
-# - seed [int]
-# - fast_simulation [bool]
-# - num_obstacles [int]
-# - world_size in meter [int]
-#
-#
-
-
-# Webots -> Python
-#
-# return_code [int]
-# lidar min range in meter [float]
-# lidar max range in meter [float]
-# simulation time_step in ms [int]
-
-
-
-class WebotConfig():
-    """NO need fuer aktion, fuell ich selber."""
-    def __init__(self):
-        pass
-
+class ReturnCode(Enum):
+    UNDEFINED = -1
+    NONE = 0
 
 class WebotCtrl():
     def __init__(self):
         self.sock = None
-        self.config = WebotConfig()
+        self.return_code = ReturnCode.NONE
+        self.lidar_min_range = -1.0
+        self.lidar_max_range = -1.0
+        self.sim_time_step = 0
+
+        # config of webots internal controller (normal robot operations)
+        self.w_config = config.WebotConfig()
+        # config of webots supervisor controller (automated operations)
+        self.s_config = config.SupervisorConfig()
 
     def init(self):
         # nothing to do here
+        self.compile_program()
         self.start_program()
+        time.sleep(5.0)
         self.establish_connection()
 
     def close(self):
@@ -45,70 +51,87 @@ class WebotCtrl():
         self.close_program()
 
     def is_program_started(self):
-        # laesst es sich ueberpruefen ob webot gestartet ist?
-        pass
+        # check if there is a process with the name "webots-bin" running
+        return "webots-bin" in (p.name() for p in psutil.process_iter())
+
+    def compile_program(self):
+        self.close_program()
+        # clean both controllers in webots
+        subprocess.call(["make", "clean"], cwd="../webots/controllers/supervisor")
+        subprocess.call(["make", "clean"], cwd="../webots/controllers/internal")
+        # compile both controllers in webots
+        subprocess.call(["make", "all"], cwd="../webots/controllers/supervisor")
+        subprocess.call(["make", "all"], cwd="../webots/controllers/internal")
 
     def start_program(self):
         if self.is_program_started() is False:
-            # hier programm starten
-            pass
+            # start webots with the path of the world as argument
+            subprocess.Popen(["webots", "../webots/worlds/testworld_prototype.wbt"])
 
     def close_program(self):
         if self.is_program_started() is True:
-            # hier programm schliessen
-            pass
+            # kill webots process
+            subprocess.call(["pkill", "webots-bin"])
 
     def establish_connection(self):
-        # start tcp connection to Webot
-        # self.sock = ...
-
-        # s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        # s.connect((TCP_IP, TCP_PORT))
-        # s.send(MESSAGE)
-        # data = s.recv(BUFFER_SIZE)
-        # s.close()
-
-        pass
+        # start tcp connection to Webot Supervisor
+        if self.sock is not None:
+            self.sock.close()
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        # reuse socket
+        self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        # set buffer size to packet size to store only latest package
+        self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_SNDBUF,
+                             self.s_config.PACKET_SIZE)
+        return self.sock.connect((self.s_config.IP, self.s_config.PORT))
 
     def close_connection(self):
-        # close tcp connection to Webot
-        pass
+        # close tcp connection to webot supervisor
+        self.sock.close()
 
-    def start_env(self, seed=1, fast_simulation=FALSE, num_obstacles=10, world_size=10):
-        # environment mit den settings ueber den supervisor modus starten
-        # Infos hol ich mir dann ueber get_metadata, koennt ihr aber gerne
-        # aendern wennn ihr ne bessere idee habt
-        pass
+    def start_env(self, seed=1, fast_simulation=False, num_obstacles=10, world_size=10):
+        data = struct.pack('iiiii',
+                           FunctionCode.START,
+                           seed,
+                           int(fast_simulation),
+                           num_obstacles,
+                           world_size)
+        self.sock.send(data)
 
     def get_metadata(self):
-        # num of lidars     // always 360!?
-        # lidar settings    // min range, max range, frequency?
-        # lengths/width of environment  // always quadratic, can be set on start_env
-        # number of obstacles // can be set on start_env
-        # simulations_speed // can be set on start_env
-        # // simulation time_step
-        # evtl mehr, ich weiss grad nict was
-        # (andere settings die wir nutzen?)
-
-        # TODO for PER: fill config here
-        pass
+        buffer = self.sock.recv(self.s_conf.PACKET_SIZE)
+        self.return_code = struct.unpack('i', buffer[0:3])[0]
+        self.lidar_min_range = struct.unpack('f', buffer[4:7])[0]
+        self.lidar_max_range = struct.unpack('f', buffer[8:11])[0]
+        self.sim_time_step = struct.unpack('i', buffer[12:15])[0]
 
     def reset_environment(self):
         # environment sollte sein wie beim start der simulation
-        pass
+        data = struct.pack('iiiii', FunctionCode.RESET, 0, 0, 0, 0)
+        self.sock.send(data)
 
     def close_environment(self):
-        # evlt notwendig, eher nicht :D
-        pass
+        # evlt notwendig, eher nicht
+        data = struct.pack('iiiii', FunctionCode.CLOSE, 0, 0, 0, 0)
+        self.sock.send(data)
+
+    def print(self):
+        print("===== WebotCtrl =====")
+        print("return_code", self.return_code)
+        print("lidar_min_range", self.lidar_min_range)
+        print("lidar_max_range", self.lidar_max_range)
+        print("sim_time_step", self.sim_time_step)
+        print("=====================")
 
 
 class ExtCtrl():
+    def compile(self):
+        self.close()
+        subprocess.call(["make", "clean"], cwd="../controller")
+        subprocess.call(["make", "all"], cwd="../controller")
+
     def start(self):
-        # selbsterklaerend
-        # ist es evtl moeglich, den uebertragungsspeed zu aendern?
-        # koennte das in Verbindung mit dem Simulationsspeed interessant sein?
-        pass
+        subprocess.Popen(["../controller/build/controller"])
 
     def close(self):
-        # selbsterklaerend
-        pass
+        subprocess.call(["pkill", "controller"])
