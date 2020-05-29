@@ -39,7 +39,7 @@ void webot_worker(arg_struct_t *arg_struct) {
 		wb_recv(&external_wb_to_ext);
 
 		// printf("========WB_WORKER: RECEIVED=========\n");
-		// print_wb_to_ext(external_wb_to_ext);
+		// print_wb_to_ext(external_wb_to_ext, 0);
 		// printf("====================================\n");
 
 		ext_to_bcknd_msg_t buffer_ext_to_bcknd;
@@ -48,10 +48,10 @@ void webot_worker(arg_struct_t *arg_struct) {
 		// format to internal_ext_to_bcknd_t
 		webot_format_wb_to_bcknd(&buffer_ext_to_bcknd, external_wb_to_ext, init_data);
 
-		// printf("WEBOT_WORKER: ======== Compare formatted shit=========\n");
-		// print_wb_to_ext(external_wb_to_ext, 1);
-		// print_ext_to_bcknd(buffer_ext_to_bcknd, 1);
-		// print_diff_distance(external_wb_to_ext, buffer_ext_to_bcknd);
+		printf("WEBOT_WORKER: ======== Compare formatted shit=========\n");
+		print_wb_to_ext(external_wb_to_ext, 0);
+		print_ext_to_bcknd(buffer_ext_to_bcknd, 0);
+		print_diff_distance(external_wb_to_ext, buffer_ext_to_bcknd);
 
 
 		pthread_mutex_lock(arg_struct->ext_to_bcknd_lock);
@@ -111,6 +111,7 @@ int webot_format_bcknd_to_wb(ext_to_wb_msg_t* ext_to_wb, bcknd_to_ext_msg_t bckn
 
 	ext_to_wb->heading = (bcknd_to_ext.heading - 180) / 180;
 	ext_to_wb->heading *= -1;
+	ext_to_wb->heading = 0;
 
 	ext_to_wb->speed = bcknd_to_ext.speed * init_data.maxspeed;
 
