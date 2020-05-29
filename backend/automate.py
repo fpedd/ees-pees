@@ -99,13 +99,15 @@ class WebotCtrl():
         # close tcp connection to webot supervisor
         self.sock.close()
 
-    def start_env(self, seed=1, fast_simulation=False, num_obstacles=10, world_size=10):
-        data = struct.pack('iiiii',
+    def start_env(self, seed=1, fast_simulation=False, num_obstacles=10, world_size=10, target_x=0.5, target_y=0.5):
+        data = struct.pack('5i2f',
                            FunctionCode.START,
                            seed,
                            int(fast_simulation),
                            num_obstacles,
-                           world_size)
+                           world_size,
+                           target_x,
+                           target_y)
         self.client_sock.send(data)
 
     def get_metadata(self):
