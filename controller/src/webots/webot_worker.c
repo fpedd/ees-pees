@@ -25,6 +25,8 @@ void webot_worker(arg_struct_t *arg_struct) {
 
 	printf("init_data.timestep: %d\n", init_data.timestep);
 	printf("init_data.robot_maxspeed: %f\n", init_data.robot_maxspeed);
+	printf("init_data.robot_minsteer: %f\n", init_data.robot_minsteer);
+	printf("init_data.robot_maxsteer: %f\n", init_data.robot_maxsteer);
 	printf("init_data.lidar_min_range: %f\n", init_data.lidar_min_range);
 	printf("init_data.lidar_max_range: %f\n", init_data.lidar_max_range);
 	printf("init_data.target_gps[0]: %f\n", init_data.target_gps[0]);
