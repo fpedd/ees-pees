@@ -68,6 +68,8 @@ int main() {
 	printf("fast_simulation: %d\n", test_buf.fast_simulation);
 	printf("num_obstacles: %d\n", test_buf.num_obstacles);
 	printf("world_size: %d\n", test_buf.world_size);
+	printf("target_x: %f\n", test_buf.target_x);
+	printf("target_y: %f\n", test_buf.target_y);
 	printf("=========================================\n");
 
 	// send test message
