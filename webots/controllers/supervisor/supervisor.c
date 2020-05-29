@@ -73,8 +73,8 @@ int main() {
 	// send test message
 	sv_to_bcknd_msg_t test_msg;
 	test_msg.return_code = 1;
-	test_msg.lidar_min_range = 2.0;
-	test_msg.lidar_max_range = 3.0;
+	test_msg.lidar_min_range = 0.04;
+	test_msg.lidar_max_range = 3.4;
 	test_msg.sim_time_step = timestep;
 
 	sv_send(test_msg);

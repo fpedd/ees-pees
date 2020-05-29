@@ -1,0 +1,1 @@
+#include "webots/safe.h"
