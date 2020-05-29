@@ -15,11 +15,27 @@
 * `WebotAction` - blueprint for Webots actions to be used in other modules. Attributes: `heading`, `speed`.
 * `Com` - Main communication class, used to receive (`recv()`) and `send(action:WebotAction)` data from the external controller.
 
+## Interface for automated testing - automate.py
+Python ->  Webots
+* function code [int]
+* seed [int]
+* fast simulation [int]
+* num_obstacles [int]
+* world_size in meter [int]
+
+Webots -> Python
+* return code [int]
+* lidar_min range in meter [float]
+* lidar_max range in meter [float]
+* simulation time_step in ms [int]
+
+
+
 ## Webots environment
 * `import environment`
 * load environment by `env = environment.WebotsEnv()`
 * make a action step by `state_arr, reward, done, {} = env.step(action)`. Gets the current state from the external controller and sends action back. If called with action=None, a random action will be send to the external controller.
-* To get the information of the communication, call appropriate action on `env.com` 
+* To get the information of the communication, call appropriate action on `env.com`
 
 ## Fake environment - environment.py
 * `import environment`

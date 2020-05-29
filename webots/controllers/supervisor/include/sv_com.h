@@ -15,7 +15,7 @@ typedef struct {
 typedef struct {
 	int function_code;    // function code [int]
 	int seed;             // seed [int]
-	int fast_simulation;  // fast_simulation [bool]
+	int fast_simulation;  // fast_simulation [int]
 	int num_obstacles;    // num_obstacles [int]
 	int world_size;       // world_size in meter [int]
 } __attribute__((packed)) bcknd_to_sv_msg_t;
