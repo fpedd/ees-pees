@@ -86,7 +86,7 @@ int webot_format_wb_to_bcknd(ext_to_bcknd_msg_t* ext_to_bcknd, wb_to_ext_msg_t w
 
 	// cast sim time and robot speed to float
 	ext_to_bcknd->sim_time = (float) wb_to_ext.sim_time;
-	ext_to_bcknd->sim_speed = (float) wb_to_ext.current_speed;
+	ext_to_bcknd->speed = (float) wb_to_ext.current_speed;
 
 	// TODO where does the target come from?
 
