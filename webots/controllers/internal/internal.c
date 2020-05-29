@@ -81,12 +81,14 @@ int main(int argc, char **argv) {
 		wb_robot_cleanup();
 		return EXIT_SUCCESS;
 	}
-	
+
 
 	// Send init information
 	init_to_ext_msg_t init_data;
 	init_data.timestep = timestep;
 	init_data.robot_maxspeed = wb_motor_get_max_velocity(motor);
+	init_data.robot_minsteer = wb_motor_get_min_position(steer);
+	init_data.robot_maxsteer = wb_motor_get_max_position(steer);
 	init_data.lidar_min_range = wb_lidar_get_min_range(lidar);
 	init_data.lidar_max_range = wb_lidar_get_max_range(lidar);
 	// Todo: how to get target gps from supervisor?
@@ -129,19 +131,14 @@ int main(int argc, char **argv) {
 		printf("Speed: %f\n", buf.speed);
 		// printf("============================\n");
 
-		// TODO set motor and steering as response says
-
-		// TODO functions for a more convenient setting of actuators? with values [-1,1]
-		// Unbounded motors: velocity control.
-		double v = buf.speed * wb_motor_get_max_velocity(motor);
-		wb_motor_set_velocity(motor, v);
+		// Set motor speed and steering
+		wb_motor_set_position(steer, buf.heading);
+		wb_motor_set_velocity(motor, buf.speed);
 
 		// position control for steering
 		// double p = 0.25 * buf.heading + 0.5; //* (sin(current_time * m_c + m_b) * m_a) + 0.5;
 		// double p = buf.heading; //* (sin(current_time * m_c + m_b) * m_a) + 0.5;
 		// double p =  buf.heading * (wb_motor_get_max_position(steer) - wb_motor_get_min_position(steer)) + wb_motor_get_min_position(steer);
-		double p =  buf.heading;
-		wb_motor_set_position(steer, p);
 	}
 
 	wb_robot_cleanup();
