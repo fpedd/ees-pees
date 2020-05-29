@@ -11,7 +11,7 @@ export WEBOTS_HOME=/usr/local/webots
 
 ### Path to Webots World and Internal Controller
 WORLD_FILE=/webots/worlds/prototypes.wbt
-INT_CTRL=/webots/controllers/internal_ctrl
+INT_CTRL=/webots/controllers/internal
 
 ### Path to Backend Script
 BCKND_SCRIPT=/backend/james.py
