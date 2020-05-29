@@ -8,7 +8,7 @@ typedef struct {
 	unsigned long long msg_cnt;  // total number of messages (even) (internal)
 	double time_stmp;            // time the message got send (internal)
 	float sim_time;              // actual simulation time in webots
-	float sim_speed;             // current simulation speed in webots
+	float speed;                 // current speed of robot in webots
 	float target_gps[2];         // coordiantes where the robot needs to go
 	float actual_gps[2];         // coordiantes where the robot is
 	float heading;               // direction the front of the robot points in
