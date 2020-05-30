@@ -23,7 +23,7 @@ SRCS := $(shell find $(SRC_DIR) -name '*.c')
 OBJS := $(SRCS:%=$(BUILD_DIR)/%.o)
 
 SRCS_TST := $(filter-out %main.c, $(SRCS))
-SRCS_TST += $(shell find $(TST_DIR_TST) -name '*.cpp')
+SRCS_TST += $(shell find $(TST_DIR) -name '*.cpp')
 OBJS_TST := $(SRCS_TST:%=$(BUILD_DIR)/%.o)
 
 LDFLAGS := -lpthread -lm -Wall -Wextra
@@ -52,7 +52,8 @@ $(BUILD_DIR)/%.cpp.o: %.cpp
 
 clean:
 	rm -rf $(BUILD_DIR)
-	# find . -name "*.o" -type f -delete
-	# find . -name "*.d" -type f -delete
+
+# find . -name "*.o" -type f -delete
+# find . -name "*.d" -type f -delete
 
 MKDIR_P := mkdir -p
