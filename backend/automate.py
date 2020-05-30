@@ -78,7 +78,7 @@ class WebotCtrl():
         self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         # set buffer size to packet size to store only latest package
         self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_SNDBUF,
-                             self.config.PACKET_SIZE)
+                             self.config.PACKET_SIZE_S)
         # return self.sock.connect((self.config.IP, self.config.PORT))
         self.sock.bind((self.config.IP_S, self.config.PORT_S))
         self.sock.listen(5)
