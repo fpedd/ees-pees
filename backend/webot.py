@@ -116,9 +116,9 @@ class WebotAction(object):
     @heading.setter
     def heading(self, value):
         if value < -1:
-            value = -1
-        if value > 1:
-            value = 1
+            value = 2 + value
+        elif value > 1:
+            value = -2 + value
         self._heading = value
 
     @property
