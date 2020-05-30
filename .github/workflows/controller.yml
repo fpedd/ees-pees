@@ -22,20 +22,20 @@ jobs:
     - name: install-gtest
       shell: bash
       run: sudo apt-get install libgtest-dev
-    - name: install-make
+    - name: install-cmake
       shell: bash
       run: sudo apt-get install cmake
-    - name: cd
-      shell: bash
-      run: cd /usr/src/gtest
     - name: cmake
       shell: bash
+      working-directory: /usr/src/gtest
       run: sudo cmake CMakeLists.txt
     - name: make
       shell: bash
+      working-directory: /usr/src/gtest
       run: sudo make
     - name: symlink
       shell: bash
+      working-directory: /usr/src/gtest
       run: sudo cp *.a /usr/lib
      
   build:
