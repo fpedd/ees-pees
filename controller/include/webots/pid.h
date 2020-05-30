@@ -11,9 +11,10 @@ typedef struct {
 	float out_min;
 	float err_acc;
 	float prev_set;
+	int wa;
 } pid_ctrl_t;
 
-int pid_init(pid_ctrl_t *pid, float k_p, float k_i, float k_d, float out_min, float out_max);
+int pid_init(pid_ctrl_t *pid, float k_p, float k_i, float k_d, float out_min, float out_max, int wrap_around);
 
 int pid_run(pid_ctrl_t *pid, float dt, float set, float in, float *out);
 
