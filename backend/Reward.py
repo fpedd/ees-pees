@@ -9,7 +9,7 @@ class Reward(object):
     def calc(self):
         """Calculate reward."""
         # calculate base value for reward
-        N = self.env.config.length
+        N = self.env.config.world_size
         base_v = np.sqrt(2) * N
 
         # get distance and crash penalties
