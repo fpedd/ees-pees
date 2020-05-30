@@ -11,8 +11,9 @@ class WebotConfig(object):
         # environment, sensor and robot
         self.DIST_VECS = 360
         self.length = 10
-        self.lidar_min = 0.12
-        self.lidar_max = 3.5
+        self.lidar_min_range = 0.12
+        self.lidar_max_range = 3.5
+        self.sim_time_step = 32  # ms
 
         # webot settings
         self.normal_speed = True
