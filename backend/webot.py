@@ -28,6 +28,9 @@ class WebotState(object):
             arr = np.hstack((arr, np.array(v)))
         return arr
 
+    # TODO: absolute, relative distance sensor as property
+    # TODO: lidar as np.diff 
+
     # def get_header(self):
     #     header = np.empty(0)
     #     header_data = [self.sim_time, self.gps_target, self.gps_actual,

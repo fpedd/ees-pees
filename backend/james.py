@@ -11,9 +11,6 @@ class Agent(abc.ABC):
     def __init__(self):
         self.history = []
 
-    # @abc.abstractmethod
-    # def train(self):
-    #     pass
     @abc.abstractmethod
     def action(self):
         pass
