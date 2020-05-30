@@ -3,8 +3,9 @@ import struct
 import time
 import numpy as np
 from enum import Enum
-from Config import WebotConfig
-from webot import WebotState, WebotAction
+
+import config
+from webots import WebotState, WebotAction
 
 
 class PacketError(Enum):
@@ -40,9 +41,8 @@ class Packet(object):
 
 
 class Com(object):
-    def __init__(self, seeds=None):
-        self.seeds = seeds
-        self.config = WebotConfig()
+    def __init__(self):
+        self.conf = config.WebotConfig()
         self.msg_cnt_in = 0
         self.msg_cnt_out = 1
         self.latency = None
@@ -51,27 +51,21 @@ class Com(object):
         self.history = []
         self.sock = None
 
-    def reset(self):
-        pass
-
     def _set_sock(self):
         if self.sock is not None:
             self.sock.close()
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        # reuse socket
         self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        # set buffer size to packet size to store only latest package
-        self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_SNDBUF,
-                             self.config.PACKET_SIZE)
-        self.sock.bind((self.config.IP, self.config.BACKEND_PORT))
+        self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_SNDBUF, self.conf.PACKET_SIZE)
+        self.sock.bind((self.conf.IP, self.conf.BACKEND_PORT))
 
     def _update_history(self):
         self.history.append([self.packet.time, self.packet])
 
     def recv(self):
         self._set_sock()
-        self.packet.buffer, addr = self.sock.recvfrom(self.config.PACKET_SIZE)
-        self.state.fill_from_buffer(self.packet.buffer, self.config.DIST_VECS)
+        self.packet.buffer, addr = self.sock.recvfrom(self.conf.PACKET_SIZE)
+        self.state.fill_from_buffer(self.packet.buffer, self.conf.DIST_VECS)
 
         ### TESTING START
         print("gps[0] ", end = '')
@@ -105,8 +99,7 @@ class Com(object):
         self._set_sock()
         data = struct.pack('Qdff', self.msg_cnt_out, time.time(),
                            action.heading, action.speed)
-        # ret = self.sock.sendto(data, (IP, CONTROL_PORT))
-        ret = self.sock.sendto(data, (self.config.IP, self.config.CONTROL_PORT))
+        ret = self.sock.sendto(data, (self.conf.IP, self.conf.CONTROL_PORT))
         if ret == len(data):
             self.msg_cnt_out += 2
         else:
