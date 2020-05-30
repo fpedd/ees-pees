@@ -5,7 +5,7 @@ from config import WebotConfig
 
 
 class WebotState(object):
-    def __init__(self, config: WebotConfig):
+    def __init__(self, config: WebotConfig = WebotConfig()):
         # meta
         self.config = config
         self.buffer = None
