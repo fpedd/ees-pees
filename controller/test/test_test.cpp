@@ -11,7 +11,7 @@ TEST(StrCompare, CStrEqual) {
 	EXPECT_STREQ(expectVal, actualValTrue);
 }
 
-This test will fail
+// This test will fail
 TEST(StrCompare, CStrNotEqual) {
 	EXPECT_STREQ(expectVal, actualValFalse);
 }
