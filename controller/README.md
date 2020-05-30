@@ -105,10 +105,9 @@ typedef struct {
 	unsigned long long msg_cnt;  // total number of messages (even) (internal)
 	double time_stmp;            // time the message got send (internal)
 	float sim_time;              // actual simulation time in webots
-	float speed;                 // current speed of robot in webots
-	float target_gps[2];         // coordiantes where the robot needs to go
+	float speed;                 // current speed of robot in webots [-1, 1]
 	float actual_gps[2];         // coordiantes where the robot is
-	float heading;               // direction the front of the robot points in
+	float heading;               // direction the front of the robot points in [-1, 1]
 	unsigned int touching;       // is the robot touching something?
 	float distance[DIST_VECS];   // distance to the next object from robot prespective
 } __attribute__((packed)) ext_to_bcknd_msg_t;
@@ -117,8 +116,8 @@ typedef struct {
 typedef struct {
 	unsigned long long msg_cnt;  // total number of messages (odd) (internal)
 	double time_stmp;            // time the message got send (internal)
-	float heading;               // the direction the robot should move in next
-	float speed;                 // the speed the robot should drive at
+	float heading;               // the direction the robot should move in next [-1, 1]
+	float speed;                 // the speed the robot should drive at [-1, 1]
 } __attribute__((packed)) bcknd_to_ext_msg_t;
 ```
 

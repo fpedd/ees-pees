@@ -18,6 +18,8 @@ typedef struct {
 	int fast_simulation;  // fast_simulation [int]
 	int num_obstacles;    // num_obstacles [int]
 	int world_size;       // world_size in meter [int]
+	float target_x;       // x coordinate of target (in meter)
+	float target_y;       // y coordinate of target (in meter)
 } __attribute__((packed)) bcknd_to_sv_msg_t;
 
 int sv_connect();

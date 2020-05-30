@@ -57,7 +57,7 @@ class WebotsEnv(Env):
 
     @property
     def targetpos(self):
-        return self.com.state.gps_target
+        return self.com.state.gps_actual    ### this is wrong and needs to be fixed
 
     @property
     def target_distance(self):

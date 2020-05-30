@@ -2,7 +2,7 @@
 
 #include <stdio.h>
 
-int pid_init(pid_ctrl_t *pid, float k_p, float k_i, float k_d, float out_min, float out_max) {
+int pid_init(pid_ctrl_t *pid, float k_p, float k_i, float k_d, float out_min, float out_max, int wrap_around) {
 
 	pid->k_p = k_p;
 	pid->k_i = k_i;
@@ -18,6 +18,8 @@ int pid_init(pid_ctrl_t *pid, float k_p, float k_i, float k_d, float out_min, fl
 	pid->err_acc = 0.0;
 	pid->prev_set = 0.0;
 
+	pid->wa = wrap_around;
+
 	return 0;
 }
 
@@ -30,11 +32,22 @@ int pid_run(pid_ctrl_t *pid, float dt, float set, float in, float *out) {
 
 	float err = set - in;
 
+	if (pid->wa) {
+		if (err < pid->out_min) {
+			err += 2 * pid->out_min;
+		} else if (err > pid->out_max) {
+			err -= 2 * pid->out_max;
+		}
+	}
+	printf("PID: err %f \n", err);
+
 	float integ = err * dt + pid->err_acc;
+	printf("PID: integ %f \n", integ);
 
-	float deriv = err / (set - pid->prev_set);
+	// float deriv = err / (set - pid->prev_set);
+	// printf("PID: deriv %f \n", deriv);
 
-	*out = err * pid->k_p + integ * pid->k_i + deriv * pid->k_d;
+	*out = err * pid->k_p + integ * pid->k_i; //+ deriv * pid->k_d;
 
 	if (*out < pid->out_min) {
 		*out = pid->out_min;
@@ -43,6 +56,7 @@ int pid_run(pid_ctrl_t *pid, float dt, float set, float in, float *out) {
 	} else {
 		pid->err_acc += err * dt;
 	}
+	printf("PID: out %f \n", *out);
 
 	pid->prev_set = set;
 

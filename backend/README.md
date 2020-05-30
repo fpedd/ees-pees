@@ -11,24 +11,29 @@
 
 ## Interface to external controller - communicate.py
 * `Packet` - holds the received data in `buffer` as well as some control information `time`, `count` and `success` (the packet has arrived as intented from the external controller.
-* `WebotState` - holds all information about the current state of the Webot, i.e. `gps_target`, `gps_actual`, `compass`, `distance`, `touching`. State will be filled from `Packet.buffer` using internal function `fill_from_buffer(buffer).` To get the current state as numpy.ndarray call `get()`.
+* `WebotState` - holds all information about the current state of the Webot, i.e. `sim_time`, `speed`, `gps_actual`, `compass`, `distance`, `touching`. State will be filled from `Packet.buffer` using internal function `fill_from_buffer(buffer).` To get the current state as numpy.ndarray call `get()`.
 * `WebotAction` - blueprint for Webots actions to be used in other modules. Attributes: `heading`, `speed`.
 * `Com` - Main communication class, used to receive (`recv()`) and `send(action:WebotAction)` data from the external controller.
 
 ## Interface for automated testing - automate.py
-Python ->  Webots
-* function code [int]
-* seed [int]
-* fast simulation [int]
-* num_obstacles [int]
-* world_size in meter [int]
+```
+// supervisor --> backend
+typedef struct {
+	int return_code;         // return_code [int]
+	float lidar_min_range;   // lidar min range in meter [float]
+	float lidar_max_range;   // lidar max range in meter [float]
+	int sim_time_step;       // simulation time_step in ms [int]
+} __attribute__((packed)) sv_to_bcknd_msg_t;
 
-Webots -> Python
-* return code [int]
-* lidar_min range in meter [float]
-* lidar_max range in meter [float]
-* simulation time_step in ms [int]
-
+// supervisor <-- backend
+typedef struct {
+	int function_code;    // function code [int]
+	int seed;             // seed [int]
+	int fast_simulation;  // fast_simulation [int]
+	int num_obstacles;    // num_obstacles [int]
+	int world_size;       // world_size in meter [int]
+} __attribute__((packed)) bcknd_to_sv_msg_t;
+```
 
 
 ## Webots environment
