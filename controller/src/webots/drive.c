@@ -35,6 +35,7 @@ int drive_automatic(init_to_ext_msg_t init_data,
                     float act_speed,
                     float act_heading) {
 
+    (void) act_speed;
     // No need for PID controller on speed
     float com_speed = set_speed;
     // pid_run(&speed_pid, get_time() - last_time, set_speed, act_speed, &com_speed);
@@ -42,13 +43,13 @@ int drive_automatic(init_to_ext_msg_t init_data,
 
     float com_heading = 0;
     pid_run(&heading_pid, get_time() - last_time, set_heading, act_heading, &com_heading);
-    printf("DRIVE: heading set: %f  act: %f com: %f \n", set_heading, act_heading, com_heading);#
+    printf("DRIVE: heading set: %f  act: %f com: %f \n", set_heading, act_heading, com_heading);
 
     last_time = get_time();
 
     ext_to_wb_msg_t ext_to_wb;
     memset(&ext_to_wb, 0, sizeof(ext_to_wb_msg_t));
-    
+
     ext_to_wb.speed = com_speed * init_data.maxspeed * -1;
 
     // if (act_speed > 0) {
