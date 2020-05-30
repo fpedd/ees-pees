@@ -44,6 +44,10 @@ class WebotState(object):
             # self.touching = struct.unpack("I", buffer[44:48])[0]
             # self.distance = struct.unpack("{}f".format(self.num_lidar), buffer[48: (48 + self.num_lidar*4)])
 
+    def get_distance(self, absolute=False):
+        # TODO: mapping absolute and relative lidar stuff with heading
+        return self.distance
+
     def get(self):
         """Get webot state as numpy array."""
         # TODO: update here nur sim time, speed etc zu nehmen ...
