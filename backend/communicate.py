@@ -4,7 +4,7 @@ import time
 import numpy as np
 from enum import Enum
 
-import config
+from config import WebotConfig
 from webots import WebotState, WebotAction
 
 
@@ -18,8 +18,8 @@ class PacketError(Enum):
 
 
 class Packet(object):
-    def __init__(self):
-        self.buffer = None
+    def __init__(self, config: WebotConfig = WebotConfig()):
+        self.config = config
         self.time_in = None
         self.error = PacketError.UNITILIZED
 
@@ -41,13 +41,13 @@ class Packet(object):
 
 
 class Com(object):
-    def __init__(self):
-        self.conf = config.WebotConfig()
+    def __init__(self, config: WebotConfig = WebotConfig()):
+        self.config = config
         self.msg_cnt_in = 0
         self.msg_cnt_out = 1
         self.latency = None
-        self.state = WebotState()
-        self.packet = Packet()
+        self.state = WebotState(config)
+        self.packet = Packet(config)
         self.history = []
         self.sock = None
 
@@ -64,8 +64,8 @@ class Com(object):
 
     def recv(self):
         self._set_sock()
-        self.packet.buffer, addr = self.sock.recvfrom(self.conf.PACKET_SIZE)
-        self.state.fill_from_buffer(self.packet.buffer, self.conf.DIST_VECS)
+        self.packet.buffer, addr = self.sock.recvfrom(self.config.PACKET_SIZE)
+        self.state.fill_from_buffer(self.packet.buffer, self.config.DIST_VECS)
 
         ### TESTING START
         print("gps[0] ", end = '')
@@ -99,7 +99,7 @@ class Com(object):
         self._set_sock()
         data = struct.pack('Qdff', self.msg_cnt_out, time.time(),
                            action.heading, action.speed)
-        ret = self.sock.sendto(data, (self.conf.IP, self.conf.CONTROL_PORT))
+        ret = self.sock.sendto(data, (self.config.IP, self.config.CONTROL_PORT))
         if ret == len(data):
             self.msg_cnt_out += 2
         else:
