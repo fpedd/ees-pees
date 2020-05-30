@@ -15,13 +15,20 @@ on:
       - webots
 
 jobs:
-  build:
-
+  gtest:
     runs-on: ubuntu-18.04
-
     steps:
     - uses: actions/checkout@v2
     - name: make
-      run: make clean all
+      shell: bash
+      run: sudo apt-get install libgtest-dev
+     
+  build:
+    runs-on: ubuntu-18.04
+    steps:
+    - uses: actions/checkout@v2
+    - name: make
       shell: bash
       working-directory: controller
+      run: make clean all
+   
