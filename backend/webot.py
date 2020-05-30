@@ -26,6 +26,7 @@ class WebotState(object):
 
         print("pending transmission")
         self.buffer = buffer
+        print(len(buffer))
         if self.transmission_success:
             print("transmission success")
             self.sim_time = struct.unpack('f', buffer[16:20])[0]
