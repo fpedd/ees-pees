@@ -18,7 +18,7 @@ CFLAGS := $(INC_FLAGS) -MMD -MP -I$(INC_DIR) -lpthread -Wall -Wextra -lm
 all: $(BUILD_DIR)/$(TARGET)
 
 $(BUILD_DIR)/$(TARGET): $(OBJS)
-	$(CC) $(OBJS) -o $@ $(LDFLAGS) $(CFLAGS)
+	$(CC) $(OBJS) -o $@ $(CFLAGS)
 
 $(BUILD_DIR)/%.c.o: %.c
 	$(MKDIR_P) $(dir $@)
