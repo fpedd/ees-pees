@@ -42,8 +42,18 @@ jobs:
     runs-on: ubuntu-18.04
     steps:
     - uses: actions/checkout@v2
-    - name: make
+    - name: make-all
       shell: bash
       working-directory: controller
       run: make clean all
+      
+  test:
+    runs-on: ubuntu-18.04
+    needs: gtest
+    steps:
+    - uses: actions/checkout@v2
+    - name: make-test
+      shell: bash
+      working-directory: controller
+      run: make clean test
    
