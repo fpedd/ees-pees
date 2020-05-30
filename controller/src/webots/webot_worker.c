@@ -8,7 +8,9 @@
 #include "webots/safe.h"
 #include "webots/drive.h"
 
-void webot_worker(arg_struct_t *arg_struct) {
+void *webot_worker(void *ptr) {
+
+	arg_struct_t *arg_struct = (arg_struct_t*) ptr;
 
 	// Init communication with webot
 	printf("WEBOT_WORKER: Initalizing\n");

@@ -5,7 +5,9 @@
 
 #include "backend/backend_com.h"
 
-void backend_worker(arg_struct_t *arg_struct) {
+void *backend_worker(void *ptr) {
+
+	arg_struct_t *arg_struct = (arg_struct_t*) ptr;
 
 	// Init communication with backend
 	printf("BACKEND_WORKER: Initalizing\n");

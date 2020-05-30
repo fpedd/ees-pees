@@ -4,7 +4,7 @@
 #include "util.h"
 #include "wb_com.h"
 
-void webot_worker(arg_struct_t *arg_struct);
+void *webot_worker(void *ptr);
 
 int webot_format_wb_to_bcknd(ext_to_bcknd_msg_t* ext_to_bcknd, wb_to_ext_msg_t wb_to_ext, init_to_ext_msg_t init_data);
 
