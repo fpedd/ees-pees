@@ -2,10 +2,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 import abc
 import gym
+import time
 
 import utils
 import communicate
+import automate
 
+from Config import WebotConfig
 from Action import DiscreteAction, ContinuousAction
 from Reward import Reward
 from Observation import observation_std
@@ -76,11 +79,6 @@ class WebotsBlue(MyGym):
         self.action_space = self.action_class.action_space
         self.reward_range = self.reward_class.reward_range
 
-    def reset(self):
-        self.com.reset()
-        # return self.state
-        return self.observation
-
     def step(self, action):
         """Perform action on environment.
 
@@ -139,18 +137,47 @@ class WebotsBlue(MyGym):
 
 
 class WebotsEnv(WebotsBlue):
-    def __init__(self, seed=None, action_class=DiscreteAction,
-                 reward_class=Reward, observation_func=observation_std):
+    def __init__(self, seed=None, train=False, action_class=DiscreteAction,
+                 reward_class=Reward, observation_func=observation_std,
+                 config: WebotConfig = WebotConfig()):
         super(WebotsEnv, self).__init__(seed=seed,
                                         action_class=action_class,
                                         reward_class=reward_class,
                                         observation_func=observation_func)
-        self.com = communicate.Com(self.seeds)
+        self.config = config
+
+        self.train = False
+        self._setup_train()
+
+        self.com = communicate.Com(self.seeds, config)
         self.com.recv()
-        # TODO: include in com call?
-        self.config = self.com.config
         self._init_act_rew_obs(self)
 
+    def _setup_train(self):
+        if self.train is True:
+            # start webots program, establish tcp connection
+            self.supervisor = automate.WebotCtrl(self.config)
+            self.supervisor.init()
+
+            # start external controller
+            self.external_controller = automate.ExtCtrl()
+            self.external_controller.init()
+
+            # start environment and update config
+            self.supervisor.start_env()
+
     def reset(self):
-        #  reset_environment in automate, wait and then grab ext ctrl info
-        pass
+        if self.supervisor_connection is True:
+            self.supervisor.start_env(self.main_seed)
+            return self.observation
+
+    def close(self):
+        if self.supervisor_connection is True:
+            self.supervisor.close()
+            self.external_controller.close()
+
+    @property
+    def supervisor_connection(self) -> bool:
+        if self.supervisor is not None and self.supervisor.return_code.value == 0:
+            return True
+        return False

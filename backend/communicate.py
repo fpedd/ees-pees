@@ -4,8 +4,8 @@ import time
 import numpy as np
 from enum import Enum
 
-from config import WebotConfig
-from webots import WebotState, WebotAction
+from Config import WebotConfig
+from webot import WebotState, WebotAction
 
 
 class PacketError(Enum):
