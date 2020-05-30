@@ -173,8 +173,10 @@ class WebotsEnv(WebotsBlue):
             return self.observation
 
     def close(self):
+        # TODO: where is close invoked? openai function calls 
         if self.supervisor_connection is True:
             self.supervisor.close()
+            # TODO: sure to close external controller? Does it do harm if left open?
             self.external_controller.close()
 
     @property
