@@ -10,7 +10,7 @@ EXT_CTRL=/controller
 export WEBOTS_HOME=/usr/local/webots
 
 ### Path to Webots World and Internal Controller
-WORLD_FILE=/webots/worlds/prototypes.wbt
+WORLD_FILE=/webots/worlds/single_playground.wbt
 INT_CTRL=/webots/controllers/internal
 
 ### Path to Backend Script
