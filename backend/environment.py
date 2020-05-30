@@ -146,11 +146,16 @@ class WebotsEnv(WebotsBlue):
                                         observation_func=observation_func)
         self.config = config
 
-        self.train = False
+        self.train = train
         self._setup_train()
 
-        self.com = communicate.Com(self.seeds, config)
+        # start external controller
+        self.external_controller = automate.ExtCtrl()
+        self.external_controller.init()
+        self.com = communicate.Com(config)
         self.com.recv()
+
+        # init action, reward, observation
         self._init_act_rew_obs(self)
 
     def _setup_train(self):
@@ -158,10 +163,6 @@ class WebotsEnv(WebotsBlue):
             # start webots program, establish tcp connection
             self.supervisor = automate.WebotCtrl(self.config)
             self.supervisor.init()
-
-            # start external controller
-            self.external_controller = automate.ExtCtrl()
-            self.external_controller.init()
 
             # start environment and update config
             self.supervisor.start_env()
