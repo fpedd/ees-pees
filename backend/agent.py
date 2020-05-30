@@ -30,8 +30,8 @@ class RndWebotAgent(Agent):
 
 class WebotCtrAgent(Agent):
     def __init__(self):
-        self.dheading = 3
-        self.dspeed = 3
+        self.dheading = 0.1
+        self.dspeed = 0.1
         self.env = environment.WebotsEnv()
         self._init_action()
 
