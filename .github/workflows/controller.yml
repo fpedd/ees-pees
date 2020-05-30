@@ -19,9 +19,24 @@ jobs:
     runs-on: ubuntu-18.04
     steps:
     - uses: actions/checkout@v2
-    - name: make
+    - name: install-gtest
       shell: bash
       run: sudo apt-get install libgtest-dev
+    - name: install-make
+      shell: bash
+      run: sudo apt-get install cmake
+    - name: cd
+      shell: bash
+      run: cd /usr/src/gtest
+    - name: cmake
+      shell: bash
+      run: sudo cmake CMakeLists.txt
+    - name: make
+      shell: bash
+      run: sudo make
+    - name: symlink
+      shell: bash
+      run: sudo cp *.a /usr/lib
      
   build:
     runs-on: ubuntu-18.04
