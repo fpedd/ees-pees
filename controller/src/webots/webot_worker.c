@@ -37,6 +37,8 @@ void webot_worker(arg_struct_t *arg_struct) {
 		memset(&external_wb_to_ext, 0, sizeof(wb_to_ext_msg_t));
 		wb_recv(&external_wb_to_ext);
 
+		// print_wb_to_ext(external_wb_to_ext, 0);
+
 		/***** 2) Push message to backend worker *****/
 		ext_to_bcknd_msg_t buffer_ext_to_bcknd;
 		memset(&buffer_ext_to_bcknd, 0, sizeof(ext_to_bcknd_msg_t));

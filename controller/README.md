@@ -29,7 +29,7 @@ make clean
 
 ## General functioning
 The external controller consists of two parallely running threads, the webot_worker and the backend_worker. Both of them communicate by using externally defined message structs that are blocked from simultaneous access by mutexes. The general idea is, that the webot_worker receives sensor data from the webot, reformats it to the format the backend needs and puts it into the corresponding struct for the backend_worker to read it. Then it continues to read the values the backend_worker left for it and uses it to do safety logic (TODO), and calculate the new motor controll settings for the webot using a PID controller (TODO). Then it sends the new commands to the webot.
-At the same time the backend_worker reads the data it gets from the webot_worker, sends it by UDP to the backend, waits for a response which it then stores for the webot_worker to read again. 
+At the same time the backend_worker reads the data it gets from the webot_worker, sends it by UDP to the backend, waits for a response which it then stores for the webot_worker to read again.
 The frequency at which both threads perform their work-loops is no yet controlled or synchronized.
 
 
@@ -106,6 +106,7 @@ typedef struct {
 	double time_stmp;            // time the message got send (internal)
 	float sim_time;              // actual simulation time in webots
 	float speed;                 // current speed of robot in webots [-1, 1]
+	float target_gps[2];         // coordiantes where the robot should go
 	float actual_gps[2];         // coordiantes where the robot is
 	float heading;               // direction the front of the robot points in [-1, 1]
 	unsigned int touching;       // is the robot touching something?
@@ -133,12 +134,13 @@ Explanation of `to_bcknd_msg_t`:
   only ever send even numbers, the backend only odd numbers.
 * `double time_stmp` is the local system time in seconds (with nanosecond precision)
   since 1970. It gets set as the last variable, just before the message gets send out.
-* `float target_gps[3]` are the latitude, longitude and altitude (in meters) coordinates
+* `float sim_time` Actual simulation time in webots in ms.
+* `float speed` Current speed of robot in webots [-1, 1].
+* `float target_gps[2]` are the latitude and longitude coordinates
   the robot has to reach in order to complete the mission.
-* `float actual_gps[3]` are the coordinates the robot is currently at.
+* `float actual_gps[2]` are the coordinates the robot is currently at.
   It is in the same format as the `target_gps`.
-* `float compass[3]` the direction the front of the robot is currently pointing
-  at in 3d space relative to the global north in degree.  
+* `float heading` the direction the front of the robot is currently pointing at [-1, 1].  
 * `float distance[DIST_VECS]` the distance (in meters) to the next solid object
   with the direction corresponding to the index of the array. So if distance[66]
   = 1.23, the distance to the next solid object in direction 66 degree is 1.23 meters.
@@ -150,6 +152,6 @@ Explanation of `to_bcknd_msg_t`:
 Explanation of `from_bcknd_msg_t`:
 * `unsigned long long msg_cnt` see above.
 * `double time_stmp` see above.
-* `float heading` the direction the robot should go move in next (degree, relative
+* `float heading` the direction the robot should go move in next [-1, 1] (relative
   to the global north in the horizontal plane).
-* `float speed` the speed the robot should move at, 0 if it should stop (in m/s).
+* `float speed` the speed the robot should move at, 0 if it should stop [-1, 1].

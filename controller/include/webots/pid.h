@@ -10,7 +10,7 @@ typedef struct {
 	float out_max;
 	float out_min;
 	float err_acc;
-	float prev_set;
+	float prev_in;
 	int wa;
 } pid_ctrl_t;
 
