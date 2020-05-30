@@ -4,10 +4,15 @@ on:
   push:
     branches:
       - master
-      
+      - backend
+      - controller
+      - webots
   pull_request:
     branches:
       - master
+      - backend
+      - controller
+      - webots
 
 jobs:
   build:
