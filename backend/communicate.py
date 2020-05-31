@@ -3,65 +3,9 @@ import struct
 import time
 import numpy as np
 from enum import Enum
-import config
 
-
-class WebotState(object):
-    def __init__(self):
-        self.sim_time = None
-        self.sim_speed = None
-        self.gps_target = None
-        self.gps_actual = None
-        self.compass = None
-        self.distance = None
-        self.touching = None
-
-    def fill_from_buffer(self, buf, dv):
-        self.sim_time = struct.unpack('f', buf[16:20])[0]
-        self.sim_speed = struct.unpack('f', buf[20:24])[0]
-        self.gps_target = struct.unpack('2f', buf[24:32])
-        self.gps_actual = struct.unpack('2f', buf[32:40])
-        self.compass = struct.unpack('f', buf[40:44])[0]
-        self.touching = struct.unpack("I", buf[44:48])[0]
-        self.distance = struct.unpack("{}f".format(dv), buf[48:(48 + 4 * dv)])
-
-    def get(self):
-        """Get webot state as numpy array."""
-        arr = np.empty(0)
-        for v in self.__dict__.values():
-            arr = np.hstack((arr, np.array(v)))
-        return arr
-
-    @property
-    def observation_shape(self):
-        if self.state_filled:
-            arr = self.get()
-            return arr.shape
-        return None
-
-    @property
-    def state_filled(self):
-        if self.gps_actual is not None:
-            return True
-        return False
-
-    @property
-    def num_of_sensors(self):
-        if self.distance is None:
-            return None
-        return len(self.distance)
-
-    @property
-    def gps_size(self):
-        if self.gps_actual is None:
-            return None
-        return len(self.gps_actual)
-
-    @property
-    def compass_size(self):
-        if self.compass is None:
-            return None
-        return len(self.compass)
+from Config import WebotConfig
+from webot import WebotState, WebotAction
 
 
 class PacketError(Enum):
@@ -74,8 +18,8 @@ class PacketError(Enum):
 
 
 class Packet(object):
-    def __init__(self):
-        self.buffer = None
+    def __init__(self, config: WebotConfig = WebotConfig()):
+        self.config = config
         self.time_in = None
         self.error = PacketError.UNITILIZED
 
@@ -96,77 +40,32 @@ class Packet(object):
         return False
 
 
-class WebotAction(object):
-    def __init__(self):
-        self._heading = None
-        self._speed = None
-
-    def _init_randomly(self):
-        self.heading = np.random.randint(360)
-        self.speed = np.random.random() * 200 - 100
-
-    @property
-    def heading(self):
-        return self._heading
-
-    @heading.setter
-    def heading(self, value):
-        if value < 0:
-            value = 0
-        if value > 360:
-            value = 360
-        # if value < 0 or value > 360:
-        #     raise ValueError("Value invalid", value)
-        self._heading = value
-
-    @property
-    def speed(self):
-        return self._speed
-
-    @speed.setter
-    def speed(self, value):
-        if value < -100:
-            value = -100
-        if value > 100:
-            value = 100
-        # if value < -100 or value > 100:
-        #     raise ValueError("Value invalid", value)
-        self._speed = value
-
-
 class Com(object):
-    def __init__(self, seeds=None):
-        self.seeds = seeds
-        self.conf = config.WebotConfig()
+    def __init__(self, config: WebotConfig = WebotConfig()):
+        self.config = config
         self.msg_cnt_in = 0
         self.msg_cnt_out = 1
         self.latency = None
-        self.state = WebotState()
-        self.packet = Packet()
+        self.state = WebotState(config)
+        self.packet = Packet(config)
         self.history = []
         self.sock = None
-
-    def reset(self):
-        pass
 
     def _set_sock(self):
         if self.sock is not None:
             self.sock.close()
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        # reuse socket
         self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        # set buffer size to packet size to store only latest package
-        self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_SNDBUF,
-                             self.conf.PACKET_SIZE)
-        self.sock.bind((self.conf.IP, self.conf.BACKEND_PORT))
+        self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_SNDBUF, self.config.PACKET_SIZE)
+        self.sock.bind((self.config.IP, self.config.BACKEND_PORT))
 
     def _update_history(self):
         self.history.append([self.packet.time, self.packet])
 
     def recv(self):
         self._set_sock()
-        self.packet.buffer, addr = self.sock.recvfrom(self.conf.PACKET_SIZE)
-        self.state.fill_from_buffer(self.packet.buffer, self.conf.DIST_VECS)
+        self.packet.buffer, addr = self.sock.recvfrom(self.config.PACKET_SIZE)
+        self.state.fill_from_buffer(self.packet.buffer)
 
         ### TESTING START
         print("gps[0] ", end = '')
@@ -200,8 +99,7 @@ class Com(object):
         self._set_sock()
         data = struct.pack('Qdff', self.msg_cnt_out, time.time(),
                            action.heading, action.speed)
-        # ret = self.sock.sendto(data, (IP, CONTROL_PORT))
-        ret = self.sock.sendto(data, (self.conf.IP, self.conf.CONTROL_PORT))
+        ret = self.sock.sendto(data, (self.config.IP, self.config.CONTROL_PORT))
         if ret == len(data):
             self.msg_cnt_out += 2
         else:

@@ -25,4 +25,6 @@ int delay(double s);
 
 double get_time();
 
+double heading_in_degrees(double x, double y, double z);
+
 #endif // UTIL_H

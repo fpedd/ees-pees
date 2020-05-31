@@ -13,7 +13,7 @@ DEPS := $(OBJS:.o=.d)
 INC_DIRS := $(shell find $(SRC_DIR) -type d)
 INC_FLAGS := $(addprefix -I,$(INC_DIRS))
 
-CFLAGS := $(INC_FLAGS) -MMD -MP -I$(INC_DIR) -lpthread -Wall -Wextra
+CFLAGS := $(INC_FLAGS) -MMD -MP -I$(INC_DIR) -lpthread -Wall -Wextra -lm
 
 all: $(BUILD_DIR)/$(TARGET)
 

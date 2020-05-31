@@ -6,7 +6,16 @@ import time
 def set_random_seed():
     """Use current time to set seed to something random."""
     t = 1000 * time.time()
-    np.random.seed(int(t) % 2**32)
+    seed = int(t) % 2**32
+    np.random.seed(seed)
+    return seed
+
+
+def seed_list(seed, n=100, low=0, high=10**6):
+    """Create a list of n seeds."""
+    np.random.seed(seed)
+    seeds = list(set(np.random.randint(low, high, n)))
+    return seeds
 
 
 def id_in_range(low, high, num_of_actions, value):

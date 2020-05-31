@@ -2,8 +2,8 @@
 WorldInfo {
 }
 Viewpoint {
-  orientation 0.0969662 0.950108 0.296468 3.7237
-  position -5.4052 6.08468 -6.88461
+  orientation 1 0 0 4.71238898038469
+  position 0.0007121459049105788 4.4580398826486345 -0.020665067671350307
   follow "rectangle arena"
 }
 TexturedBackground {
@@ -13,9 +13,13 @@ TexturedBackgroundLight {
 RectangleArena {
   floorSize 10 10
 }
+WoodenBox {
+  translation 0 0.15 0.5
+  size 0.6 0.3 0.3
+  mass 1
+}
 TinkerbotsBase {
-  translation -0.42 0.0399858 0.3
-  rotation -0.987168785798863 -0.0008713565246461446 0.15967789165130383 -3.6176520147050033e-07
+  rotation 0 1 0 0
   name "Tinkerbots(2)"
   controller "internal_ctrl"
   downSlot TinkerbotsPivot {
