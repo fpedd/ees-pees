@@ -3,6 +3,6 @@
 
 #include "util.h"
 
-void backend_worker(arg_struct_t *arg_struct);
+void *backend_worker(void *ptr);
 
 #endif // BACKEND_WORKER_H

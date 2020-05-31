@@ -6,14 +6,12 @@
 
 
 int time_diff_start(double *time) {
-	get_time(time);
+	*time = get_time();
 	return 0;
 }
 
 int time_diff_stop(double *time) {
-	double time_stop;
-	get_time(&time_stop);
-	*time = time_stop - *time;
+	*time = get_time() - *time;
 	return 0;
 }
 

@@ -2,18 +2,51 @@ name: controller
 
 on:
   push:
-    branches: [ master ]
+    branches:
+      - master
+      - backend
+      - controller
+      - webots
   pull_request:
-    branches: [ master ]
+    branches:
+      - master
+      - backend
+      - controller
+      - webots
 
 jobs:
-  build:
-
+  gtest:
     runs-on: ubuntu-18.04
-
     steps:
     - uses: actions/checkout@v2
+    - name: install-gtest
+      shell: bash
+      run: sudo apt-get install libgtest-dev
+    - name: install-cmake
+      shell: bash
+      run: sudo apt-get install cmake
+    - name: cmake
+      shell: bash
+      working-directory: /usr/src/gtest
+      run: sudo cmake CMakeLists.txt
     - name: make
-      run: make clean all
+      shell: bash
+      working-directory: /usr/src/gtest
+      run: sudo make
+    - name: symlink
+      shell: bash
+      working-directory: /usr/src/gtest
+      run: sudo cp *.a /usr/lib
+    - name: make-test
       shell: bash
       working-directory: controller
+      run: make clean test
+
+  build:
+    runs-on: ubuntu-18.04
+    steps:
+    - uses: actions/checkout@v2
+    - name: make-all
+      shell: bash
+      working-directory: controller
+      run: make clean all

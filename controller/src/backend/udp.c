@@ -38,7 +38,8 @@ int udp_init() {
 		return -2;
 	}
 
-	if (setsockopt(sock_fd, SOL_SOCKET, SO_REUSEADDR, &(int){1}, sizeof(int)) < 0) {
+	int enable = 1;
+	if (setsockopt(sock_fd, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) < 0) {
 		fprintf(stderr, "ERROR: udp init setsockopt reuse failed '%s'\n", strerror(errno));
 		return -3;
 	}

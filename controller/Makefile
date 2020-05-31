@@ -1,34 +1,59 @@
 ### Simple Makefile to compile our Controller ###
 
+# Compiler
+CC := g++
+
+# Main Target
 TARGET := controller
-CC = gcc
+
+# Target to run unit tests
+TARGET_TST := controller_test
+
+# Project directories
 BUILD_DIR := build
 SRC_DIR := src
 INC_DIR := include
+TST_DIR := test
 
-SRCS := $(shell find $(SRC_DIR) -name *.c)
+# Path to your Googletest
+GTEST_INC := /usr/src/gtest/include/gtest
+GTEST_BIN := gtest
+
+SRCS := $(shell find $(SRC_DIR) -name '*.c')
 OBJS := $(SRCS:%=$(BUILD_DIR)/%.o)
-DEPS := $(OBJS:.o=.d)
 
-INC_DIRS := $(shell find $(SRC_DIR) -type d)
-INC_FLAGS := $(addprefix -I,$(INC_DIRS))
+SRCS_TST := $(filter-out %main.c, $(SRCS))
+SRCS_TST += $(shell find $(TST_DIR) -name '*.cpp')
+OBJS_TST := $(SRCS_TST:%=$(BUILD_DIR)/%.o)
 
-CFLAGS := $(INC_FLAGS) -MMD -MP -I$(INC_DIR) -lpthread -Wall -Wextra -lm
+LDFLAGS := -lpthread -lm -Wall -Wextra
+CFLAGS := -MMD -MP -I$(INC_DIR) -Wall -Wextra
 
 all: $(BUILD_DIR)/$(TARGET)
 
 $(BUILD_DIR)/$(TARGET): $(OBJS)
-	$(CC) $(OBJS) -o $@ $(LDFLAGS) $(CFLAGS)
+	$(CC) $(OBJS) -o $@ $(LDFLAGS)
+
+test: $(BUILD_DIR)/$(TARGET_TST)
+	./$(BUILD_DIR)/$(TARGET_TST)
+
+$(BUILD_DIR)/$(TARGET_TST): $(OBJS_TST)
+	$(CC) $(OBJS_TST) -o $@ -l$(GTEST_BIN) $(LDFLAGS)
 
 $(BUILD_DIR)/%.c.o: %.c
 	$(MKDIR_P) $(dir $@)
 	$(CC) $(CFLAGS) -c $< -o $@
 
+$(BUILD_DIR)/%.cpp.o: %.cpp
+	$(MKDIR_P) $(dir $@)
+	$(CC) $(CFLAGS) -I$(GTEST_INC) -c $< -o $@
+
 .PHONY: all clean
 
 clean:
-	$(RM) -r $(BUILD_DIR)
+	rm -rf $(BUILD_DIR)
 
--include $(DEPS)
+# find . -name "*.o" -type f -delete
+# find . -name "*.d" -type f -delete
 
 MKDIR_P := mkdir -p

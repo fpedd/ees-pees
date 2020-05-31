@@ -33,6 +33,9 @@ At the same time the backend_worker reads the data it gets from the webot_worker
 The frequency at which both threads perform their work-loops is no yet controlled or synchronized.
 
 
+## Testing
+We are using [Google Test](https://github.com/google/googletest) to run unit tests on our code. Before you will be able to run any tests you will need to install Google Test on your machine. Please follow the installation instructions [here](https://www.eriksmistad.no/getting-started-with-google-test-on-ubuntu/) to install Google Test. After that you will be able to call `make test`. That will compile and run all unit tests. You can add your own unit tests in the `/test` directory. You may need to create a new corresponding test file in that directory if there is none already. The tests will also be automatically executed when pushing to Github using [Github Actions](https://help.github.com/en/actions). 
+
 ## Protocol
 
 * IP `127.0.0.1` (local host)
