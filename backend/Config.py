@@ -29,3 +29,7 @@ class WebotConfig(object):
         self.lidar_min_range = 0.12
         self.lidar_max_range = 3.5
         self.sim_time_step = 32  # ms
+
+    def print(self):
+        for (k, v) in self.__dict__.items():
+            print(str(k) + "\t" + str(v))

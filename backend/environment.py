@@ -17,7 +17,7 @@ from Observation import observation_std
 class MyGym(gym.Env):
     def __init__(self, seed):
         super(MyGym, self).__init__()
-        self.seeds = self.set_seed(seed)
+        self.set_seed(seed)
 
     @abc.abstractmethod
     def reset(self):
@@ -39,10 +39,9 @@ class MyGym(gym.Env):
         """Set main seed of env + 1000 other seeds for placements."""
         if seed is None:
             seed = utils.set_random_seed()
-        seeds = [seed]
+        self.seeds = [seed]
         np.random.seed(seed)
-        seeds.extend(utils.seed_list(seed, n=1000))
-        return seeds
+        self.seeds.extend(utils.seed_list(seed, n=1000))
 
     def get_next_seed(self):
         """Get next random seed, increment next_seed_idx."""
@@ -137,8 +136,9 @@ class WebotsBlue(MyGym):
 
 
 class WebotsEnv(WebotsBlue):
-    def __init__(self, seed=None, train=False, action_class=DiscreteAction,
-                 reward_class=Reward, observation_func=observation_std,
+    def __init__(self, seed=None, train=False, start_controller=False,
+                 action_class=DiscreteAction, reward_class=Reward,
+                 observation_func=observation_std,
                  config: WebotConfig = WebotConfig()):
         super(WebotsEnv, self).__init__(seed=seed,
                                         action_class=action_class,
@@ -150,10 +150,11 @@ class WebotsEnv(WebotsBlue):
         self._setup_train()
 
         # start external controller
-        self.external_controller = automate.ExtCtrl()
-        self.external_controller.init()
         self.com = communicate.Com(config)
-        self.com.recv()
+        if start_controller is True:
+            self.external_controller = automate.ExtCtrl()
+            self.external_controller.init()
+            self.com.recv()
 
         # init action, reward, observation
         self._init_act_rew_obs(self)
