@@ -8,11 +8,6 @@ import psutil
 
 from Config import WebotConfig
 
-# class WebotConfig():
-#     """NO need fuer aktion, fuell ich selber."""
-#     def __init__(self):
-#         pass
-
 
 class FunctionCode(IntEnum):
     UNDEFINED = -1
