@@ -21,36 +21,6 @@ class Reward(object):
 
 
 class Reward2(Reward):
-    def __init__(self, env):
-        super(Reward2, self).__init__(env)
-        self.reward_range = (-100, 100)
-    
-    def calc(self):
-        if self.gps_actual == self.gps_target:
-            reward = 100
-        else:
-            #distance reward
-            dist_max = np.sqrt(2)*self.com.N
-            dist_penalty = self.get_target_distance()
-            dist_reward = -(dist_penalty/dist_max)**0.4
-
-            #obstacle punishment
-            obst_dist = np.min(self.env.distance_sensor()[1])
-            radius = 3
-            if obst_dist < radius:
-                obstacle_reward = 1-(dist_penalty/radius)**0.4
-            else:
-                obstacle_reward = 0
-
-            reward = dist_max*(dist_reward - obstacle_reward)
-            #crash
-            if self.env.state_object.touching:
-                reward = reward - 100
-
-        return reward
-
-
-class Reward3(Reward):
     def __init__(self.env):
         self.env = env
         self.reward_range = {100,-100}
@@ -85,7 +55,7 @@ class Reward3(Reward):
         return reward
 
 
-class Reward4(Reward):
+class Reward3(Reward):
     def __init__(self, env):
         super(Reward2, self).__init__(env)
         self.reward_range = (-100, 100)
@@ -101,12 +71,17 @@ class Reward4(Reward):
             dist_reward = - (dist_penalty/dist_max)**0.4
 
             #obstacle punishment
-            obst_dist = np.min(self.env.distance_sensor()[1])
             radius = 3
-            if obst_dist < radius:
-                obstacle_reward = 1-(dist_penalty/radius)**0.4
-            else:
+            #if the target is too near to an obstacle
+            if self.get_target_distance() < radius:
                 obstacle_reward = 0
+            else:
+                obst_dist = np.min(self.env.distance_sensor()[1])
+                radius = 3
+                if obst_dist < radius:
+                    obstacle_reward = 1-(dist_penalty/radius)**0.4
+                else:
+                    obstacle_reward = 0
 
             #reward to help round the huge obstacle
             factor = 0.1
