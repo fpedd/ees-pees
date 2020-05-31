@@ -19,7 +19,20 @@ int wb_send(ext_to_wb_msg_t data) {
 
 	int len = tcp_send((char *) &data, sizeof(ext_to_wb_msg_t));
 	if (len < (int) sizeof(ext_to_wb_msg_t)) {
-		fprintf(stderr, "ERROR: wb_send did not send complete data, is %d, should %ld \n",
+		fprintf(stderr, "WB_COM: wb_send did not send complete data, is %d, should %ld \n",
+		       len, sizeof(ext_to_wb_msg_t));
+	}
+
+	return 0;
+}
+
+int wb_recv_init(init_to_ext_msg_t *data){
+
+	memset(data, 0, sizeof(init_to_ext_msg_t));
+
+	int len = tcp_recv((char *)data, sizeof(init_to_ext_msg_t));
+	if (len != (int) sizeof(init_to_ext_msg_t)) {
+		fprintf(stderr, "WB_COM: wb_recv did not receive complete data, is %d, should %ld \n",
 		       len, sizeof(ext_to_wb_msg_t));
 	}
 
@@ -33,8 +46,8 @@ int wb_recv(wb_to_ext_msg_t *data) {
 
 	int len = tcp_recv((char *)data, sizeof(wb_to_ext_msg_t));
 	if (len != (int) sizeof(wb_to_ext_msg_t)) {
-		fprintf(stderr, "ERROR: wb_recv did not receive complete data, is %d, should %ld \n",
-		       len, sizeof(ext_to_wb_msg_t));
+		fprintf(stderr, "WB_COM: wb_recv did not receive complete data, is %d, should %ld \n",
+		       len, sizeof(wb_to_ext_msg_t));
 	}
 
 	return 0;

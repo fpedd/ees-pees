@@ -29,21 +29,15 @@ double get_time() {
 	return (double)time_raw.tv_sec + ((double)time_raw.tv_nsec / (double)1000000000);
 }
 
-double heading_in_degrees(double x, double y, double z) {
+double heading_in_norm(double x, double y, double z) {
 
-	double rad = atan2(x, z);
-	double heading = (rad-M_PI/2) * 180.0  / M_PI;
-
-	if (heading < 0.0) {
-		heading = heading + 360.0;
-	}
+	double heading = -atan2(z, x) / M_PI;
 
 	// Error check
-	if (heading < 0.0 || heading >= 360.0) {
+	if (heading < -1.0 || heading > 1.0) {
 		printf("UTIL: Error calculating heading. Heading = %f. y= %f\n", heading, y);
 		return -1.0;
 	}
-
 
 	return heading;
 }

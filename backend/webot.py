@@ -26,6 +26,7 @@ class WebotState(object):
 
         print("pending transmission")
         self.buffer = buffer
+        print(len(buffer))
         if self.transmission_success:
             print("transmission success")
             self.sim_time = struct.unpack('f', buffer[16:20])[0]
@@ -42,6 +43,10 @@ class WebotState(object):
             # self.heading = struct.unpack('f', buffer[40:44])[0]
             # self.touching = struct.unpack("I", buffer[44:48])[0]
             # self.distance = struct.unpack("{}f".format(self.num_lidar), buffer[48: (48 + self.num_lidar*4)])
+
+    def get_distance(self, absolute=False):
+        # TODO: mapping absolute and relative lidar stuff with heading
+        return self.distance
 
     def get(self):
         """Get webot state as numpy array."""
@@ -115,9 +120,9 @@ class WebotAction(object):
     @heading.setter
     def heading(self, value):
         if value < -1:
-            value = -1
-        if value > 1:
-            value = 1
+            value = 2 + value
+        elif value > 1:
+            value = -2 + value
         self._heading = value
 
     @property

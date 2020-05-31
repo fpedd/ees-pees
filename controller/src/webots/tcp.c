@@ -43,6 +43,11 @@ int tcp_init() {
 		return tcp_socket_fd;
 	}
 
+	if (setsockopt(tcp_socket_fd, SOL_SOCKET, SO_REUSEADDR, &(int){1}, sizeof(int)) < 0) {
+		fprintf(stderr, "ERROR: udp init setsockopt reuse failed '%s'\n", strerror(errno));
+		return -3;
+	}
+
 	//bind socket to address
 	int bind_stat = bind(tcp_socket_fd, server_info->ai_addr, server_info->ai_addrlen);
 	if (bind_stat != 0) {

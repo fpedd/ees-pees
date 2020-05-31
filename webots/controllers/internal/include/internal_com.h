@@ -1,12 +1,12 @@
-#ifndef WB_COM_H
-#define WB_COM_H
+#ifndef INTERNAL_COM_H
+#define INTERNAL_COM_H
 
 #define DIST_VECS    360
 
 // webot --> external controller
 typedef struct {
-	double sim_time;              // current simulation time
-	double current_speed;         // current robot speed
+	double sim_time;              // current simulation time [if requested]
+	double current_speed;         // current robot speed [if requested]
 	double actual_gps[3];         // coordiantes where the robot is
 	double compass[3];            // direction the front of the robot points in
 	float distance[DIST_VECS];    // distance to the next object from robot prespective
@@ -27,15 +27,13 @@ typedef struct {
 	double target_gps[3];     // coodinates of the target
 }__attribute__((packed)) init_to_ext_msg_t;
 
-void wb_init_com();
+int internal_connect();
 
-int wb_send(ext_to_wb_msg_t data);
+int internal_send_init(init_to_ext_msg_t data);
 
-int wb_recv_init(init_to_ext_msg_t *data);
+int internal_send(wb_to_ext_msg_t data);
 
-int wb_recv(wb_to_ext_msg_t *data);
-
-void wb_test_com();
+int internal_recv(ext_to_wb_msg_t *data);
 
 
-#endif // WB_COM_H
+#endif //INTERNAL_COM_H
