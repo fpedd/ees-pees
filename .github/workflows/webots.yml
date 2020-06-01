@@ -13,7 +13,10 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - name: install-webots
+      shell: bash
+      run: sudo apt install webots
     - name: make
-      run: echo This is just dummy test # make clean all
       shell: bash
       working-directory: webots/controllers/internal
+      run: make clean all
