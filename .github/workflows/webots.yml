@@ -18,11 +18,11 @@ jobs:
       run: sudo snap install webots
     - name: set-path
       shell: bash
-      # run: echo 'export WEBOTS_HOME=/snap/webots/current/usr/share/webots:$WEBOTS_HOME' >> $BASH_ENV
+      run: echo "::set-env name=WEBOTS_HOME::/snap/webots/current/usr/share/webots"
     - name: make
       shell: bash
       working-directory: webots/controllers/internal
       run: make clean all
-      env:
-          WEBOTS_HOME: /snap/webots/current/usr/share/webots
-          LD_LIBRARY_PATH: /snap/webots/current/usr/share/webots/lib/controller
+      # env:
+      #     WEBOTS_HOME: /snap/webots/current/usr/share/webots
+      #     LD_LIBRARY_PATH: /snap/webots/current/usr/share/webots/lib/controller
