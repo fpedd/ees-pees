@@ -85,35 +85,20 @@ int main() {
 
 	/**************** COMMUNICATION END **********************/
 
+	//---TODO AREA -- reset performed in here if necessary and keep in mind, that reset needs a time step
 
-
-
-	const int seed = time(NULL);
-	srand(seed);
-
-	WbNodeRef objects_group_node = wb_supervisor_node_get_from_def("Objects");
-	WbFieldRef group_children_field = wb_supervisor_node_get_field(objects_group_node, "children");
-
-	rand_place_obstacles(19, group_children_field);
-
-	int c = 0;
 
 	if (timestep == 0)
 	timestep = 1;
 	while (wb_robot_step(timestep) != -1) {
 		//const double current_time = wb_robot_get_time();
-		// Generate a world every 60 timesteps for testing purposes
-		if(c >= 60) {
-			c = 0;
-			wb_supervisor_simulation_reset();
-		} else if (c == 0) {
-			rand_place_obstacles(19, group_children_field);
-			c++;
-		} else {
-			c++;
-		}
 	};
-
+	//wb_supervisor_simulation_quit(EXIT_SUCCESS); //terminates the program/leave while loop
+	
+	//----TODO AREA END
+	// Termination routine should only be down here
+	
+	//sv_simulation_cleanup();
 	wb_robot_cleanup();
 
 	return EXIT_SUCCESS;
