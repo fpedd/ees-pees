@@ -17,15 +17,10 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
-      - run: pip install pylint  # -r requirements.txt
-      - run: pylint backend/webot.py
+      - name: install-pylint
+        run: pip install pylint
+      - name: pylint webot
+        working-directory: backend
+        run: pylint webot.py
 
         
-
-    # - name: install wheel
-    #   run: pip install wheel
-    # - name: install pylint
-    #   run: pip install pylint
-    #- name: lint fabian_test.py
-    #  working-directory: backend
-    #  run: pylint fabian_test.py
