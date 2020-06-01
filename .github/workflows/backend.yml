@@ -15,10 +15,11 @@ jobs:
     runs-on: ubuntu-18.04
     steps:
     - uses: actions/checkout@v2
-    - name: install wheel
-      run: pip install wheel
-    - name: install pylint
-      run: pip install pylint
+    - uses: ricardochaves/python-lint@v1.1.0
+    # - name: install wheel
+    #   run: pip install wheel
+    # - name: install pylint
+    #   run: pip install pylint
     - name: lint fabian_test.py
       working-directory: backend
       run: pylint fabian_test.py
