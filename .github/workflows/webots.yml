@@ -15,7 +15,7 @@ jobs:
     - uses: actions/checkout@v2
     - name: install-webots
       shell: bash
-      run: sudo apt install webots
+      run: sudo snap install webots
     - name: make
       shell: bash
       working-directory: webots/controllers/internal
