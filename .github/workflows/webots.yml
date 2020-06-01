@@ -20,6 +20,6 @@ jobs:
       shell: bash
       working-directory: webots/controllers/internal
       run: make clean all
-      enviroment:
-          WEBOTS_HOME: /snap/webots/current/usr/share/webots
-          LD_LIBRARY_PATH: /snap/webots/current/usr/share/webots/lib/controller
+      # enviroment:
+      #     WEBOTS_HOME: /snap/webots/current/usr/share/webots
+      #     LD_LIBRARY_PATH: /snap/webots/current/usr/share/webots/lib/controller
