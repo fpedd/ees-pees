@@ -22,7 +22,7 @@ jobs:
     - name: make
       shell: bash
       working-directory: webots/controllers/internal
-      run: make clean all
+      run: make
       # env:
       #     WEBOTS_HOME: /snap/webots/current/usr/share/webots
       #     LD_LIBRARY_PATH: /snap/webots/current/usr/share/webots/lib/controller
