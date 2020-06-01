@@ -2,12 +2,16 @@ name: webots
 
 on:
   push:
-    branches: [ master ]
+    branches:
+      - master
+      - webots
   pull_request:
-    branches: [ master ]
+    branches:
+      - master
+      - webots
 
 jobs:
-  build:
+  build-internal:
 
     runs-on: ubuntu-latest
 
@@ -23,6 +27,20 @@ jobs:
       shell: bash
       working-directory: webots/controllers/internal
       run: make
-      # env:
-      #     WEBOTS_HOME: /snap/webots/current/usr/share/webots
-      #     LD_LIBRARY_PATH: /snap/webots/current/usr/share/webots/lib/controller
+
+  build-internal:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: install-webots
+      shell: bash
+      run: sudo snap install webots
+    - name: set-path
+      shell: bash
+      run: echo "::set-env name=WEBOTS_HOME::/snap/webots/current/usr/share/webots"
+    - name: make
+      shell: bash
+      working-directory: webots/controllers/supervisor
+      run: make
