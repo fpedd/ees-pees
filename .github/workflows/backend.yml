@@ -15,11 +15,11 @@ jobs:
     runs-on: ubuntu-18.04
     steps:
     - uses: actions/checkout@v2
-    - name: install-pycodestyle
-      run: pip install pycodestyle
-    - name: test pycodestyle
+    - name: install-pylint
+      run: pip install pylint
+    - name: test pylint
       working-directory: backend
-      run: pycodestyle webot.py
+      run: pylint webot.py
 
 
     # - name: install wheel
