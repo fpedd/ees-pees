@@ -11,7 +11,8 @@ on:
       - webots
 
 jobs:
-  setup-env:
+
+  build-internal:
     runs-on: ubuntu-latest
 
     steps:
@@ -19,20 +20,10 @@ jobs:
     - name: install-webots
       shell: bash
       run: sudo snap install webots
-
-  build-internal:
-    runs-on: ubuntu-latest
-    - needs: setup-env
-
-    steps:
-    - uses: actions/checkout@v2
-    # - name: install-webots
-    #   shell: bash
-    #   run: sudo snap install webots
     - name: set-path
       shell: bash
       run: echo "::set-env name=WEBOTS_HOME::/snap/webots/current/usr/share/webots"
-    - name: make
+    - name: make-interal
       shell: bash
       working-directory: webots/controllers/internal
       run: make
@@ -40,17 +31,16 @@ jobs:
 
   build-supervisor:
     runs-on: ubuntu-latest
-    - needs: setup-env
 
     steps:
     - uses: actions/checkout@v2
-    # - name: install-webots
-    #   shell: bash
-    #   run: sudo snap install webots
+    - name: install-webots
+      shell: bash
+      run: sudo snap install webots
     - name: set-path
       shell: bash
       run: echo "::set-env name=WEBOTS_HOME::/snap/webots/current/usr/share/webots"
-    - name: make
+    - name: make-supervisor
       shell: bash
       working-directory: webots/controllers/supervisor
       run: make
