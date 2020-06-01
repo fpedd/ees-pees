@@ -18,7 +18,8 @@ jobs:
     - name: install-pycodestyle
       run: pip install pycodestyle
     - name: test pycodestyle
-      run: pycodestyle test_script.py
+      working-directory: backend
+      run: pycodestyle webot.py
 
 
     # - name: install wheel
