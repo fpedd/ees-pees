@@ -15,6 +15,9 @@ jobs:
     runs-on: ubuntu-18.04
     steps:
     - uses: actions/checkout@v2
+    - name: install pylint
+      working-directory: backend
+      run: pip install pylint
     - name: lint fabian_test.py
       working-directory: backend
       run: pylint fabian_test.py
