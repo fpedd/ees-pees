@@ -9,7 +9,6 @@
 #include "webots/wb_com.h"
 #include "util.h"
 
-sadfasdlfkjlkasdflköjsdlksadf
 
 int main(int argc, char **argv) {
 
