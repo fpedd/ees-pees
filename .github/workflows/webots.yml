@@ -12,7 +12,6 @@ on:
 
 jobs:
   build-internal:
-
     runs-on: ubuntu-latest
 
     steps:
@@ -28,8 +27,8 @@ jobs:
       working-directory: webots/controllers/internal
       run: make
 
-  build-internal:
 
+  build-supervisor:
     runs-on: ubuntu-latest
 
     steps:
