@@ -29,18 +29,15 @@ jobs:
       # - name: pylint Config
       #   working-directory: backend
       #   run: pylint Config.py --disable=missing-docstring || pylint-exit -efail $?
-      # - name: pylint Observation
-      #   working-directory: backend
-      #   run: pylint Observation.py --disable=missing-docstring || pylint-exit -efail $?
-      # - name: pylint webot
-      #   working-directory: backend
-      #   run: pylint webot.py --disable=missing-docstring --extension-pkg-whitelist=numpy || pylint-exit -efail $?
+      - name: pylint Observation
+        working-directory: backend
+        run: pylint Observation.py --disable=missing-docstring || pylint-exit -efail $?
       # - name: pylint Reward
       #   working-directory: backend
       #   run: pylint Reward.py --disable=missing-docstring --extension-pkg-whitelist=numpy || pylint-exit -efail $?
       # - name: pylint automate
       #   working-directory: backend
-      #   run: pylint automate.py --disable=missing-docstring || pylint-exit -efail $?
+      #   run: pylint automate.py --disable=missing-docstring --extension-pkg-whitelist=numpy|| pylint-exit -efail $?
       # - name: pylint communicate
       #   working-directory: backend
       #   run: pylint communicate.py --disable=missing-docstring --extension-pkg-whitelist=numpy || pylint-exit -efail $?
@@ -50,11 +47,12 @@ jobs:
       # - name: pylint james
       #   working-directory: backend
       #   run: pylint james.py --disable=missing-docstring || pylint-exit -efail $?
-
-
-
-
-
+      # - name: pylint utils
+      #   working-directory: backend
+      #   run: pylint utils.py --disable=missing-docstring --extension-pkg-whitelist=numpy || pylint-exit -efail $?
+      # - name: pylint webot
+      #   working-directory: backend
+      #   run: pylint webot.py --disable=missing-docstring --extension-pkg-whitelist=numpy || pylint-exit -efail $?
 
   Pytest:
     runs-on: ubuntu-18.04
