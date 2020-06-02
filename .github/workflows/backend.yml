@@ -15,6 +15,7 @@ jobs:
     runs-on: ubuntu-18.04
     steps:
       - uses: actions/checkout@v2
+<<<<<<< HEAD
       - uses: actions/setup-python@v2
       - name: install pylint
         run: pip install pylint
@@ -36,5 +37,15 @@ jobs:
   #       run: test.py
   
 
+=======
+      #- uses: actions/setup-python@v2
+      #- name: install-pylint
+      #  run: pip install pylint
+      #- name: pylint webot
+      #  working-directory: backend
+      #  run: pylint webot.py
+        
+        
+>>>>>>> 6a64de65731eb460e7be323b547c8cc139e38f93
 
         
