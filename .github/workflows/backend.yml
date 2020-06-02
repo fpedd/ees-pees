@@ -22,6 +22,8 @@ jobs:
         run: pip install pylint-exit
       - name: install numpy
         run: pip install numpy
+      - name: install flake8_docstrings
+        run: pip install flake8_docstrings
 
       # - name: pylint Action
       #   working-directory: backend
@@ -34,7 +36,7 @@ jobs:
         run: pylint Observation.py || pylint-exit -efail $?
       - name: pylint webot
         working-directory: backend
-        run: pylint webot.py || pylint-exit -efail $?
+        run: pylint webot.py --ignore C0116|| pylint-exit -efail $?
       # - name: pylint Reward
       #   working-directory: backend
       #   run: pylint Reward.py || pylint-exit $?
