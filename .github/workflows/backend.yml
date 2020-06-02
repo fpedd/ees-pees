@@ -34,7 +34,10 @@ jobs:
         run: pylint Observation.py || pylint-exit -efail $?
       - name: pylint webot
         working-directory: backend
-        run: pylint webot.py --disable=missing-function-docstring|| pylint-exit -efail $?
+        run: pylint webot.py 
+        --disable=missing-function-docstring 
+        --disable=missing-method-docstring 
+        --disable=missing-class-docstring || pylint-exit -efail $?
       # - name: pylint Reward
       #   working-directory: backend
       #   run: pylint Reward.py || pylint-exit $?
