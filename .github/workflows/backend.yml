@@ -29,9 +29,9 @@ jobs:
       # - name: pylint Config
       #   working-directory: backend
       #   run: pylint Config.py --disable=missing-docstring || pylint-exit -efail $?
-      # - name: pylint Observation
-      #   working-directory: backend
-      #   run: pylint Observation.py --disable=missing-docstring || pylint-exit -efail $?
+      - name: pylint Observation
+        working-directory: backend
+        run: pylint Observation.py --disable=missing-docstring || pylint-exit -efail $?
       # - name: pylint Reward
       #   working-directory: backend
       #   run: pylint Reward.py --disable=missing-docstring --extension-pkg-whitelist=numpy || pylint-exit -efail $?
