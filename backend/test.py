@@ -5,9 +5,9 @@ class test_class1:
         x = "this"
         assert "h" in x
 
-    # def test_fail(self):
-    #     x = "hello"
-    #     assert hasattr(x, "check")
+    def test_fail(self):
+        x = "hello"
+        assert hasattr(x, "check")
 
 class test_class2:
     def test_pass02(self):
