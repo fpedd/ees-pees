@@ -25,49 +25,47 @@ jobs:
 
       # - name: pylint Action
       #   working-directory: backend
-      #   run: pylint Action.py || pylint-exit $?
+      #   run: pylint Action.py --disable=missing-docstring --extension-pkg-whitelist=numpy || pylint-exit -efail $?
       # - name: pylint Config
       #   working-directory: backend
-      #   run: pylint Config.py || pylint-exit $?
-      - name: pylint Observation
-        working-directory: backend
-        run: pylint Observation.py || pylint-exit -efail $?
-      - name: pylint webot
-        working-directory: backend
-        run: pylint webot.py --disable=missing-docstring --extension-pkg-whitelist=numpy || pylint-exit -efail $?
+      #   run: pylint Config.py --disable=missing-docstring || pylint-exit -efail $?
+      # - name: pylint Observation
+      #   working-directory: backend
+      #   run: pylint Observation.py --disable=missing-docstring || pylint-exit -efail $?
+      # - name: pylint webot
+      #   working-directory: backend
+      #   run: pylint webot.py --disable=missing-docstring --extension-pkg-whitelist=numpy || pylint-exit -efail $?
       # - name: pylint Reward
       #   working-directory: backend
-      #   run: pylint Reward.py || pylint-exit $?
+      #   run: pylint Reward.py --disable=missing-docstring --extension-pkg-whitelist=numpy || pylint-exit -efail $?
       # - name: pylint automate
       #   working-directory: backend
-      #   run: pylint automate.py || pylint-exit $?
+      #   run: pylint automate.py --disable=missing-docstring || pylint-exit -efail $?
       # - name: pylint communicate
       #   working-directory: backend
-      #   run: pylint communicate.py || pylint-exit $?
+      #   run: pylint communicate.py --disable=missing-docstring || pylint-exit -efail $?
       # - name: pylint environment
       #   working-directory: backend
-      #   run: pylint environment.py || pylint-exit $?
+      #   run: pylint environment.py --disable=missing-docstring --extension-pkg-whitelist=numpy || pylint-exit -efail $?
       # - name: pylint james
       #   working-directory: backend
-      #   run: pylint james.py || pylint-exit $?
-      # - name: pylint test_error
-      #   working-directory: backend
-      #   run: pylint fabian_test.py || pylint-exit -efail $?
+      #   run: pylint james.py --disable=missing-docstring || pylint-exit -efail $?
 
 
 
 
 
-  # Pytest:
-  #   runs-on: ubuntu-18.04
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #     - uses: actions/setup-python@v2
-  #     - name: install-pytest
-  #       run: pip install pytest
-  #     - name: pytest
-  #       working-directory: backend
-  #       run: test.py
+
+  Pytest:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+      - name: install-pytest
+        run: pip install pytest
+      - name: pytest
+        working-directory: backend
+        run: pytest -q
   
 
 
