@@ -65,7 +65,7 @@ jobs:
         run: pip install pytest
       - name: pytest
         working-directory: backend
-        run: pytest -q
+        run: pytest -q test.py
   
 
 
