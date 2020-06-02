@@ -2,6 +2,7 @@ import time
 import automate
 import subprocess
 
+gresgresuigfi
 w = automate.WebotCtrl()
 print("init")
 w.init()
