@@ -20,6 +20,8 @@ jobs:
         run: pip install pylint
       - name: install pylint-exit
         run: pip install pylint-exit
+      - name: install numpy
+        run: pip install numpy
 
       # - name: pylint Action
       #   working-directory: backend
@@ -32,9 +34,7 @@ jobs:
         run: pylint Observation.py || pylint-exit -efail $?
       - name: pylint webot
         working-directory: backend
-        run: 
-          pylint disable=missing-function-docstring
-          pylint webot.py || pylint-exit -efail $?
+        run: pylint webot.py || pylint-exit -efail $?
       # - name: pylint Reward
       #   working-directory: backend
       #   run: pylint Reward.py || pylint-exit $?
