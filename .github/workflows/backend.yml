@@ -20,9 +20,7 @@ jobs:
         run: pip install pylint
       - name: install pylint-exit
         run: pip install pylint-exit
-      # - name: pylint webot
-      #   working-directory: backend
-      #   run: pylint webot.py || pylint-exit -efail $?
+
       # - name: pylint Action
       #   working-directory: backend
       #   run: pylint Action.py || pylint-exit $?
@@ -32,6 +30,9 @@ jobs:
       - name: pylint Observation
         working-directory: backend
         run: pylint Observation.py || pylint-exit -efail $?
+      - name: pylint webot
+        working-directory: backend
+        run: pylint webot.py || pylint-exit -efail $?
       # - name: pylint Reward
       #   working-directory: backend
       #   run: pylint Reward.py || pylint-exit $?
