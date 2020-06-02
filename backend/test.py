@@ -1,7 +1,10 @@
 import pytest
 
-def test_001():
-    assert  1+1 == 2
+class TestClass:
+    def test_one(self):
+        x = "this"
+        assert "h" in x
 
-def test_002():
-    assert  2+3 == 4
+    def test_two(self):
+        x = "hello"
+        assert hasattr(x, "check")

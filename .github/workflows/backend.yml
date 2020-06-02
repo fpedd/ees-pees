@@ -43,7 +43,7 @@ jobs:
       #   run: pylint automate.py --disable=missing-docstring || pylint-exit -efail $?
       # - name: pylint communicate
       #   working-directory: backend
-      #   run: pylint communicate.py --disable=missing-docstring || pylint-exit -efail $?
+      #   run: pylint communicate.py --disable=missing-docstring --extension-pkg-whitelist=numpy || pylint-exit -efail $?
       # - name: pylint environment
       #   working-directory: backend
       #   run: pylint environment.py --disable=missing-docstring --extension-pkg-whitelist=numpy || pylint-exit -efail $?
