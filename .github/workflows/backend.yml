@@ -12,15 +12,29 @@ on:
 
 jobs:
   Pylint:
-    #runs-on: ubuntu-latest
     runs-on: ubuntu-18.04
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
-      - name: install-pylint
+      - name: install pylint
         run: pip install pylint
+      - name: install pylint-exit
+        run: pip install pylint-exit
       - name: pylint webot
         working-directory: backend
-        run: pylint webot.py
+        run: pylint webot.py || pylint-exit $?
+
+  # Pytest:
+  #   runs-on: ubuntu-18.04
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - uses: actions/setup-python@v2
+  #     - name: install-pytest
+  #       run: pip install pytest
+  #     - name: pytest
+  #       working-directory: backend
+  #       run: test.py
+  
+
 
         
