@@ -3,6 +3,9 @@ import pickle
 import time
 
 
+# =========================================================================
+# ==========================        SEEDING       =========================
+# =========================================================================
 def np_random_seed(set=True):
     """Use current time to set seed to something random."""
     t = 1000 * time.time()
@@ -20,12 +23,9 @@ def seed_list(seed, n=100, low=0, high=10**6):
     return seeds
 
 
-def id_in_range(low, high, num_of_actions, value):
-    """Find index of value between low and high."""
-    bins = np.linspace(low, high, num_of_actions + 1)
-    return np.digitize(value, bins) - 1
-
-
+# =========================================================================
+# ==========================      SAVE/LOAD       =========================
+# =========================================================================
 def save_object(obj, path):
     """Save object via pickle."""
     filehandler = open(path, 'wb')
@@ -38,6 +38,9 @@ def load_object(path):
     return (pickle.load(filehandler))
 
 
+# =========================================================================
+# ==========================         MISC         =========================
+# =========================================================================
 def euklidian_distance(source, target):
     xs, ys = source
     xt, yt = target
@@ -51,6 +54,15 @@ def add_tuples(t1, t2):
     arr2 = np.array(t2)
     arr = arr1 + arr2
     return tuple(arr)
+
+
+# =========================================================================
+# ==========================   FAKE ENVIRONMENT   =========================
+# =========================================================================
+def id_in_range(low, high, num_of_actions, value):
+    """Find index of value between low and high."""
+    bins = np.linspace(low, high, num_of_actions + 1)
+    return np.digitize(value, bins) - 1
 
 
 def get_line(start, end):
