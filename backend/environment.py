@@ -1,40 +1,46 @@
 import numpy as np
-import matplotlib.pyplot as plt
-import abc
 import gym
-import time
-
 import utils
 import communicate
 import automate
 
 from Config import WebotConfig
-from Action import DiscreteAction, ContinuousAction
+from Action import DiscreteAction
 from Reward import Reward
 from Observation import observation_std
 
 
-class MyGym(gym.Env):
-    def __init__(self, seed):
-        super(MyGym, self).__init__()
+class WebotsEnv(gym.Env):
+    def __init__(self, seed=None, train=False, start_controller=False,
+                 action_class=DiscreteAction, reward_class=Reward,
+                 observation_func=observation_std,
+                 config: WebotConfig = WebotConfig()):
+        super(WebotsEnv, self).__init__()
         self.set_seed(seed)
 
-    @abc.abstractmethod
-    def reset(self):
-        pass
+        # some general inits
+        self.i = 0
+        self.history = {}
+        self.config = config
 
-    @abc.abstractmethod
-    def step(self):
-        pass
+        # init action, reward, observation
+        self.action_class = action_class
+        self.reward_class = reward_class
+        self.observation_func = observation_func
+        self._init_act_rew_obs(self)
 
-    @abc.abstractmethod
-    def render(self):
-        pass
+        # communication and supervisor
+        self.train = train
+        self._setup_train()
+        self.com = communicate.Com(config)
+        if start_controller is True:
+            self.external_controller = automate.ExtCtrl()
+            self.external_controller.init()
+            self.com.recv()
 
-    @abc.abstractmethod
-    def close(self):
-        pass
-
+    # =========================================================================
+    # ==========================       SEEDING       ==========================
+    # =========================================================================
     def set_seed(self, seed):
         """Set main seed of env + 1000 other seeds for placements."""
         if seed is None:
@@ -54,19 +60,17 @@ class MyGym(gym.Env):
         """Get the main seed of the env, first in seeds (list)."""
         return int(self.seeds[0])
 
+    # =========================================================================
+    # ==========================        SETUPS       ==========================
+    # =========================================================================
+    def _setup_train(self):
+        if self.train is True:
+            # start webots program, establish tcp connection
+            self.supervisor = automate.WebotCtrl(self.config)
+            self.supervisor.init()
 
-class WebotsBlue(MyGym):
-    def __init__(self, seed, action_class, reward_class, observation_func):
-        super(WebotsBlue, self).__init__(seed=seed)
-        self.action_class = action_class
-        self.reward_class = reward_class
-        self.observation_func = observation_func
-        self.i = 0
-        self.history = {}
-
-    def _update_history(self):
-        self.history[self.i] = self.state
-        self.i += 1
+            # start environment and update config
+            self.supervisor.start_env()
 
     def _init_act_rew_obs(self, env):
         # type to instance
@@ -78,6 +82,9 @@ class WebotsBlue(MyGym):
         self.action_space = self.action_class.action_space
         self.reward_range = self.reward_class.reward_range
 
+    # =========================================================================
+    # ==========================         CORE        ==========================
+    # =========================================================================
     def step(self, action):
         """Perform action on environment.
 
@@ -92,27 +99,56 @@ class WebotsBlue(MyGym):
         # return self.state, reward, done, {}
         return self.observation, reward, done, {}
 
+    def calc_reward(self):
+        """Calc reward with reward class."""
+        return self.reward_class.calc()
+
+    def check_done(self):
+        """Check done."""
+        # TODO: Part of reward_class?
+        if self.gps_actual == self.gps_target:
+            return True
+        return False
+
+    def reset(self):
+        """Reset environment to random."""
+        if self.supervisor_connected is True:
+            seed = utils.np_random_seed(set=False)
+            self.seed(seed)
+            self.supervisor.start_env(self.main_seed)
+            return self.observation
+
+    def close(self):
+        """Close connection to supervisor and external controller."""
+        if self.supervisor_connected is True:
+            self.supervisor.close()
+            # TODO: sure to close external controller? Does it do harm if left open?
+            self.external_controller.close()
+
+    def render(self):
+        """Render, does nothing just dummy."""
+        pass
+
+    # =========================================================================
+    # ==========================        HELPER       ==========================
+    # =========================================================================
     def send(self, action):
+        """Send action via Com class."""
         self.com.send(action)
 
     def recv(self):
+        """Receive state via Com class."""
         self.com.recv()
         self._update_history()
 
-    def close(self):
-        pass
+    def _update_history(self):
+        """Add current state of Com to history."""
+        self.history[self.i] = self.state
+        self.i += 1
 
     def get_target_distance(self):
         """Calculate euklidian distance to target."""
         return utils.euklidian_distance(self.gps_actual, self.gps_target)
-
-    def calc_reward(self):
-        return self.reward_class.calc()
-
-    def check_done(self):
-        if self.gps_actual == self.gps_target:
-            return True
-        return False
 
     @property
     def observation(self):
@@ -134,53 +170,8 @@ class WebotsBlue(MyGym):
     def gps_target(self):
         return self.com.state.gps_target
 
-
-class WebotsEnv(WebotsBlue):
-    def __init__(self, seed=None, train=False, start_controller=False,
-                 action_class=DiscreteAction, reward_class=Reward,
-                 observation_func=observation_std,
-                 config: WebotConfig = WebotConfig()):
-        super(WebotsEnv, self).__init__(seed=seed,
-                                        action_class=action_class,
-                                        reward_class=reward_class,
-                                        observation_func=observation_func)
-        self.config = config
-
-        self.train = train
-        self._setup_train()
-
-        # start external controller
-        self.com = communicate.Com(config)
-        if start_controller is True:
-            self.external_controller = automate.ExtCtrl()
-            self.external_controller.init()
-            self.com.recv()
-
-        # init action, reward, observation
-        self._init_act_rew_obs(self)
-
-    def _setup_train(self):
-        if self.train is True:
-            # start webots program, establish tcp connection
-            self.supervisor = automate.WebotCtrl(self.config)
-            self.supervisor.init()
-
-            # start environment and update config
-            self.supervisor.start_env()
-
-    def reset(self):
-        if self.supervisor_connection is True:
-            self.supervisor.start_env(self.main_seed)
-            return self.observation
-
-    def close(self):
-        if self.supervisor_connection is True:
-            self.supervisor.close()
-            # TODO: sure to close external controller? Does it do harm if left open?
-            self.external_controller.close()
-
     @property
-    def supervisor_connection(self) -> bool:
+    def supervisor_connected(self) -> bool:
         if self.supervisor is not None and self.supervisor.return_code.value == 0:
             return True
         return False
