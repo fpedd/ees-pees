@@ -32,9 +32,10 @@ class WebotState(object):
             self.sim_time = struct.unpack('f', buffer[16:20])[0]
             self.speed = struct.unpack('f', buffer[20:24])[0]
             self.gps_actual = struct.unpack('2f', buffer[24:32])
-            self.heading = struct.unpack('f', buffer[32:36])[0]
-            self.touching = struct.unpack("I", buffer[36:40])[0]
-            self.distance = struct.unpack("{}f".format(self.num_lidar), buffer[40: (40 + self.num_lidar*4)])
+            self.gps_target = struct.unpack('2f', buffer[32:40])
+            self.heading = struct.unpack('f', buffer[40:44])[0]
+            self.touching = struct.unpack("I", buffer[44:48])[0]
+            self.distance = struct.unpack("{}f".format(self.num_lidar), buffer[48: (48 + self.num_lidar*4)])
 
             # self.sim_time = struct.unpack('f', buffer[16:20])[0]
             # self.speed = struct.unpack('f', buffer[20:24])[0]
