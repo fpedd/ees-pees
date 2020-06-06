@@ -28,7 +28,7 @@ make clean
 ```
 
 ## General functioning
-The external controller consists of two parallely running threads, the webot_worker and the backend_worker. Both of them communicate by using externally defined message structs that are blocked from simultaneous access by mutexes. The general idea is, that the webot_worker receives sensor data from the webot, reformats it to the format the backend needs and puts it into the corresponding struct for the backend_worker to read it. Then it continues to read the values the backend_worker left for it and uses it to do safety logic (TODO), and calculate the new motor controll settings for the webot using a PID controller (TODO). Then it sends the new commands to the webot.
+The external controller consists of two parallely running threads, the webot_worker and the backend_worker. Both of them communicate by using externally defined message structs that are blocked from simultaneous access by mutexes. The general idea is, that the webot_worker receives sensor data from the webot, reformats it to the format the backend needs and puts it into the corresponding struct for the backend_worker to read it. Then it continues to read the values the backend_worker left for it and uses it to do safety logic (TODO), and calculate the new motor controll settings for the webot using a PID controller. Then it sends the new commands to the webot.
 At the same time the backend_worker reads the data it gets from the webot_worker, sends it by UDP to the backend, waits for a response which it then stores for the webot_worker to read again.
 The frequency at which both threads perform their work-loops is no yet controlled or synchronized.
 
@@ -61,7 +61,7 @@ typedef struct {
 ```
 * timestep is the realtime (in ms) that passes in the simulation with each simulated step. It is defined by the webots world. Sensor data does not change in intervalls smaller than this.
 * maxspeed defines the maximum speed the robot motor can drive at. This is used solely to scale the used speeds to a intervall from -1 to 1.
-* lidar min and max range are the ranges in which the lidar detects obstacles. Values below or above this are reported at the lidar_max_range value. These values are subject to noise and can differntiate slightly from the max value though
+* lidar min and max range are the ranges in which the lidar detects obstacles. Values below or above this are reported at the lidar_max_range value. These values are subject to noise and can differentiate slightly from the max value though
 * (TODO) target_gps is not yet inplemented.
 
 ###### webot --> external controller
@@ -82,11 +82,12 @@ typedef struct {
 ###### webot <-- external controller
 ```
 typedef struct {
-	double heading;               // the direction the robot should move in next; between -1 and 1
-	double speed;                 // the speed the robot should drive at; between -1 and 1
+	double heading;               // the direction the robot should move in next
+	double speed;                 // the speed the robot should drive at
 } __attribute__((packed)) ext_to_wb_msg_t;
 ```
-
+* the heading value tells the robot at which angle it positions its back axle. It _can_ range from 0 to 1 but should be between 0,25 and 0,75 to avoid clipping. 0,5 is used to drive straight
+* speed gives the webots motor a value. It should be between -max_speed and +max_speed. Negative numbers mean the robot is driving forwards (ONLY INTERNALLY, values from backend should have the more intuitive positive=forward format)
 
 
 ### Backend

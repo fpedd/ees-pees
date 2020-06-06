@@ -2,18 +2,45 @@ name: webots
 
 on:
   push:
-    branches: [ master ]
+    branches:
+      - master
+      - webots
   pull_request:
-    branches: [ master ]
+    branches:
+      - master
+      - webots
 
 jobs:
-  build:
 
+  build-internal:
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v2
-    - name: make
-      run: echo This is just dummy test # make clean all
+    - name: install-webots
+      shell: bash
+      run: sudo snap install webots
+    - name: set-path
+      shell: bash
+      run: echo "::set-env name=WEBOTS_HOME::/snap/webots/current/usr/share/webots"
+    - name: make-interal
       shell: bash
       working-directory: webots/controllers/internal
+      run: make
+
+
+  build-supervisor:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: install-webots
+      shell: bash
+      run: sudo snap install webots
+    - name: set-path
+      shell: bash
+      run: echo "::set-env name=WEBOTS_HOME::/snap/webots/current/usr/share/webots"
+    - name: make-supervisor
+      shell: bash
+      working-directory: webots/controllers/supervisor
+      run: make
