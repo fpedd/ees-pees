@@ -4,6 +4,9 @@ import numpy as np
 from Config import WebotConfig
 
 
+# =========================================================================
+# ==============================    STATE    ==============================
+# =========================================================================
 class WebotState(object):
     def __init__(self, config: WebotConfig = WebotConfig()):
         # meta
@@ -32,7 +35,13 @@ class WebotState(object):
             self.gps_target = struct.unpack('2f', buffer[32:40])
             self.heading = struct.unpack('f', buffer[40:44])[0]
             self.touching = struct.unpack("I", buffer[44:48])[0]
-            self.distance = struct.unpack("{}f".format(self.num_lidar), buffer[48: (48 + self.num_lidar*4)])
+            self._unpack_distance(buffer)
+
+    def _unpack_distance(self, buffer):
+        from_ = 48
+        to = 48 + self.num_lidar * 4
+        N = self.num_lidar
+        self.distance = struct.unpack("{}f".format(N), buffer[from_: to])
 
     def get_distance(self, absolute=False):
         # TODO: mapping absolute and relative lidar stuff with heading
@@ -83,6 +92,9 @@ class WebotState(object):
         return len(self.heading)
 
 
+# =========================================================================
+# ==============================    ACTION   ==============================
+# =========================================================================
 class WebotAction(object):
     def __init__(self, action=None):
         self._heading = None
