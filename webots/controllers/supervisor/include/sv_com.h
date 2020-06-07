@@ -1,26 +1,36 @@
 #ifndef SV_COM_H
 #define SV_COM_H
 
-#define DIST_VECS    360
+enum function_code {
+	UNDEFINED = -1
+    NO_FUNCTION = 0
+    START = 1
+    RESET = 2
+    CLOSE = 3
+};
+
+enum return_code {
+    UNDEFINED = -1
+    SUCCESS = 0
+    ERROR = 1
+};
 
 // supervisor --> backend
 typedef struct {
-	int return_code;         // return_code [int]
-	float lidar_min_range;   // lidar min range in meter [float]
-	float lidar_max_range;   // lidar max range in meter [float]
-	int sim_time_step;       // simulation time_step in ms [int]
+	enum return_code return_code;   // return_code [enum return_code]
+	int sim_time_step;              // simulation time_step in ms [int]
+	double[2] target;               // target position [double[2]]
 } __attribute__((packed)) sv_to_bcknd_msg_t;
 
 // supervisor <-- backend
 typedef struct {
-	int function_code;    // function code [int]
-	int seed;             // seed [int]
-	int fast_simulation;  // fast_simulation [int]
-	int num_obstacles;    // num_obstacles [int]
-	int world_size;       // world_size in meter [int]
-	float target_x;       // x coordinate of target (in meter)
-	float target_y;       // y coordinate of target (in meter)
+	enum function_code function_code; // function code [enum function_code]
+	int seed;                         // seed [int]
+	int fast_simulation;              // fast_simulation [int]
+	int num_obstacles;                // num_obstacles [int]
+	int world_size;                   // world_size in blocks [int]
 } __attribute__((packed)) bcknd_to_sv_msg_t;
+
 
 int sv_connect();
 
