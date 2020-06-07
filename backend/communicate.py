@@ -1,7 +1,6 @@
 import socket
 import struct
 import time
-import numpy as np
 from enum import Enum
 
 from Config import WebotConfig
@@ -62,7 +61,8 @@ class Com(object):
             self.sock.close()
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_SNDBUF, self.config.PACKET_SIZE)
+        self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_SNDBUF,
+                             self.config.PACKET_SIZE)
         self.sock.bind((self.config.IP, self.config.BACKEND_PORT))
 
     def _update_history(self):
@@ -73,15 +73,15 @@ class Com(object):
         self.packet.buffer, addr = self.sock.recvfrom(self.config.PACKET_SIZE)
         self.state.fill_from_buffer(self.packet.buffer)
 
-        ### TESTING START
-        print("gps[0] ", end = '')
-        print(self.state.gps_actual[0], end = '')
-        print("  gps[1] ", end = '')
+        # TESTING START
+        print("gps[0] ", end='')
+        print(self.state.gps_actual[0], end='')
+        print("  gps[1] ", end='')
         print(self.state.gps_actual[1])
 
         # print(self.state.gps_actual[0])
         # print(self.state.gps_actual[1])
-        ### TESTING END
+        # TESTING END
 
         # if PACKET_SIZE < len(self.packet.buffer):
         #     print("ERROR: recv did not get full packet", len(self.packet.buffer))

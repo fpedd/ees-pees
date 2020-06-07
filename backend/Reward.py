@@ -23,9 +23,7 @@ class Reward(object):
 class Reward2(Reward):
     def __init__(self, env):
         super(Reward2, self).__init__(env)
-        
+
     def calc(self):
         """This will overwrite calc function from Reward()."""
         pass
-
-

@@ -2,7 +2,6 @@ import subprocess
 import socket
 import struct
 import time
-import numpy as np
 from enum import IntEnum
 import psutil
 
@@ -29,7 +28,7 @@ class WebotCtrl():
         self.sock = None
         self.client_sock = None
         self.address = None
-        self.return_code = ReturnCode.SUCCESS
+        self.return_c = ReturnCode.SUCCESS
 
     def init(self):
         self.compile_program()
@@ -48,16 +47,21 @@ class WebotCtrl():
     def compile_program(self):
         self.close_program()
         # clean both controllers in webots
-        subprocess.call(["make", "clean"], cwd="../webots/controllers/supervisor")
-        subprocess.call(["make", "clean"], cwd="../webots/controllers/internal")
+        subprocess.call(["make", "clean"],
+                        cwd="../webots/controllers/supervisor")
+        subprocess.call(["make", "clean"],
+                        cwd="../webots/controllers/internal")
         # compile both controllers in webots
-        subprocess.call(["make", "all"], cwd="../webots/controllers/supervisor")
-        subprocess.call(["make", "all"], cwd="../webots/controllers/internal")
+        subprocess.call(["make", "all"],
+                        cwd="../webots/controllers/supervisor")
+        subprocess.call(["make", "all"],
+                        cwd="../webots/controllers/internal")
 
     def start_program(self):
         if self.is_program_started() is False:
             # start webots with the path of the world as argument
-            subprocess.Popen(["webots", "../webots/worlds/testworld_prototype.wbt"])
+            subprocess.Popen(["webots",
+                              "../webots/worlds/testworld_prototype.wbt"])
 
     def close_program(self):
         if self.is_program_started() is True:
@@ -102,7 +106,7 @@ class WebotCtrl():
 
     def get_metadata(self):
         buffer = self.client_sock.recv(self.config.PACKET_SIZE_S)
-        self.return_code = struct.unpack('i', buffer[0:4])[0]
+        self.return_c = struct.unpack('i', buffer[0:4])[0]
         self.config.lidar_min_range = struct.unpack('f', buffer[4:8])[0]
         self.config.lidar_max_range = struct.unpack('f', buffer[8:12])[0]
         self.config.sim_time_step = struct.unpack('i', buffer[12:16])[0]
@@ -119,7 +123,7 @@ class WebotCtrl():
 
     def print(self):
         print("===== WebotCtrl =====")
-        print("return_code", self.return_code)
+        print("return_c", self.return_c)
         print("lidar_min_range", self.lidar_min_range)
         print("lidar_max_range", self.lidar_max_range)
         print("sim_time_step", self.sim_time_step)
