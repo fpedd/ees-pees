@@ -24,11 +24,8 @@ class WebotState(object):
         Fills state information of transmission was success.
         """
 
-        print("pending transmission")
         self.buffer = buffer
-        print(len(buffer))
         if self.transmission_success:
-            print("transmission success")
             self.sim_time = struct.unpack('f', buffer[16:20])[0]
             self.speed = struct.unpack('f', buffer[20:24])[0]
             self.gps_actual = struct.unpack('2f', buffer[24:32])
