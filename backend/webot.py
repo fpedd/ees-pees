@@ -37,24 +37,19 @@ class WebotState(object):
             self.touching = struct.unpack("I", buffer[44:48])[0]
             self.distance = struct.unpack("{}f".format(self.num_lidar), buffer[48: (48 + self.num_lidar*4)])
 
-            # self.sim_time = struct.unpack('f', buffer[16:20])[0]
-            # self.speed = struct.unpack('f', buffer[20:24])[0]
-            # self.gps_actual = struct.unpack('2f', buffer[24:32])
-            # self.gps_target = struct.unpack('2f', buffer[32:40])
-            # self.heading = struct.unpack('f', buffer[40:44])[0]
-            # self.touching = struct.unpack("I", buffer[44:48])[0]
-            # self.distance = struct.unpack("{}f".format(self.num_lidar), buffer[48: (48 + self.num_lidar*4)])
-
     def get_distance(self, absolute=False):
         # TODO: mapping absolute and relative lidar stuff with heading
         return self.distance
 
     def get(self):
         """Get webot state as numpy array."""
-        # TODO: update here nur sim time, speed etc zu nehmen ...
         arr = np.empty(0)
-        for v in self.__dict__.values():
-            arr = np.hstack((arr, np.array(v)))
+        arr = np.hstack((arr, np.array(self.sim_time)))
+        arr = np.hstack((arr, np.array(self.gps_actual)))
+        arr = np.hstack((arr, np.array(self.gps_target)))
+        arr = np.hstack((arr, np.array(self.heading)))
+        arr = np.hstack((arr, np.array(self.touching)))
+        arr = np.hstack((arr, np.array(self.distance)))
         return arr
 
     @property
@@ -89,13 +84,6 @@ class WebotState(object):
         if self.heading is None:
             return None
         return len(self.heading)
-
-    # @property
-    # def observation_shape(self):
-    #     if self.state_filled:
-    #         arr = self.get()
-    #         return arr.shape
-    #     return None
 
 
 class WebotAction(object):
