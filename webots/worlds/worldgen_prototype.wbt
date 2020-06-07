@@ -4,7 +4,7 @@ WorldInfo {
 Viewpoint {
   orientation 0.0018573061566430715 -0.7585985591106043 -0.6515556588113985 3.1360029093136994
   position 0.6159831175268526 4.431210182916333 0.1729851075802693
-  follow "botty"
+  follow "smitty"
   followType "None"
 }
 TexturedBackground {
@@ -15,10 +15,10 @@ DEF Arena RectangleArena {
   translation 1 0 1
   floorSize 2 2
 }
-TinkerbotsBase {
+DEF Smitty TinkerbotsBase {
   translation 0.125 0.03 0.125
   rotation 0 1 0 0
-  name "botty"
+  name "smitty"
   controller "internal"
   downSlot TinkerbotsPivot {
     rotation 0 0 1 1.5707996938995747
@@ -67,29 +67,26 @@ TinkerbotsBase {
     }
   ]
 }
-DEF Objects Group {
+DEF Obstacles Group {
+}
+DEF Target Solid {
+  translation 0.125 0.005 0.125
+  scale 2.505 2.505 2.505
   children [
-    Solid {
-      translation 0.125 0.005 0.125
-      scale 2.505 2.505 2.505
-      children [
-        DEF block_shape Shape {
-          appearance GlossyPaint {
-            baseColor 0 1 0
-          }
-          geometry Box {
-            size 0.1 0.005 0.1
-          }
-        }
-      ]
-      name "goal"
+    DEF block_shape Shape {
+      appearance GlossyPaint {
+        baseColor 0 1 0
+      }
+      geometry Box {
+        size 0.1 0.005 0.1
+      }
     }
   ]
+  name "goal"
 }
-DEF Robo Robot {
+Robot {
   name "obstacle_placer"
   locked TRUE
   controller "supervisor"
   supervisor TRUE
-  synchronization FALSE
 }
