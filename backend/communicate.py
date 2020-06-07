@@ -8,6 +8,9 @@ from Config import WebotConfig
 from webot import WebotState, WebotAction
 
 
+# =========================================================================
+# ==========================       PACKET        ==========================
+# =========================================================================
 class PacketError(Enum):
     UNITILIZED = -1
     NO_ERROR = 0
@@ -40,6 +43,9 @@ class Packet(object):
         return False
 
 
+# =========================================================================
+# ==========================    COMMUNICATION    ==========================
+# =========================================================================
 class Com(object):
     def __init__(self, config: WebotConfig = WebotConfig()):
         self.config = config
