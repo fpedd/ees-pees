@@ -2,22 +2,23 @@
 WorldInfo {
 }
 Viewpoint {
-  orientation -0.0025520317866880513 -0.7642550668172812 -0.6449090478337801 3.1255269950869913
-  position -0.10327095606033732 7.390209306303588 -1.4674520549179524
-  follow "botty"
+  orientation 0.0018573061566430715 -0.7585985591106043 -0.6515556588113985 3.1360029093136994
+  position 0.6159831175268526 4.431210182916333 0.1729851075802693
+  follow "smitty"
   followType "None"
 }
 TexturedBackground {
 }
 TexturedBackgroundLight {
 }
-RectangleArena {
-  floorSize 5 5
+DEF Arena RectangleArena {
+  translation 1 0 1
+  floorSize 2 2
 }
-TinkerbotsBase {
-  translation 1.5 0.03 1.5
+DEF Smitty TinkerbotsBase {
+  translation 0.125 0.03 0.125
   rotation 0 1 0 0
-  name "botty"
+  name "smitty"
   controller "internal"
   downSlot TinkerbotsPivot {
     rotation 0 0 1 1.5707996938995747
@@ -66,39 +67,22 @@ TinkerbotsBase {
     }
   ]
 }
-DEF Objects Group {
+DEF Obstacles Group {
+}
+DEF Target Solid {
+  translation 0.125 0.005 0.125
+  scale 2.505 2.505 2.505
   children [
-    Solid {
-      translation -1.625 0.005 -1.375
-      scale 2.505 2.505 2.505
-      children [
-        DEF block_shape Shape {
-          appearance GlossyPaint {
-            baseColor 0 1 0
-          }
-          geometry Box {
-            size 0.1 0.005 0.1
-          }
-        }
-      ]
-      name "goal"
-    }
-    Solid {
-      translation 0.125 0.125 0.125
-      scale 2.505 2.505 2.505
-      children [
-        DEF block_shape Shape {
-          appearance RedBricks {
-          }
-          geometry Box {
-            size 0.1 0.1 0.1
-          }
-        }
-      ]
-      name "block1"
-      boundingObject USE block_shape
+    DEF block_shape Shape {
+      appearance GlossyPaint {
+        baseColor 0 1 0
+      }
+      geometry Box {
+        size 0.1 0.005 0.1
+      }
     }
   ]
+  name "goal"
 }
 Robot {
   name "obstacle_placer"
