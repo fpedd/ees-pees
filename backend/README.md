@@ -1,4 +1,40 @@
 # EES-PEES Robot Project Backend    
+
+## Webots environment
+* Goal: create a openai-gym-wrapper around the communication to Webots (http://gym.openai.com/docs/)
+* `import environment`
+* load environment by `env = environment.WebotsEnv()`
+* Main arguments:
+    * `seed`, used to setup different Webot environments in **training** in combination with the supervisor mode
+    * `action_class`, used to setup the **action_space** and the mapping of the actions to webots actions via **map()**. For example: `action_class=DiscreteAction(directions=3, speeds=3, mode="flatten")` will setup a discrete Action space of size 9. Possile actions to be calculated by an agent (e.g. openai model) are 0:8. **map()** is used to translate the action index to a webot action. Example 0: decrease speed, turn left. For more information of the mapping see *DiscreteAction* in **Action.py**. Another possiblity is `action_class=ContinuousAction`, this will set the **action_space=[-1, 1]^2** with a direct mapping.
+    * `reward_class`, uses the environment information to calculate a reward for the *last action* resulting in the *current state*. For different reward options see **Reward.py**.
+    * `observation_func`, used the environment to setup an observation to be fed to some agent. Not final yet, probably will change to class to set observation_space simultaneously.
+* make a action step by `state, reward, done, {} = env.step(action)`. Gets the current state from the external controller and sends action back.
+* To get the information of the communication, call appropriate action on `env.com`
+
+## Current configurations - Config.py
+	# external controller protocol
+		IP = "127.0.0.1"
+		CONTROL_PORT = 6969
+		BACKEND_PORT = 6970
+		PACKET_SIZE = 1488
+		TIME_OFFSET_ALLOWED = 1.0
+		DIST_VECS = 360
+		
+	# supervisor communication protocol
+		IP_S = "127.0.0.1"
+		PORT_S = 10201
+		PACKET_SIZE_S = 16
+		fast_simulation = False
+		num_obstacles = 10
+		world_size = 10
+		target_x = 0.5
+		target_y = 0.5
+		seed = None
+		lidar_min_range = 0.12
+		lidar_max_range = 3.5
+		sim_time_step = 32  # ms
+
 ## Interface for automated testing - automate.py
 ```
 // supervisor --> backend
@@ -18,16 +54,6 @@ typedef struct {
 	int world_size;       // world_size in meter [int]
 } __attribute__((packed)) bcknd_to_sv_msg_t;
 ```
-## Webots environment
-* `import environment`
-* load environment by `env = environment.WebotsEnv()`
-* Main arguments:
-    * `seed`, used to setup different Webot environments in **training** in combination with the supervisor mode
-    * `action_class`, used to setup the **action_space** and the mapping of the actions to webots actions via **map()**. For example: `action_class=DiscreteAction(directions=3, speeds=3, mode="flatten")` will setup a discrete Action space of size 9. Possile actions to be calculated by an agent (e.g. openai model) are 0:8. **map()** is used to translate the action index to a webot action. Example 0: decrease speed, turn left. For more information of the mapping see *DiscreteAction* in **Action.py**. Another possiblity is `action_class=ContinuousAction`, this will set the **action_space=[-1, 1]^2** with a direct mapping.
-    * `reward_class`, uses the environment information to calculate a reward for the *last action* resulting in the *current state*. For different reward options see **Reward.py**.
-    * `observation_func`, used the environment to setup an observation to be fed to some agent. Not final yet, probably will change to class to set observation_space simultaneously.
-* make a action step by `state, reward, done, {} = env.step(action)`. Gets the current state from the external controller and sends action back.
-* To get the information of the communication, call appropriate action on `env.com`
 
 ## Interface to external controller - communicate.py
 * `Packet` - holds the received data in `buffer` as well as some control information `time`, `count` and `success` (the packet has arrived as intented from the external controller.
@@ -36,20 +62,6 @@ typedef struct {
 ## webot.py
 * `WebotState` - holds all information about the current state of the Webot, i.e. `gps_target`, `gps_actual`, `compass`, `distance`, `touching`. State will be filled from `Packet.buffer` using internal function `fill_from_buffer(buffer).` To get the current state as numpy.ndarray call `get()`.
 * `WebotAction` - blueprint for Webots actions to be used in other modules. Attributes: `heading`, `speed`.
-
-## Interface to external controller - current configurations
-        IP = "127.0.0.1"
-        CONTROL_PORT = 6969
-        BACKEND_PORT = 6970
-        PACKET_SIZE = 1496
-        TIME_OFFSET_ALLOWED = 1.0
-
-        DIST_VECS = 360
-        length = 10
-        lidar_min = 0.12
-        lidar_max = 3.5
-
-        normal_speed = True -->
 
 <!-- ## Fake environment - environment.py
 * `import environment`
