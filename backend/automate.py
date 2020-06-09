@@ -7,6 +7,7 @@ from enum import IntEnum
 import psutil
 
 from Config import WebotConfig
+import utils
 
 
 class FunctionCode(IntEnum):
@@ -34,7 +35,6 @@ class WebotCtrl():
     def init(self):
         self.compile_program()
         self.start_program()
-        # time.sleep(5.0)
         self.establish_connection()
 
     def close(self):
@@ -57,7 +57,7 @@ class WebotCtrl():
     def start_program(self):
         if self.is_program_started() is False:
             # start webots with the path of the world as argument
-            subprocess.Popen(["webots", "../webots/worlds/testworld_prototype.wbt"])
+            subprocess.Popen(["webots", "../webots/worlds/training_env.wbt"])
 
     def close_program(self):
         if self.is_program_started() is True:
@@ -87,8 +87,13 @@ class WebotCtrl():
         # close tcp connection to webot supervisor
         self.sock.close()
 
-    def start_env(self, seed=1, waiting_time=1):
-        data = struct.pack('5if',
+    def start_env(self, seed=None, waiting_time=1):
+        if seed is None:
+            seed = utils.set_random_seed()
+        print("HI PETER")
+        print(seed)
+        print(self.config.world_scaling)
+        data = struct.pack('iiiiif',
                            FunctionCode.START,
                            seed,
                            int(self.config.fast_simulation),
@@ -102,7 +107,7 @@ class WebotCtrl():
     def get_metadata(self):
         buffer = self.client_sock.recv(self.config.PACKET_SIZE_S)
         self.return_code = struct.unpack('i', buffer[0:4])[0]
-		self.config.sim_time_step = struct.unpack('i', buffer[4:8])[0]
+        self.config.sim_time_step = struct.unpack('i', buffer[4:8])[0]
         self.config.gps_target = struct.unpack('2f', buffer[8:16])[0]
 
     def reset_environment(self):
