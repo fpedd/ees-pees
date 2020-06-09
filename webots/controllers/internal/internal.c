@@ -82,6 +82,7 @@ int main(int argc, char **argv) {
 		return EXIT_SUCCESS;
 	}
 
+	wb_robot_step(0);
 
 	// Send init information
 	init_to_ext_msg_t init_data;
