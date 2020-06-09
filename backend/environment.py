@@ -6,7 +6,7 @@ import automate
 
 from config import WebotConfig
 from action import DiscreteAction
-from reward import Reward
+from evaluate import Evaluate
 from observation import Observation
 
 
@@ -17,7 +17,7 @@ class WebotsEnv(gym.Env):
                  train=False,
                  start_controller=False,
                  action_class=DiscreteAction,
-                 reward_class=Reward,
+                 evaluate_class=Evaluate,
                  observation_class=Observation,
                  config: WebotConfig = WebotConfig()):
         super(WebotsEnv, self).__init__()
@@ -34,7 +34,7 @@ class WebotsEnv(gym.Env):
 
         # init action, reward, observation
         self.action_class = action_class
-        self.reward_class = reward_class
+        self.evaluate_class = evaluate_class
         self.observation_class = observation_class
         self._init_act_rew_obs(self)
 
@@ -94,12 +94,12 @@ class WebotsEnv(gym.Env):
             self.action_class = (self.action_class)()
         if type(self.observation_class) == type:
             self.observation_class = (self.observation_class)(env)
-        if type(self.reward_class) == type:
-            self.reward_class = (self.reward_class)(env)
+        if type(self.evaluate_class) == type:
+            self.evaluate_class = (self.evaluate_class)(env)
 
         self.action_space = self.action_class.action_space
         self.observation_space = self.observation_class.observation_space
-        self.reward_range = self.reward_class.reward_range
+        self.reward_range = self.evaluate_class.reward_range
 
     @property
     def observation(self):
@@ -127,15 +127,12 @@ class WebotsEnv(gym.Env):
         return self.observation, reward, done, {}
 
     def calc_reward(self):
-        """Calc reward with reward class."""
-        return self.reward_class.calc()
+        """Calc reward with evaluate class."""
+        return self.evaluate_class.calc_reward()
 
     def check_done(self):
         """Check done."""
-        # TODO: Part of reward_class?
-        if self.gps_actual == self.gps_target:
-            return True
-        return False
+        return self.evaluate_class.check_done()
 
     def reset(self):
         """Reset environment to random."""
@@ -185,6 +182,10 @@ class WebotsEnv(gym.Env):
     @property
     def state(self):
         return self.com.state
+
+    @property
+    def iterations(self):
+        return len(self.history)
 
     @property
     def gps_actual(self):
