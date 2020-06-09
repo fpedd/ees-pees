@@ -22,7 +22,7 @@ class WebotConfig(object):
         self.fast_simulation = False
         self.num_obstacles = 10
         self.world_size = 20
-        self.world_scaling = 0.25  # meters: 20*0.25 -> 5mx5m
+        self.world_scaling = 0.25  # meters: 20*0.25 -> 5m x 5m
 
         # (received) world metadata
 		self.gps_target = None

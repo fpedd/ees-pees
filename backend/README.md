@@ -12,7 +12,7 @@
 * make a action step by `state, reward, done, {} = env.step(action)`. Gets the current state from the external controller and sends action back.
 * To get the information of the communication, call appropriate action on `env.com`
 
-## Current Fabians Pornhub configurations - Config.py
+## Current Configurations - Config.py
 
     # ----------------------------------------------------------------------
     # external controller protocol
