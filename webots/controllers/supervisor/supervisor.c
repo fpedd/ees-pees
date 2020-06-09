@@ -38,8 +38,14 @@ void print_recvd_packet(bcknd_to_sv_msg_t *packet) {
 
 int main() {
 
+	printf("Per stinkt\n");
+
 	wb_robot_init();
 	int timestep = wb_robot_get_basic_time_step();
+
+	printf("Jonas stinkt\n");
+	wb_robot_step(0);
+
 
 	bcknd_to_sv_msg_t recv_buffer = {.function_code = FUNC_UNDEF};
 	sv_to_bcknd_msg_t send_buffer = {.return_code = RET_UNDEF};
@@ -54,7 +60,7 @@ int main() {
 
 	while(recv_buffer.function_code != START) {
 		sv_recv(&recv_buffer);
-		
+
 		print_recvd_packet(&recv_buffer);
 	}
 
@@ -65,8 +71,6 @@ int main() {
 	send_buffer.sim_time_step = timestep;
 	send_buffer.target[0] = world->target[0];
 	send_buffer.target[1] = world->target[1];
-	
-	
 
 	sv_send(send_buffer);
 
@@ -75,7 +79,7 @@ int main() {
 	while (wb_robot_step(0) != -1) {
 
 		sv_recv(&recv_buffer);
-		
+
 		print_recvd_packet(&recv_buffer);
 
 		if(recv_buffer.function_code == START) {
