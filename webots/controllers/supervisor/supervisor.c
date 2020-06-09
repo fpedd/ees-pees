@@ -20,9 +20,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <unistd.h>
 
 #include "sv_com.h"
 #include "sv_functions.h"
+
+#define RECONNECT_WAIT_TIME_MS 4000
 
 void print_recvd_packet(bcknd_to_sv_msg_t *packet) {
 	printf("=========== received packet ===========\n");
@@ -40,77 +43,89 @@ int main() {
 	wb_robot_init();
 	int timestep = wb_robot_get_basic_time_step();
 
-	bcknd_to_sv_msg_t recv_buffer = {.function_code = FUNC_UNDEF};
-	sv_to_bcknd_msg_t send_buffer = {.return_code = RET_UNDEF};
+	int connection = 1;
+	int com_ret = 0;
 
-	sv_world_def *world = sv_simulation_init();
+	while(connection) {
+		bcknd_to_sv_msg_t recv_buffer = {.function_code = FUNC_UNDEF};
+		sv_to_bcknd_msg_t send_buffer = {.return_code = RET_UNDEF};
 
-	 // establish coms to backend
-	int ret_connect = sv_connect();
-	if(ret_connect) {
-		fprintf(stderr, "SUPERVISOR: Can't connect to backend\n");
-	}
+		sv_world_def *world = sv_simulation_init();
 
-	while(recv_buffer.function_code != START) {
-		sv_recv(&recv_buffer);
-
-		print_recvd_packet(&recv_buffer);
-	}
-
-	sv_world_init(world, recv_buffer.world_size, recv_buffer.scale, recv_buffer.num_obstacles, recv_buffer.fast_simulation);
-	sv_world_generate(world, recv_buffer.seed);
-
-	send_buffer.return_code = SUCCESS;
-	send_buffer.sim_time_step = timestep;
-	send_buffer.target[0] = (float) world->target[0];
-	send_buffer.target[1] = (float) world->target[1];
-
-	sv_send(send_buffer);
-
-	sv_simulation_start(world);
-
-	while (wb_robot_step(0) != -1) {
-
-		sv_recv(&recv_buffer);
-
-		print_recvd_packet(&recv_buffer);
-
-		if(recv_buffer.function_code == START) {
-			sv_simulation_stop();
-			sv_world_clear(world);
-			sv_world_init(world, recv_buffer.world_size, recv_buffer.scale, recv_buffer.num_obstacles, recv_buffer.fast_simulation);
-			sv_world_generate(world, recv_buffer.seed);
-
-			send_buffer.return_code = SUCCESS;
-			send_buffer.sim_time_step = timestep;
-			send_buffer.target[0] = (float) world->target[0];
-			send_buffer.target[1] = (float) world->target[1];
-
-			sv_send(send_buffer);
-
-			sv_simulation_start(world);
-		} else if(recv_buffer.function_code == RESET) {
-			sv_simulation_stop();
-			sv_world_generate(world, recv_buffer.seed);
-
-			send_buffer.return_code = SUCCESS;
-			send_buffer.sim_time_step = timestep;
-			send_buffer.target[0] = (float) world->target[0];
-			send_buffer.target[1] = (float) world->target[1];
-
-			sv_send(send_buffer);
-
-			sv_simulation_start(world);
-		} else if(recv_buffer.function_code == CLOSE) {
-			sv_simulation_stop();
-			wb_supervisor_simulation_quit(EXIT_SUCCESS);
-			break; //quit should also break the while loop
+		 // establish coms to backend
+		int ret_connect = sv_connect();
+		if(ret_connect) {
+			fprintf(stderr, "SUPERVISOR: Can't connect to backend\n");
 		}
-	};
 
-	sv_close();
+		while(recv_buffer.function_code != START && com_ret != -1) {
+			com_ret = sv_recv(&recv_buffer);
 
-	sv_simulation_cleanup(world);
+			print_recvd_packet(&recv_buffer);
+		}
+
+		sv_world_init(world, recv_buffer.world_size, recv_buffer.scale, recv_buffer.num_obstacles, recv_buffer.fast_simulation);
+		sv_world_generate(world, recv_buffer.seed);
+
+		send_buffer.return_code = SUCCESS;
+		send_buffer.sim_time_step = timestep;
+		send_buffer.target[0] = (float) world->target[0];
+		send_buffer.target[1] = (float) world->target[1];
+
+		com_ret sv_send(send_buffer);
+
+		sv_simulation_start(world);
+
+		while (wb_robot_step(0) != -1 && com_ret != -1) {
+
+			com_ret = sv_recv(&recv_buffer);
+
+			print_recvd_packet(&recv_buffer);
+
+			if(recv_buffer.function_code == START) {
+				sv_simulation_stop();
+				sv_world_clear(world);
+				sv_world_init(world, recv_buffer.world_size, recv_buffer.scale, recv_buffer.num_obstacles, recv_buffer.fast_simulation);
+				sv_world_generate(world, recv_buffer.seed);
+
+				send_buffer.return_code = SUCCESS;
+				send_buffer.sim_time_step = timestep;
+				send_buffer.target[0] = (float) world->target[0];
+				send_buffer.target[1] = (float) world->target[1];
+
+				com_ret = sv_send(send_buffer);
+
+				sv_simulation_start(world);
+			} else if(recv_buffer.function_code == RESET) {
+				sv_simulation_stop();
+				sv_world_generate(world, recv_buffer.seed);
+
+				send_buffer.return_code = SUCCESS;
+				send_buffer.sim_time_step = timestep;
+				send_buffer.target[0] = (float) world->target[0];
+				send_buffer.target[1] = (float) world->target[1];
+
+				com_ret = sv_send(send_buffer);
+
+				sv_simulation_start(world);
+			} else if(recv_buffer.function_code == CLOSE) {
+				wb_supervisor_simulation_quit(EXIT_SUCCESS);
+				connection = 0;
+				break; //quit should also break the while loop
+			}
+		};
+
+		sv_simulation_stop();
+		
+		if(com_ret == -1) {
+			fprintf(stderr, "ERROR(supervisor_com): Trying to reconnect...");
+			usleep(RECONNECT_WAIT_TIME_MS);
+		}
+		sv_close();    //close tcp connection
+
+		sv_world_clear(world);
+		sv_simulation_cleanup(world);
+	}
 
 	wb_robot_cleanup();
 
