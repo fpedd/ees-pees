@@ -21,13 +21,10 @@ void *webot_worker(void *ptr) {
 	init_to_ext_msg_t init_data;
 	wb_recv_init(&init_data);
 
-	printf("WEBOT_WORKER: init_data.timestep: %d\n", init_data.timestep);
-	printf("WEBOT_WORKER: init_data.robot_maxspeed: %f\n", init_data.maxspeed);
-	printf("WEBOT_WORKER: init_data.lidar_min_range: %f\n", init_data.lidar_min_range);
-	printf("WEBOT_WORKER: init_data.lidar_max_range: %f\n", init_data.lidar_max_range);
-	printf("WEBOT_WORKER: init_data.target_gps[0]: %f\n", init_data.target_gps[0]);
-	printf("WEBOT_WORKER: init_data.target_gps[1]: %f\n", init_data.target_gps[1]);
-	printf("WEBOT_WORKER: init_data.target_gps[2]: %f\n", init_data.target_gps[2]);
+	// printf("WEBOT_WORKER: init_data.timestep: %d\n", init_data.timestep);
+	// printf("WEBOT_WORKER: init_data.robot_maxspeed: %f\n", init_data.maxspeed);
+	// printf("WEBOT_WORKER: init_data.lidar_min_range: %f\n", init_data.lidar_min_range);
+	// printf("WEBOT_WORKER: init_data.lidar_max_range: %f\n", init_data.lidar_max_range);
 
 	// Run webot worker
 	printf("WEBOT_WORKER: Running\n");
