@@ -24,6 +24,18 @@
 #include "sv_com.h"
 #include "sv_functions.h"
 
+void print_recvd_packet(bcknd_to_sv_msg_t *packet) {
+	printf("=========== received packet ===========\n");
+	printf("function_code: %d\n", packet->function_code);
+	printf("seed: %d\n", packet->seed);
+	printf("fast_simulation: %d\n", packet->fast_simulation);
+	printf("num_obstacles: %d\n", packet->num_obstacles);
+	printf("world_size: %d\n", packet->world_size);
+	printf("scale: %f\n", packet->scale);
+	printf("=========================================\n");
+}
+
+
 int main() {
 
 	wb_robot_init();
@@ -42,6 +54,8 @@ int main() {
 
 	while(recv_buffer.function_code != START) {
 		sv_recv(&recv_buffer);
+		
+		print_recvd_packet(&recv_buffer);
 	}
 
 	sv_world_init(world, recv_buffer.world_size, recv_buffer.scale, recv_buffer.num_obstacles, recv_buffer.fast_simulation);
@@ -51,6 +65,8 @@ int main() {
 	send_buffer.sim_time_step = timestep;
 	send_buffer.target[0] = world->target[0];
 	send_buffer.target[1] = world->target[1];
+	
+	
 
 	sv_send(send_buffer);
 
@@ -59,6 +75,8 @@ int main() {
 	while (wb_robot_step(0) != -1) {
 
 		sv_recv(&recv_buffer);
+		
+		print_recvd_packet(&recv_buffer);
 
 		if(recv_buffer.function_code == START) {
 			sv_simulation_stop();
