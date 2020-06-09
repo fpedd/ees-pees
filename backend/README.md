@@ -13,36 +13,38 @@
 * To get the information of the communication, call appropriate action on `env.com`
 
 ## Current configurations - Config.py
-	# external controller protocol
-		IP = "127.0.0.1"
-		CONTROL_PORT = 6969
-		BACKEND_PORT = 6970
-		PACKET_SIZE = 1488
-		TIME_OFFSET_ALLOWED = 1.0
-		DIST_VECS = 360
-		
-	# supervisor communication protocol
-		IP_S = "127.0.0.1"
-		PORT_S = 10201
-		PACKET_SIZE_S = 16
-		fast_simulation = False
-		num_obstacles = 10
-		world_size = 10
-		target_x = 0.5
-		target_y = 0.5
-		seed = None
-		lidar_min_range = 0.12
-		lidar_max_range = 3.5
-		sim_time_step = 32  # ms
+    # ----------------------------------------------------------------------
+    # external controller protocol
+    IP = "127.0.0.1"
+    CONTROL_PORT = 6969
+    BACKEND_PORT = 6970
+    PACKET_SIZE = 1480
+    TIME_OFFSET_ALLOWED = 1.0
+    DIST_VECS = 360
+
+    # ----------------------------------------------------------------------
+    # supervisor communication protocol
+    IP_S = "127.0.0.1"
+    PORT_S = 10201
+    PACKET_SIZE_S = 16
+
+    # settable for environment start via supervisor
+    fast_simulation = False
+    num_obstacles = 10
+    world_size = 10
+    seed = None
+
+    # (received) world metadata
+    gps_target = None
+    sim_time_step = 32  # ms
 
 ## Interface for automated testing - automate.py
 ```
 // supervisor --> backend
 typedef struct {
 	int return_code;         // return_code [int]
-	float lidar_min_range;   // lidar min range in meter [float]
-	float lidar_max_range;   // lidar max range in meter [float]
 	int sim_time_step;       // simulation time_step in ms [int]
+	float target[2];         // target gps [float]
 } __attribute__((packed)) sv_to_bcknd_msg_t;
 
 // supervisor <-- backend
