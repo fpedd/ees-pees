@@ -9,7 +9,6 @@ typedef struct {
 	double time_stmp;            // time the message got send (internal)
 	float sim_time;              // actual simulation time in webots
 	float speed;                 // current speed of robot in webots [-1, 1]
-	float target_gps[2];         // coordiantes where the robot should go
 	float actual_gps[2];         // coordiantes where the robot is
 	float heading;               // direction the front of the robot points in [-1, 1]
 	unsigned int touching;       // is the robot touching something?
