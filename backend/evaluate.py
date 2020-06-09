@@ -30,6 +30,7 @@ class Evaluate(object):
 class EvaluateMats(Evaluate):
     def __init__(self, env):
         super(EvaluateMats, self).__init__(env)
+        self.reward_range = (-2000, 2000)
 
     def calc_reward(self):
         """Calculate reward function.
@@ -47,10 +48,10 @@ class EvaluateMats(Evaluate):
         else:
             epsilon = 10**-5
             cost_step = 1
-            distance = self.get_target_distance() + epsilon
+            distance = self.env.get_target_distance() + epsilon
             cost_distance = (distance**0.4) / (distance)
             reward_factor = -1
             reward = reward_factor * (cost_step * cost_distance)
-            if self.state:
+            if self.env.state:
                 reward = reward - 10
         return reward

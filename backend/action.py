@@ -72,12 +72,6 @@ class DiscreteAction(Action):
 
     def map(self, action, pre_action):
         if self.mode == "flatten":
-            # if not isinstance(action, int):
-            #     print("++++++++++++++++++++++++++++++++++++++++++")
-            #     print(isinstance(action, int))
-            #     print(action)
-            #     print("++++++++++++++++++++++++++++++++++++++++++")
-            #     raise TypeError("Action must be int.")
             dir_idx = action % len(self.dirspace)
             speed_idx = int((action - dir_idx) / len(self.dirspace))
         elif self.mode == "tuple":
