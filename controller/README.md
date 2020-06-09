@@ -34,7 +34,7 @@ The frequency at which both threads perform their work-loops is no yet controlle
 
 
 ## Testing
-We are using [Google Test](https://github.com/google/googletest) to run unit tests on our code. Before you will be able to run any tests you will need to install Google Test on your machine. Please follow the installation instructions [here](https://www.eriksmistad.no/getting-started-with-google-test-on-ubuntu/) to install Google Test. After that you will be able to call `make test`. That will compile and run all unit tests. You can add your own unit tests in the `/test` directory. You may need to create a new corresponding test file in that directory if there is none already. The tests will also be automatically executed when pushing to Github using [Github Actions](https://help.github.com/en/actions). 
+We are using [Google Test](https://github.com/google/googletest) to run unit tests on our code. Before you will be able to run any tests you will need to install Google Test on your machine. Please follow the installation instructions [here](https://www.eriksmistad.no/getting-started-with-google-test-on-ubuntu/) to install Google Test. After that you will be able to call `make test`. That will compile and run all unit tests. You can add your own unit tests in the `/test` directory. You may need to create a new corresponding test file in that directory if there is none already. The tests will also be automatically executed when pushing to Github using [Github Actions](https://help.github.com/en/actions).
 
 ## Protocol
 
@@ -121,6 +121,7 @@ typedef struct {
 typedef struct {
 	unsigned long long msg_cnt;  // total number of messages (odd) (internal)
 	double time_stmp;            // time the message got send (internal)
+	enum response_request request; //Type of response the backend awaits to the packet
 	float heading;               // the direction the robot should move in next [-1, 1]
 	float speed;                 // the speed the robot should drive at [-1, 1]
 } __attribute__((packed)) bcknd_to_ext_msg_t;
@@ -156,6 +157,22 @@ Explanation of `to_bcknd_msg_t`:
 Explanation of `from_bcknd_msg_t`:
 * `unsigned long long msg_cnt` see above.
 * `double time_stmp` see above.
+* `enum response_request request` type of response the backend expects. More info see below
 * `float heading` the direction the robot should go move in next [-1, 1] (relative
   to the global north in the horizontal plane).
 * `float speed` the speed the robot should move at, 0 if it should stop [-1, 1].
+
+```
+enum response_request {
+	UNDEF = 0,                  // Invalid Packet
+	COMMAND_ONLY = 1,           // Only new instructions for Robot, dont send next packet
+	REQUEST_ONLY = 2,           // Only request for new packet
+	COMMAND_REQUEST = 3         // New instructions for robot AND request for new packet
+};
+```
+
+Explanation of `enum response_request`:
+* `UNDEF`: Invalid Packet. Wait for next message from backend
+* `COMMAND_ONLY`: Only forward heading and speed to `webot_worker`, then wait for next message from backend
+* `REQUEST_ONLY`: Only send newest sensordata from `webot_worker` to backend, then wait for next message from backend
+* `COMMAND_REQUEST`: Do both of the above, then wait for next message from backend
