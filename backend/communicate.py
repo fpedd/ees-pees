@@ -74,10 +74,10 @@ class Com(object):
         self.state.fill_from_buffer(self.packet.buffer)
 
         # TESTING START
-        print("gps[0] ", end='')
-        print(self.state.gps_actual[0], end='')
-        print("  gps[1] ", end='')
-        print(self.state.gps_actual[1])
+        # print("gps[0] ", end='')
+        # print(self.state.gps_actual[0], end='')
+        # print("  gps[1] ", end='')
+        # print(self.state.gps_actual[1])
 
         # print(self.state.gps_actual[0])
         # print(self.state.gps_actual[1])
