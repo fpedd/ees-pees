@@ -12,7 +12,8 @@
 * make a action step by `state, reward, done, {} = env.step(action)`. Gets the current state from the external controller and sends action back.
 * To get the information of the communication, call appropriate action on `env.com`
 
-## Current configurations - Config.py
+## Current Fabians Pornhub configurations - Config.py
+
     # ----------------------------------------------------------------------
     # external controller protocol
     IP = "127.0.0.1"
@@ -38,8 +39,28 @@
     gps_target = None
     sim_time_step = 32  # ms
 
+    # known constants
+    lidar_min_range = 0.05
+    lidar_max_range = 3.5
+
+
 ## Interface for automated testing - automate.py
 ```
+
+enum function_code {
+	FUNC_UNDEF = -1,
+    NO_FUNCTION = 0,
+    START = 1,
+    RESET = 2,
+    CLOSE = 3
+};
+
+enum return_code {
+    RET_UNDEF = -1,
+    SUCCESS = 0,
+    ERROR = 1
+};
+
 // supervisor --> backend
 typedef struct {
 	int return_code;         // return_code [int]
@@ -49,12 +70,14 @@ typedef struct {
 
 // supervisor <-- backend
 typedef struct {
-	int function_code;    // function code [int]
-	int seed;             // seed [int]
-	int fast_simulation;  // fast_simulation [int]
-	int num_obstacles;    // num_obstacles [int]
-	int world_size;       // world_size in meter [int]
+	enum function_code function_code; // function code [enum function_code]
+	int seed;                         // seed [int]
+	int fast_simulation;              // fast_simulation [int]
+	int num_obstacles;                // num_obstacles [int]
+	int world_size;                   // world_size in blocks [int]
+	float world_scaling;              // world grid size in meters [float]
 } __attribute__((packed)) bcknd_to_sv_msg_t;
+
 ```
 
 ## Interface to external controller - communicate.py

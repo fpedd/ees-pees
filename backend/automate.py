@@ -88,12 +88,13 @@ class WebotCtrl():
         self.sock.close()
 
     def start_env(self, seed=1, waiting_time=1):
-        data = struct.pack('5i',
+        data = struct.pack('5if',
                            FunctionCode.START,
                            seed,
                            int(self.config.fast_simulation),
                            self.config.num_obstacles,
-                           self.config.world_size)
+                           self.config.world_size,
+                           self.config.world_scaling)
         self.client_sock.send(data)
         time.sleep(waiting_time)
         self.get_metadata()

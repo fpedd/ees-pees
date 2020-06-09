@@ -18,10 +18,11 @@ class WebotConfig(object):
         self.PACKET_SIZE_S = 16
 
         # settable for environment start via supervisor
+		self.seed = None
         self.fast_simulation = False
         self.num_obstacles = 10
-        self.world_size = 10
-        self.seed = None
+        self.world_size = 20
+        self.world_scaling = 0.25  # meters: 20*0.25 -> 5mx5m
 
         # (received) world metadata
 		self.gps_target = None

@@ -40,8 +40,6 @@ void print_ext_to_bcknd(ext_to_bcknd_msg_t ext_to_bcknd, int print_distance) {
 	printf("WEBOT_WORKER: time_stmp: \t%f\n", ext_to_bcknd.time_stmp);
 	printf("WEBOT_WORKER: sim_time: \t%f\n", ext_to_bcknd.sim_time);
 	printf("WEBOT_WORKER: speed: \t%f\n", ext_to_bcknd.speed);
-	printf("WEBOT_WORKER: target_gps[0]: \t%f\n", ext_to_bcknd.target_gps[0]);
-	printf("WEBOT_WORKER: target_gps[1]: \t%f\n", ext_to_bcknd.target_gps[1]);
 	printf("WEBOT_WORKER: actual_gps[0]: \t%f\n", ext_to_bcknd.actual_gps[0]);
 	printf("WEBOT_WORKER: actual_gps[1]: \t%f\n", ext_to_bcknd.actual_gps[1]);
 	printf("WEBOT_WORKER: heading: \t%f\n", ext_to_bcknd.heading);

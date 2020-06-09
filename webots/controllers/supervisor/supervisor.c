@@ -102,8 +102,8 @@ int main() {
 
 			send_buffer.return_code = SUCCESS;
 			send_buffer.sim_time_step = timestep;
-			send_buffer.target[0] = world->target[0];
-			send_buffer.target[1] = world->target[1];
+			send_buffer.target[0] = (float) world->target[0];
+			send_buffer.target[1] = (float) world->target[1];
 
 			sv_send(send_buffer);
 
