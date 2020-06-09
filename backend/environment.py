@@ -4,19 +4,28 @@ import utils
 import communicate
 import automate
 
-from Config import WebotConfig
-from Action import DiscreteAction
-from Reward import Reward
-from Observation import observation_std
+from config import WebotConfig
+from action import DiscreteAction
+from reward import Reward
+from observation import Observation
 
 
 class WebotsEnv(gym.Env):
-    def __init__(self, seed=None, train=False, start_controller=False,
-                 action_class=DiscreteAction, reward_class=Reward,
-                 observation_func=observation_std,
+    def __init__(self,
+                 seed=None,
+                 gps_target=None,
+                 train=False,
+                 start_controller=False,
+                 action_class=DiscreteAction,
+                 reward_class=Reward,
+                 observation_class=Observation,
                  config: WebotConfig = WebotConfig()):
         super(WebotsEnv, self).__init__()
         self.set_seed(seed)
+
+        if gps_target is None and train is False:
+            raise ValueError("Target GPS data must be supplied in normal mode")
+        self.gps_target = gps_target
 
         # some general inits
         self.i = 0
@@ -26,17 +35,19 @@ class WebotsEnv(gym.Env):
         # init action, reward, observation
         self.action_class = action_class
         self.reward_class = reward_class
-        self.observation_func = observation_func
+        self.observation_class = observation_class
         self._init_act_rew_obs(self)
 
         # communication and supervisor
         self.train = train
         self._setup_train()
-        self.com = communicate.Com(config)
-        if start_controller is True:
+        self._init_com()
+
+        if train is False and start_controller is True:
             self.external_controller = automate.ExtCtrl()
             self.external_controller.init()
-            self.com.recv()
+
+        self.com.recv()
 
     # =========================================================================
     # ==========================       SEEDING       ==========================
@@ -63,6 +74,9 @@ class WebotsEnv(gym.Env):
     # =========================================================================
     # ==========================        SETUPS       ==========================
     # =========================================================================
+    def _init_com(self):
+        self.com = communicate.Com(self.gps_target, self.config)
+
     def _setup_train(self):
         if self.train is True:
             # start webots program, establish tcp connection
@@ -72,15 +86,24 @@ class WebotsEnv(gym.Env):
             # start environment and update config
             self.supervisor.start_env()
 
+            self.gps_target = self.config.gps_target
+
     def _init_act_rew_obs(self, env):
         # type to instance
         if type(self.action_class) == type:
             self.action_class = (self.action_class)()
+        if type(self.observation_class) == type:
+            self.observation_class = (self.observation_class)(env)
         if type(self.reward_class) == type:
             self.reward_class = (self.reward_class)(env)
 
         self.action_space = self.action_class.action_space
+        self.observation_space = self.observation_class.observation_space
         self.reward_range = self.reward_class.reward_range
+
+    @property
+    def observation(self):
+        return self.observation_class.get()
 
     # =========================================================================
     # ==========================         CORE        ==========================
@@ -90,7 +113,8 @@ class WebotsEnv(gym.Env):
 
         Handled inside com class.
         """
-        action = self.action_class.map(action, self.state_object)
+        pre_action = self.state.pre_action
+        action = self.action_class.map(action, pre_action)
         self.send(action)
         self.recv()
         reward = self.calc_reward()
@@ -113,9 +137,13 @@ class WebotsEnv(gym.Env):
     def reset(self):
         """Reset environment to random."""
         if self.supervisor_connected is True:
-            seed = utils.np_random_seed(set=False)
+            seed = utils.set_random_seed(apply=False)
             self.seed(seed)
-            self.supervisor.start_env(self.main_seed)
+            self.supervisor.reset_environment(self.main_seed)
+
+            self._init_com()
+            self.com.recv()
+
             return self.observation
 
     def close(self):
@@ -152,15 +180,7 @@ class WebotsEnv(gym.Env):
         return utils.euklidian_distance(self.gps_actual, self.gps_target)
 
     @property
-    def observation(self):
-        return self.observation_func(self)
-
-    @property
     def state(self):
-        return self.com.state.get()
-
-    @property
-    def state_object(self):
         return self.com.state
 
     @property
@@ -168,11 +188,7 @@ class WebotsEnv(gym.Env):
         return self.com.state.gps_actual
 
     @property
-    def gps_target(self):
-        return self.com.state.gps_target
-
-    @property
     def supervisor_connected(self) -> bool:
-        if self.supervisor is not None and self.supervisor.return_c.value == 0:
+        if self.supervisor is not None and self.supervisor.return_code == 0:
             return True
         return False

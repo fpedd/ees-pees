@@ -70,7 +70,7 @@ class DiscreteAction(Action):
                                       self.dspeed * each_speed,
                                       self.speeds)
 
-    def map(self, action, state: WebotState):
+    def map(self, action, pre_action):
         if self.mode == "flatten":
             if not isinstance(action, int):
                 raise TypeError("Action must be int.")
@@ -82,7 +82,7 @@ class DiscreteAction(Action):
 
         # get action difference and add to base action = latest state info
         action_dx = (self.dirspace[dir_idx], self.speedspace[speed_idx])
-        action = utils.add_tuples(state.pre_action, action_dx)
+        action = utils.add_tuples(pre_action, action_dx)
         action = WebotAction(action)
         action.print()
         return action

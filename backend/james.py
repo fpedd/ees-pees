@@ -24,13 +24,9 @@ class RndWebotAgent(Agent):
 
     def action(self):
         action = WebotAction()
-        self.com.recv()
-        print("current state")
-        print(self.com.state.gps_actual)
         action.heading = np.random.random() * 2 - 1
         action.speed = np.random.random() * 2 - 1
         time.sleep(0.2)
-        action.print()
         self.com.send(action)
 
 #

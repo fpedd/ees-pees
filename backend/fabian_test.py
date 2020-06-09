@@ -15,12 +15,9 @@ w.init()
 print("start environment")
 w.start_env()
 
-print("print data")
-w.print()
-
 print("random actions")
 timmy = RndWebotAgent()
-for _ in range(10):
+for _ in range(20):
     timmy.action()
 
 print("wating for reset")
@@ -28,8 +25,6 @@ time.sleep(3.0)
 
 w.reset_environment()
 
-
-time.sleep(2.0)
 print("random actions")
 timmy = RndWebotAgent()
 for _ in range(20):

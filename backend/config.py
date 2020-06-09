@@ -28,6 +28,10 @@ class WebotConfig(object):
         self.gps_target = None
         self.sim_time_step = 32  # ms
 
+        # training settings, varies with speed of computer
+        self.wait_env_creation = 5  # in sec
+        self.wait_env_reset = 2  # in sec
+
     def print(self):
         for (k, v) in self.__dict__.items():
             print(str(k) + "\t" + str(v))

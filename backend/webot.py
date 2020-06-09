@@ -1,14 +1,14 @@
 import struct
 import numpy as np
 
-from Config import WebotConfig
+from config import WebotConfig
 
 
 # =========================================================================
 # ==============================    STATE    ==============================
 # =========================================================================
 class WebotState(object):
-    def __init__(self, config: WebotConfig = WebotConfig()):
+    def __init__(self, gps_target=None, config: WebotConfig = WebotConfig()):
         # meta
         self.config = config
         self.buffer = None
@@ -17,6 +17,7 @@ class WebotState(object):
         self.sim_time = None
         self.speed = None
         self.gps_actual = None
+        self.gps_target = gps_target
         self.heading = None
         self.distance = None
         self.touching = None
@@ -32,16 +33,14 @@ class WebotState(object):
             self.sim_time = struct.unpack('f', buffer[16:20])[0]
             self.speed = struct.unpack('f', buffer[20:24])[0]
             self.gps_actual = struct.unpack('2f', buffer[24:32])
-            self.gps_target = struct.unpack('2f', buffer[32:40])
-            self.heading = struct.unpack('f', buffer[40:44])[0]
-            self.touching = struct.unpack("I", buffer[44:48])[0]
-            self._unpack_distance(buffer)
+            self.heading = struct.unpack('f', buffer[32:36])[0]
+            self.touching = struct.unpack("I", buffer[36:40])[0]
+            self._unpack_distance(buffer, start=40)
 
-    def _unpack_distance(self, buffer):
-        from_ = 48
-        to = 48 + self.num_lidar * 4
+    def _unpack_distance(self, buffer, start=40):
+        to = start + self.num_lidar * 4
         N = self.num_lidar
-        self.distance = struct.unpack("{}f".format(N), buffer[from_: to])
+        self.distance = struct.unpack("{}f".format(N), buffer[start: to])
 
     def get_distance(self, absolute=False):
         # TODO: mapping absolute and relative lidar stuff with heading

@@ -3,7 +3,7 @@ import struct
 import time
 from enum import Enum
 
-from Config import WebotConfig
+from config import WebotConfig
 from webot import WebotState, WebotAction
 
 
@@ -46,12 +46,12 @@ class Packet(object):
 # ==========================    COMMUNICATION    ==========================
 # =========================================================================
 class Com(object):
-    def __init__(self, config: WebotConfig = WebotConfig()):
+    def __init__(self, gps_target, config: WebotConfig = WebotConfig()):
         self.config = config
         self.msg_cnt_in = 0
         self.msg_cnt_out = 1
         self.latency = None
-        self.state = WebotState(config)
+        self.state = WebotState(gps_target, config)
         self.packet = Packet(config)
         self.history = []
         self.sock = None

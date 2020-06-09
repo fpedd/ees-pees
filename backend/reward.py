@@ -14,7 +14,7 @@ class Reward(object):
 
         # get distance and crash penalties
         distance_penalty = self.env.get_target_distance()
-        crash = self.env.state_object.touching
+        crash = self.env.state.touching
 
         val = base_v * (1 - crash) - distance_penalty
         return val * self.reward_range[1] / base_v
