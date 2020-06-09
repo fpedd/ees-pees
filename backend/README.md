@@ -12,29 +12,37 @@
 * make a action step by `state, reward, done, {} = env.step(action)`. Gets the current state from the external controller and sends action back.
 * To get the information of the communication, call appropriate action on `env.com`
 
-## Current configurations - Config.py
-	# external controller protocol
-		IP = "127.0.0.1"
-		CONTROL_PORT = 6969
-		BACKEND_PORT = 6970
-		PACKET_SIZE = 1488
-		TIME_OFFSET_ALLOWED = 1.0
-		DIST_VECS = 360
-		
-	# supervisor communication protocol
-		IP_S = "127.0.0.1"
-		PORT_S = 10201
-		PACKET_SIZE_S = 16
-		seed = None
-		fast_simulation = False
-		num_obstacles = 10
-		world_size = 10
-		
-		sim_time_step = 32  # ms
-		
-	# known constants
-		lidar_min_range = 0.05
-		lidar_max_range = 3.5
+## Current Configurations - Config.py
+
+    # ----------------------------------------------------------------------
+    # external controller protocol
+    IP = "127.0.0.1"
+    CONTROL_PORT = 6969
+    BACKEND_PORT = 6970
+    PACKET_SIZE = 1480
+    TIME_OFFSET_ALLOWED = 1.0
+    DIST_VECS = 360
+
+    # ----------------------------------------------------------------------
+    # supervisor communication protocol
+    IP_S = "127.0.0.1"
+    PORT_S = 10201
+    PACKET_SIZE_S = 16
+
+    # settable for environment start via supervisor
+    fast_simulation = False
+    num_obstacles = 10
+    world_size = 10
+    seed = None
+
+    # (received) world metadata
+    gps_target = None
+    sim_time_step = 32  # ms
+
+    # known constants
+    lidar_min_range = 0.05
+    lidar_max_range = 3.5
+
 
 ## Interface for automated testing - automate.py
 ```
@@ -55,9 +63,9 @@ enum return_code {
 
 // supervisor --> backend
 typedef struct {
-	enum return_code return_code;   // return_code [enum return_code]
-	int sim_time_step;              // simulation time_step in ms [int]
-	float target[2];                // target position [double[2]]
+	int return_code;         // return_code [int]
+	int sim_time_step;       // simulation time_step in ms [int]
+	float target[2];         // target gps [float]
 } __attribute__((packed)) sv_to_bcknd_msg_t;
 
 // supervisor <-- backend
@@ -67,6 +75,7 @@ typedef struct {
 	int fast_simulation;              // fast_simulation [int]
 	int num_obstacles;                // num_obstacles [int]
 	int world_size;                   // world_size in blocks [int]
+	float world_scaling;              // world grid size in meters [float]
 } __attribute__((packed)) bcknd_to_sv_msg_t;
 
 ```

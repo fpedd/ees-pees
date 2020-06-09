@@ -88,14 +88,13 @@ class WebotCtrl():
         self.sock.close()
 
     def start_env(self, seed=1, waiting_time=1):
-        data = struct.pack('5i2f',
+        data = struct.pack('5if',
                            FunctionCode.START,
                            seed,
                            int(self.config.fast_simulation),
                            self.config.num_obstacles,
                            self.config.world_size,
-                           self.config.target_x,
-                           self.config.target_y)
+                           self.config.world_scaling)
         self.client_sock.send(data)
         time.sleep(waiting_time)
         self.get_metadata()
@@ -103,9 +102,8 @@ class WebotCtrl():
     def get_metadata(self):
         buffer = self.client_sock.recv(self.config.PACKET_SIZE_S)
         self.return_code = struct.unpack('i', buffer[0:4])[0]
-        self.config.lidar_min_range = struct.unpack('f', buffer[4:8])[0]
-        self.config.lidar_max_range = struct.unpack('f', buffer[8:12])[0]
-        self.config.sim_time_step = struct.unpack('i', buffer[12:16])[0]
+		self.config.sim_time_step = struct.unpack('i', buffer[4:8])[0]
+        self.config.gps_target = struct.unpack('2f', buffer[8:16])[0]
 
     def reset_environment(self):
         # environment sollte sein wie beim start der simulation
@@ -120,8 +118,7 @@ class WebotCtrl():
     def print(self):
         print("===== WebotCtrl =====")
         print("return_code", self.return_code)
-        print("lidar_min_range", self.lidar_min_range)
-        print("lidar_max_range", self.lidar_max_range)
+        print("target", self.config.gps_target)
         print("sim_time_step", self.sim_time_step)
         print("=====================")
 
