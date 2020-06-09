@@ -53,7 +53,7 @@ int main() {
 		sv_world_def *world = sv_simulation_init();
 
 		 // establish coms to backend
-		int com_ret = sv_connect();
+		com_ret = sv_connect();
 		if(com_ret) {
 			fprintf(stderr, "SUPERVISOR: Can't connect to backend\n");
 			fprintf(stderr, "SUPERVISOR: Retrying to connect...");
