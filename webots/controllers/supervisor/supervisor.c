@@ -21,47 +21,13 @@
 #include <stdlib.h>
 #include <time.h>
 
-// #define COM_EN
 #include "sv_com.h"
 #include "sv_functions.h"
-
-#define STANDARD_SCALE 0.25
-
 
 int main() {
 
 	wb_robot_init();
 	int timestep = wb_robot_get_basic_time_step();
-
-/*	// **************** COMMUNICATION TEST ***************************
-	// *********** comment out if testing without backend*******
-
-	// recv test message
-	bcknd_to_sv_msg_t test_buf;
-
-	printf("=========== Received Test msg ===========\n");
-	printf("function_code: %d\n", test_buf.function_code);
-	printf("seed: %d\n", test_buf.seed);
-	printf("fast_simulation: %d\n", test_buf.fast_simulation);
-	printf("num_obstacles: %d\n", test_buf.num_obstacles);
-	printf("world_size: %d\n", test_buf.world_size);
-	printf("target_x: %f\n", test_buf.target_x);
-	printf("target_y: %f\n", test_buf.target_y);
-	printf("=========================================\n");
-
-	// send test message
-	sv_to_bcknd_msg_t test_msg;
-	test_msg.return_code = 1;
-	test_msg.lidar_min_range = 0.04;
-	test_msg.lidar_max_range = 3.4;
-	test_msg.sim_time_step = timestep;
-
-	sv_send(test_msg);
-	printf("=========== Sending Test msg  successful ===========\n");
-
-
-	// **************** COMMUNICATION TEST END **********************
-*/
 
 	bcknd_to_sv_msg_t recv_buffer = {.function_code = FUNC_UNDEF};
 	sv_to_bcknd_msg_t send_buffer = {.return_code = RET_UNDEF};
@@ -78,7 +44,7 @@ int main() {
 		sv_recv(&recv_buffer);
 	}
 
-	sv_world_init(world, recv_buffer.world_size, STANDARD_SCALE, recv_buffer.num_obstacles, recv_buffer.fast_simulation);
+	sv_world_init(world, recv_buffer.world_size, recv_buffer.scale, recv_buffer.num_obstacles, recv_buffer.fast_simulation);
 	sv_world_generate(world, recv_buffer.seed);
 
 	send_buffer.return_code = SUCCESS;
@@ -97,7 +63,7 @@ int main() {
 		if(recv_buffer.function_code == START) {
 			sv_simulation_stop();
 			sv_world_clear(world);
-			sv_world_init(world, recv_buffer.world_size, STANDARD_SCALE, recv_buffer.num_obstacles, recv_buffer.fast_simulation);
+			sv_world_init(world, recv_buffer.world_size, recv_buffer.scale, recv_buffer.num_obstacles, recv_buffer.fast_simulation);
 			sv_world_generate(world, recv_buffer.seed);
 
 			send_buffer.return_code = SUCCESS;

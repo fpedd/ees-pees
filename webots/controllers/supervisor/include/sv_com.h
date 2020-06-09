@@ -29,6 +29,7 @@ typedef struct {
 	int fast_simulation;              // fast_simulation [int]
 	int num_obstacles;                // num_obstacles [int]
 	int world_size;                   // world_size in blocks [int]
+	float scale;                      // scale of the world, actual_size = world_size*scale [float]
 } __attribute__((packed)) bcknd_to_sv_msg_t;
 
 
