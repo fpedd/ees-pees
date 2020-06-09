@@ -89,4 +89,5 @@ Robot {
   locked TRUE
   controller "supervisor"
   supervisor TRUE
+  synchronization FALSE
 }

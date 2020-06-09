@@ -3,13 +3,13 @@ import automate
 import subprocess
 
 w = automate.WebotCtrl()
-e = automate.ExtCtrl()
 print("init")
-e.init()
 w.init()
 time.sleep(1)
 print("send data")
 time.sleep(1)
+e = automate.ExtCtrl()
+e.init()
 w.start_env()
 print("recv data")
 w.get_metadata()
