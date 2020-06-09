@@ -29,7 +29,7 @@ make clean
 
 ## General functioning
 The external controller consists of two parallely running threads, the webot_worker and the backend_worker. Both of them communicate by using externally defined message structs that are blocked from simultaneous access by mutexes. The general idea is, that the webot_worker receives sensor data from the webot, reformats it to the format the backend needs and puts it into the corresponding struct for the backend_worker to read it. Then it continues to read the values the backend_worker left for it and uses it to do safety logic (TODO), and calculate the new motor controll settings for the webot using a PID controller. Then it sends the new commands to the webot.
-At the same time the backend_worker reads the data it gets from the webot_worker, sends it by UDP to the backend, waits for a response which it then stores for the webot_worker to read again.
+At the same time the backend_worker waits for the backend to either request the newest sensor data, or sending updated speed and heading or both. 
 The frequency at which both threads perform their work-loops is no yet controlled or synchronized.
 
 
