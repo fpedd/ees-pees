@@ -2,21 +2,30 @@ import time
 import automate
 import subprocess
 
+from james import RndWebotAgent
+
+print("start webot")
 w = automate.WebotCtrl()
-print("init")
 w.init()
-time.sleep(1)
-print("send data")
-time.sleep(1)
+
+print("start external")
 e = automate.ExtCtrl()
 e.init()
+
+print("start environment")
 w.start_env()
-print("recv data")
-w.get_metadata()
+
 print("print data")
 w.print()
+
+print("random actions")
+timmy = RndWebotAgent()
+for _ in range(1000):
+    timmy.action()
+
 print("sleeping")
-time.sleep(3.0)
+time.sleep(500.0)
+
 print("kill")
 w.close()
 e.close()

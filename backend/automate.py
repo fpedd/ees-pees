@@ -97,6 +97,7 @@ class WebotCtrl():
                            self.config.num_obstacles,
                            self.config.world_size,
                            self.config.world_scaling)
+        print("sending: env")
         self.client_sock.send(data)
         time.sleep(waiting_time)
         self.get_metadata()
@@ -105,23 +106,27 @@ class WebotCtrl():
         buffer = self.client_sock.recv(self.config.PACKET_SIZE_S)
         self.return_code = struct.unpack('i', buffer[0:4])[0]
         self.config.sim_time_step = struct.unpack('i', buffer[4:8])[0]
-        self.config.gps_target = struct.unpack('2f', buffer[8:16])[0]
+        self.config.gps_target = struct.unpack('2f', buffer[8:16])
 
-    def reset_environment(self):
+    def reset_environment(self, seed=None):
+        if seed is None:
+            seed = utils.set_random_seed()
         # environment sollte sein wie beim start der simulation
-        data = struct.pack('iiiii', FunctionCode.RESET, 0, 0, 0, 0)
+        data = struct.pack('iiiii', FunctionCode.RESET, seed, 0, 0, 0)
+        print("sending: reset")
         self.client_sock.send(data)
 
     def close_environment(self):
         # environment sollte sein wie beim start der simulation
         data = struct.pack('iiiii', FunctionCode.CLOSE, 0, 0, 0, 0)
+        print("sending: close")
         self.client_sock.send(data)
 
     def print(self):
         print("===== WebotCtrl =====")
         print("return_code", self.return_code)
-        print("target", self.config.gps_target)
-        print("sim_time_step", self.sim_time_step)
+        print("target", self.config.gps_target[0], self.config.gps_target[1])
+        print("sim_time_step", self.config.sim_time_step)
         print("=====================")
 
 
