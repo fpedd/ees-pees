@@ -75,7 +75,7 @@ int main() {
 		send_buffer.target[0] = (float) world->target[0];
 		send_buffer.target[1] = (float) world->target[1];
 
-		com_ret sv_send(send_buffer);
+		com_ret = sv_send(send_buffer);
 
 		sv_simulation_start(world);
 
