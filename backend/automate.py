@@ -90,9 +90,6 @@ class WebotCtrl():
     def start_env(self, seed=None, waiting_time=1):
         if seed is None:
             seed = utils.set_random_seed()
-        print("HI PETER")
-        print(seed)
-        print(self.config.world_scaling)
         data = struct.pack('iiiiif',
                            FunctionCode.START,
                            seed,
