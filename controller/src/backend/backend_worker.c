@@ -68,4 +68,8 @@ void *backend_worker(void *ptr) {
 			printf("BACKEND_WORKER: Invalid Request from Backend\n");
 		}
 	}
+
+	// for some reason the compiler warns about not having a return value here
+	// but doesn't in webot_worker
+	return (void *) arg_struct;
 }
