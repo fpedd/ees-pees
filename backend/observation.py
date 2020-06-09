@@ -1,4 +1,5 @@
 import numpy as np
+from gym import spaces
 
 
 class Observation():
@@ -7,7 +8,7 @@ class Observation():
 
     @property
     def observation_space(self):
-        return (20, )
+        return spaces.Box(-np.inf, np.inf, shape=(367,), dtype=np.float32)
 
     def get(self):
         return self.env.state.get()
