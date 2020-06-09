@@ -32,14 +32,18 @@ class WebotCtrl():
         self.address = None
         self.return_code = ReturnCode.SUCCESS
 
+        self.extr_ctrl = ExtCtrl()
+
     def init(self):
         self.compile_program()
         self.start_program()
         self.establish_connection()
+        self.extr_ctrl.init()
 
     def close(self):
         self.close_connection()
         self.close_program()
+        self.extr_ctrl.close()
 
     def is_program_started(self):
         # check if there is a process with the name "webots-bin" running
@@ -88,6 +92,7 @@ class WebotCtrl():
         self.sock.close()
 
     def start_env(self, seed=None, waiting_time=1):
+        self.extr_ctrl.reset()
         if seed is None:
             seed = utils.set_random_seed()
         data = struct.pack('iiiiif',
@@ -109,16 +114,17 @@ class WebotCtrl():
         self.config.gps_target = struct.unpack('2f', buffer[8:16])
 
     def reset_environment(self, seed=None):
+        self.extr_ctrl.reset()
         if seed is None:
             seed = utils.set_random_seed()
         # environment sollte sein wie beim start der simulation
-        data = struct.pack('iiiii', FunctionCode.RESET, seed, 0, 0, 0)
+        data = struct.pack('iiiiif', FunctionCode.RESET, seed, 0, 0, 0, 0.0)
         print("sending: reset")
         self.client_sock.send(data)
 
     def close_environment(self):
         # environment sollte sein wie beim start der simulation
-        data = struct.pack('iiiii', FunctionCode.CLOSE, 0, 0, 0, 0)
+        data = struct.pack('iiiiif', FunctionCode.CLOSE, 0, 0, 0, 0, 0.0)
         print("sending: close")
         self.client_sock.send(data)
 
@@ -134,6 +140,10 @@ class ExtCtrl():
     def init(self):
         self.compile()
         self.start()
+
+    def reset(self):
+        self.close()
+        self.init()
 
     def compile(self):
         self.close()

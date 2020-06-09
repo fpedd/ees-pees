@@ -72,7 +72,7 @@ int main() {
 		send_buffer.target[0] = (float) world->target[0];
 		send_buffer.target[1] = (float) world->target[1];
 
-		com_ret sv_send(send_buffer);
+		com_ret = sv_send(send_buffer);
 
 		sv_simulation_start(world);
 
@@ -116,7 +116,7 @@ int main() {
 		};
 
 		sv_simulation_stop();
-		
+
 		if(com_ret == -1) {
 			fprintf(stderr, "ERROR(supervisor_com): Trying to reconnect...");
 			usleep(RECONNECT_WAIT_TIME_MS);
