@@ -19,7 +19,7 @@ enum return_code {
 typedef struct {
 	enum return_code return_code;   // return_code [enum return_code]
 	int sim_time_step;              // simulation time_step in ms [int]
-	float target[2];               // target position [double[2]]
+	float target[2];                // target position [float[2]]
 } __attribute__((packed)) sv_to_bcknd_msg_t;
 
 // supervisor <-- backend

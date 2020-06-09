@@ -25,34 +25,50 @@
 		IP_S = "127.0.0.1"
 		PORT_S = 10201
 		PACKET_SIZE_S = 16
+		seed = None
 		fast_simulation = False
 		num_obstacles = 10
 		world_size = 10
-		target_x = 0.5
-		target_y = 0.5
-		seed = None
-		lidar_min_range = 0.12
-		lidar_max_range = 3.5
+		
 		sim_time_step = 32  # ms
+		
+	# known constants
+		lidar_min_range = 0.05
+		lidar_max_range = 3.5
 
 ## Interface for automated testing - automate.py
 ```
+
+enum function_code {
+	FUNC_UNDEF = -1,
+    NO_FUNCTION = 0,
+    START = 1,
+    RESET = 2,
+    CLOSE = 3
+};
+
+enum return_code {
+    RET_UNDEF = -1,
+    SUCCESS = 0,
+    ERROR = 1
+};
+
 // supervisor --> backend
 typedef struct {
-	int return_code;         // return_code [int]
-	float lidar_min_range;   // lidar min range in meter [float]
-	float lidar_max_range;   // lidar max range in meter [float]
-	int sim_time_step;       // simulation time_step in ms [int]
+	enum return_code return_code;   // return_code [enum return_code]
+	int sim_time_step;              // simulation time_step in ms [int]
+	float target[2];                // target position [double[2]]
 } __attribute__((packed)) sv_to_bcknd_msg_t;
 
 // supervisor <-- backend
 typedef struct {
-	int function_code;    // function code [int]
-	int seed;             // seed [int]
-	int fast_simulation;  // fast_simulation [int]
-	int num_obstacles;    // num_obstacles [int]
-	int world_size;       // world_size in meter [int]
+	enum function_code function_code; // function code [enum function_code]
+	int seed;                         // seed [int]
+	int fast_simulation;              // fast_simulation [int]
+	int num_obstacles;                // num_obstacles [int]
+	int world_size;                   // world_size in blocks [int]
 } __attribute__((packed)) bcknd_to_sv_msg_t;
+
 ```
 
 ## Interface to external controller - communicate.py
