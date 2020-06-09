@@ -3,14 +3,11 @@ import pickle
 import time
 
 
-# =========================================================================
-# ==========================        SEEDING       =========================
-# =========================================================================
-def np_random_seed(set=True):
+def set_random_seed(apply=False):
     """Use current time to set seed to something random."""
     t = 1000 * time.time()
-    seed = int(t) % 2**32
-    if set is True:
+    seed = int(t) % 2**16
+    if apply is True:
         np.random.seed(seed)
     else:
         return seed

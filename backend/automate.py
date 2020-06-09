@@ -2,10 +2,12 @@ import subprocess
 import socket
 import struct
 import time
+import numpy as np
 from enum import IntEnum
 import psutil
 
 from Config import WebotConfig
+import utils
 
 
 class FunctionCode(IntEnum):
@@ -28,17 +30,20 @@ class WebotCtrl():
         self.sock = None
         self.client_sock = None
         self.address = None
-        self.return_c = ReturnCode.SUCCESS
+        self.return_code = ReturnCode.SUCCESS
+
+        self.extr_ctrl = ExtCtrl()
 
     def init(self):
         self.compile_program()
         self.start_program()
-        # time.sleep(5.0)
         self.establish_connection()
+        self.extr_ctrl.init()
 
     def close(self):
         self.close_connection()
         self.close_program()
+        self.extr_ctrl.close()
 
     def is_program_started(self):
         # check if there is a process with the name "webots-bin" running
@@ -47,21 +52,16 @@ class WebotCtrl():
     def compile_program(self):
         self.close_program()
         # clean both controllers in webots
-        subprocess.call(["make", "clean"],
-                        cwd="../webots/controllers/supervisor")
-        subprocess.call(["make", "clean"],
-                        cwd="../webots/controllers/internal")
+        subprocess.call(["make", "clean"], cwd="../webots/controllers/supervisor")
+        subprocess.call(["make", "clean"], cwd="../webots/controllers/internal")
         # compile both controllers in webots
-        subprocess.call(["make", "all"],
-                        cwd="../webots/controllers/supervisor")
-        subprocess.call(["make", "all"],
-                        cwd="../webots/controllers/internal")
+        subprocess.call(["make", "all"], cwd="../webots/controllers/supervisor")
+        subprocess.call(["make", "all"], cwd="../webots/controllers/internal")
 
     def start_program(self):
         if self.is_program_started() is False:
             # start webots with the path of the world as argument
-            subprocess.Popen(["webots",
-                              "../webots/worlds/testworld_prototype.wbt"])
+            subprocess.Popen(["webots", "../webots/worlds/training_env.wbt"])
 
     def close_program(self):
         if self.is_program_started() is True:
@@ -91,42 +91,48 @@ class WebotCtrl():
         # close tcp connection to webot supervisor
         self.sock.close()
 
-    def start_env(self, seed=1, waiting_time=1):
-        data = struct.pack('5i2f',
+    def start_env(self, seed=None, waiting_time=1):
+        self.extr_ctrl.reset()
+        if seed is None:
+            seed = utils.set_random_seed()
+        data = struct.pack('iiiiif',
                            FunctionCode.START,
                            seed,
                            int(self.config.fast_simulation),
                            self.config.num_obstacles,
                            self.config.world_size,
-                           self.config.target_x,
-                           self.config.target_y)
+                           self.config.world_scaling)
+        print("sending: env")
         self.client_sock.send(data)
         time.sleep(waiting_time)
         self.get_metadata()
 
     def get_metadata(self):
         buffer = self.client_sock.recv(self.config.PACKET_SIZE_S)
-        self.return_c = struct.unpack('i', buffer[0:4])[0]
-        self.config.lidar_min_range = struct.unpack('f', buffer[4:8])[0]
-        self.config.lidar_max_range = struct.unpack('f', buffer[8:12])[0]
-        self.config.sim_time_step = struct.unpack('i', buffer[12:16])[0]
+        self.return_code = struct.unpack('i', buffer[0:4])[0]
+        self.config.sim_time_step = struct.unpack('i', buffer[4:8])[0]
+        self.config.gps_target = struct.unpack('2f', buffer[8:16])
 
-    def reset_environment(self):
+    def reset_environment(self, seed=None):
+        self.extr_ctrl.reset()
+        if seed is None:
+            seed = utils.set_random_seed()
         # environment sollte sein wie beim start der simulation
-        data = struct.pack('iiiii', FunctionCode.RESET, 0, 0, 0, 0)
+        data = struct.pack('iiiiif', FunctionCode.RESET, seed, 0, 0, 0, 0.0)
+        print("sending: reset")
         self.client_sock.send(data)
 
     def close_environment(self):
         # environment sollte sein wie beim start der simulation
-        data = struct.pack('iiiii', FunctionCode.CLOSE, 0, 0, 0, 0)
+        data = struct.pack('iiiiif', FunctionCode.CLOSE, 0, 0, 0, 0, 0.0)
+        print("sending: close")
         self.client_sock.send(data)
 
     def print(self):
         print("===== WebotCtrl =====")
-        print("return_c", self.return_c)
-        print("lidar_min_range", self.lidar_min_range)
-        print("lidar_max_range", self.lidar_max_range)
-        print("sim_time_step", self.sim_time_step)
+        print("return_code", self.return_code)
+        print("target", self.config.gps_target[0], self.config.gps_target[1])
+        print("sim_time_step", self.config.sim_time_step)
         print("=====================")
 
 
@@ -134,6 +140,10 @@ class ExtCtrl():
     def init(self):
         self.compile()
         self.start()
+
+    def reset(self):
+        self.close()
+        self.init()
 
     def compile(self):
         self.close()

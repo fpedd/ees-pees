@@ -16,7 +16,7 @@
 
 
 int sv_connect(){
-	
+
 	int ret_connect = tcp_connect();
 	return ret_connect;
 }
@@ -43,4 +43,9 @@ int sv_recv(bcknd_to_sv_msg_t *data) {
 	}
 
 	return 0;
+}
+
+int sv_close() {
+	
+	return tcp_close();
 }

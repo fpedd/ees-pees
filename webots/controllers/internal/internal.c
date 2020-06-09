@@ -39,7 +39,7 @@ int main(int argc, char **argv) {
 
 	const int timestep = (int)wb_robot_get_basic_time_step();
 
-	printf("This  C controller is a WIP playground for basic setup\n\n");
+	printf("This C controller is a WIP playground for basic setup\n\n");
 
 	WbDeviceTag motor, steer, lidar, gps, compass;
 	motor   = wb_robot_get_device("motor");
@@ -82,6 +82,7 @@ int main(int argc, char **argv) {
 		return EXIT_SUCCESS;
 	}
 
+	wb_robot_step(0);
 
 	// Send init information
 	init_to_ext_msg_t init_data;

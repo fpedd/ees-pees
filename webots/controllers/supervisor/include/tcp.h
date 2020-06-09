@@ -4,11 +4,11 @@
 
 int tcp_connect();
 
-int tcp_send (char* data, int data_len);
+int tcp_send(char* data, int data_len);
 
-int tcp_recv (char* buf, int buf_size);
+int tcp_recv(char* buf, int buf_size);
 
-int tcp_close ();
+int tcp_close();
 
 
 
