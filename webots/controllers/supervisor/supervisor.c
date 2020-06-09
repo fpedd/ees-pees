@@ -53,9 +53,12 @@ int main() {
 		sv_world_def *world = sv_simulation_init();
 
 		 // establish coms to backend
-		int ret_connect = sv_connect();
-		if(ret_connect) {
+		int com_ret = sv_connect();
+		if(com_ret) {
 			fprintf(stderr, "SUPERVISOR: Can't connect to backend\n");
+			fprintf(stderr, "SUPERVISOR: Retrying to connect...");
+			usleep(RECONNECT_WAIT_TIME_MS);
+			continue;
 		}
 
 		while(recv_buffer.function_code != START && com_ret != -1) {
@@ -119,9 +122,8 @@ int main() {
 		
 		if(com_ret == -1) {
 			fprintf(stderr, "ERROR(supervisor_com): Trying to reconnect...");
-			usleep(RECONNECT_WAIT_TIME_MS);
 		}
-		sv_close();    //close tcp connection
+		sv_close();    //close tcp socket
 
 		sv_world_clear(world);
 		sv_simulation_cleanup(world);
