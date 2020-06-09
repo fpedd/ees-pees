@@ -118,6 +118,9 @@ class WebotsEnv(gym.Env):
         self.send(action)
         self.recv()
         reward = self.calc_reward()
+        if len(self.history) % 10 == 0:
+            print("Reward (", len(self.history), ")\t", reward)
+
         done = self.check_done()
 
         # return self.state, reward, done, {}
