@@ -119,12 +119,9 @@ class Com(object):
         self.send(pack_out)
 
     def send_command_and_data_request(self, action):
-        print("PY: ALL IN")
         pack_out = OutgoingPacket(self.msg_cnt_out, PacketType.COM_REQ, action)
         self.send(pack_out)
-        time.sleep(self.wait_time)
         self.recv()
-        print(self.packet.time)
 
     @property
     def wait_time(self):
