@@ -6,7 +6,7 @@ import numpy as np
 from enum import IntEnum
 import psutil
 
-from Config import WebotConfig
+from config import WebotConfig
 import utils
 
 
@@ -107,6 +107,8 @@ class WebotCtrl():
         time.sleep(waiting_time)
         self.get_metadata()
 
+        time.sleep(self.config.wait_env_creation)
+
     def get_metadata(self):
         buffer = self.client_sock.recv(self.config.PACKET_SIZE_S)
         self.return_code = struct.unpack('i', buffer[0:4])[0]
@@ -121,6 +123,8 @@ class WebotCtrl():
         data = struct.pack('iiiiif', FunctionCode.RESET, seed, 0, 0, 0, 0.0)
         print("sending: reset")
         self.client_sock.send(data)
+
+        time.sleep(self.config.wait_env_reset)
 
     def close_environment(self):
         # environment sollte sein wie beim start der simulation

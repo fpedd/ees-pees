@@ -1,33 +1,70 @@
-# This is a basic workflow to help you get started with Actions
-
 name: backend
 
-# Controls when the action will run. Triggers the workflow on push or pull request
-# events but only for the master branch
 on:
   push:
-    branches: [ master ]
+    branches:
+      - master
+      - backend
   pull_request:
-    branches: [ master ]
+    branches:
+      - master
+      - backend
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
-  build:
-    # The type of runner that the job will run on
+  Pylint:
     runs-on: ubuntu-18.04
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-    - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+      - name: install pylint
+        run: pip install pylint
+      - name: install pylint-exit
+        run: pip install pylint-exit
+      - name: install numpy
+        run: pip install numpy
 
-    # Runs a single command using the runners shell
-    - name: Run a one-line script
-      run: echo Hello, world!
+      # - name: pylint Action
+      #   working-directory: backend
+      #   run: pylint Action.py --disable=missing-docstring --extension-pkg-whitelist=numpy || pylint-exit -efail $?
+      # - name: pylint Config
+      #   working-directory: backend
+      #   run: pylint Config.py --disable=missing-docstring || pylint-exit -efail $?
+      - name: pylint Observation
+        working-directory: backend
+        run: pylint Observation.py --disable=missing-docstring || pylint-exit -efail $?
+      # - name: pylint Reward
+      #   working-directory: backend
+      #   run: pylint Reward.py --disable=missing-docstring --extension-pkg-whitelist=numpy || pylint-exit -efail $?
+      # - name: pylint automate
+      #   working-directory: backend
+      #   run: pylint automate.py --disable=missing-docstring --extension-pkg-whitelist=numpy|| pylint-exit -efail $?
+      # - name: pylint communicate
+      #   working-directory: backend
+      #   run: pylint communicate.py --disable=missing-docstring --extension-pkg-whitelist=numpy || pylint-exit -efail $?
+      # - name: pylint environment
+      #   working-directory: backend
+      #   run: pylint environment.py --disable=missing-docstring --extension-pkg-whitelist=numpy || pylint-exit -efail $?
+      # - name: pylint james
+      #   working-directory: backend
+      #   run: pylint james.py --disable=missing-docstring || pylint-exit -efail $?
+      # - name: pylint utils
+      #   working-directory: backend
+      #   run: pylint utils.py --disable=missing-docstring --extension-pkg-whitelist=numpy || pylint-exit -efail $?
+      # - name: pylint webot
+      #   working-directory: backend
+      #   run: pylint webot.py --disable=missing-docstring --extension-pkg-whitelist=numpy || pylint-exit -efail $?
 
-    # Runs a set of commands using the runners shell
-    - name: Run a multi-line script
-      run: |
-        echo Add other actions to build,
-        echo test, and deploy your project.
+  Pytest:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+      - name: install-pytest
+        run: pip install pytest
+      - name: pytest
+        working-directory: backend
+        run: pytest -q test.py
+  
+
+
+        

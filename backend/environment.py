@@ -1,41 +1,58 @@
 import numpy as np
-import matplotlib.pyplot as plt
-import abc
 import gym
-import time
-
 import utils
-import communicate
 import automate
 
-from Config import WebotConfig
-from Action import DiscreteAction, ContinuousAction
-from Reward import Reward
-from Observation import observation_std
+from config import WebotConfig
+from action import DiscreteAction
+from evaluate import Evaluate
+from observation import Observation
+from communicate import Com
 
 
-class MyGym(gym.Env):
-    def __init__(self, seed):
-        super(MyGym, self).__init__()
-        self.set_seed(seed)
+class WebotsEnv(gym.Env):
+    def __init__(self,
+                 seed=None,
+                 gps_target=None,
+                 train=False,
+                 start_controller=False,
+                 action_class=DiscreteAction,
+                 evaluate_class=Evaluate,
+                 observation_class=Observation,
+                 config: WebotConfig = WebotConfig()):
+        super(WebotsEnv, self).__init__()
+        self.seed(seed)
 
-    @abc.abstractmethod
-    def reset(self):
-        pass
+        if gps_target is None and train is False:
+            raise ValueError("Target GPS data must be supplied in normal mode")
+        self.gps_target = gps_target
 
-    @abc.abstractmethod
-    def step(self):
-        pass
+        # some general inits
+        self.i = 0
+        self.history = {}
+        self.config = config
 
-    @abc.abstractmethod
-    def render(self):
-        pass
+        # init action, reward, observation
+        self.action_class = action_class
+        self.evaluate_class = evaluate_class
+        self.observation_class = observation_class
+        self._init_act_rew_obs(self)
 
-    @abc.abstractmethod
-    def close(self):
-        pass
+        # communication and supervisor
+        self.train = train
+        self._setup_train()
+        self._init_com()
 
-    def set_seed(self, seed):
+        if train is False and start_controller is True:
+            self.external_controller = automate.ExtCtrl()
+            self.external_controller.init()
+
+        self.send_data_request()
+
+    # =========================================================================
+    # ==========================       SEEDING       ==========================
+    # =========================================================================
+    def seed(self, seed):
         """Set main seed of env + 1000 other seeds for placements."""
         if seed is None:
             seed = utils.set_random_seed()
@@ -54,110 +71,11 @@ class MyGym(gym.Env):
         """Get the main seed of the env, first in seeds (list)."""
         return int(self.seeds[0])
 
-
-class WebotsBlue(MyGym):
-    def __init__(self, seed, action_class, reward_class, observation_func):
-        super(WebotsBlue, self).__init__(seed=seed)
-        self.action_class = action_class
-        self.reward_class = reward_class
-        self.observation_func = observation_func
-        self.i = 0
-        self.history = {}
-
-    def _update_history(self):
-        self.history[self.i] = self.state
-        self.i += 1
-
-    def _init_act_rew_obs(self, env):
-        # type to instance
-        if type(self.action_class) == type:
-            self.action_class = (self.action_class)()
-        if type(self.reward_class) == type:
-            self.reward_class = (self.reward_class)(env)
-
-        self.action_space = self.action_class.action_space
-        self.reward_range = self.reward_class.reward_range
-
-    def step(self, action):
-        """Perform action on environment.
-
-        Handled inside com class.
-        """
-        action = self.action_class.map(action, self.state_object)
-        self.send(action)
-        self.recv()
-        reward = self.calc_reward()
-        done = self.check_done()
-
-        # return self.state, reward, done, {}
-        return self.observation, reward, done, {}
-
-    def send(self, action):
-        self.com.send(action)
-
-    def recv(self):
-        self.com.recv()
-        self._update_history()
-
-    def close(self):
-        pass
-
-    def get_target_distance(self):
-        """Calculate euklidian distance to target."""
-        return utils.euklidian_distance(self.gps_actual, self.gps_target)
-
-    def calc_reward(self):
-        return self.reward_class.calc()
-
-    def check_done(self):
-        if self.gps_actual == self.gps_target:
-            return True
-        return False
-
-    @property
-    def observation(self):
-        return self.observation_func(self)
-
-    @property
-    def state(self):
-        return self.com.state.get()
-
-    @property
-    def state_object(self):
-        return self.com.state
-
-    @property
-    def gps_actual(self):
-        return self.com.state.gps_actual
-
-    @property
-    def gps_target(self):
-        return self.com.state.gps_target
-
-
-class WebotsEnv(WebotsBlue):
-    def __init__(self, seed=None, train=False, start_controller=False,
-                 action_class=DiscreteAction, reward_class=Reward,
-                 observation_func=observation_std,
-                 config: WebotConfig = WebotConfig()):
-        super(WebotsEnv, self).__init__(seed=seed,
-                                        action_class=action_class,
-                                        reward_class=reward_class,
-                                        observation_func=observation_func)
-        self.config = config
-
-        self.train = train
-        self._setup_train()
-
-        # start external controller
-        self.com = communicate.Com(config)
-        if start_controller is True:
-            self.external_controller = automate.ExtCtrl()
-            self.external_controller.init()
-            self.com.recv()
-
-        # init action, reward, observation
-        self._init_act_rew_obs(self)
+    # =========================================================================
+    # ==========================        SETUPS       ==========================
+    # =========================================================================
+    def _init_com(self):
+        self.com = Com(self.gps_target, self.config)
 
     def _setup_train(self):
         if self.train is True:
@@ -168,19 +86,116 @@ class WebotsEnv(WebotsBlue):
             # start environment and update config
             self.supervisor.start_env()
 
+            self.gps_target = self.config.gps_target
+
+    def _init_act_rew_obs(self, env):
+        # type to instance
+        if type(self.action_class) == type:
+            self.action_class = (self.action_class)()
+        if type(self.observation_class) == type:
+            self.observation_class = (self.observation_class)(env)
+        if type(self.evaluate_class) == type:
+            self.evaluate_class = (self.evaluate_class)(env)
+
+        self.action_space = self.action_class.action_space
+        self.observation_space = self.observation_class.observation_space
+        self.reward_range = self.evaluate_class.reward_range
+
+    @property
+    def observation(self):
+        return self.observation_class.get()
+
+    # =========================================================================
+    # ==========================         CORE        ==========================
+    # =========================================================================
+    def step(self, action):
+        """Perform action on environment.
+
+        Handled inside com class.
+        """
+        pre_action = self.state.pre_action
+        action = self.action_class.map(action, pre_action)
+        self.send_command_and_data_request(action)
+        reward = self.calc_reward()
+        if len(self.history) % 10 == 0:
+            print("Reward (", len(self.history), ")\t", reward)
+        done = self.check_done()
+
+        return self.observation, reward, done, {}
+
+    def calc_reward(self):
+        """Calc reward with evaluate class."""
+        return self.evaluate_class.calc_reward()
+
+    def check_done(self):
+        """Check done."""
+        return self.evaluate_class.check_done()
+
     def reset(self):
-        if self.supervisor_connection is True:
-            self.supervisor.start_env(self.main_seed)
+        """Reset environment to random."""
+        if self.supervisor_connected is True:
+            seed = utils.set_random_seed(apply=False)
+            self.seed(seed)
+            print("=========resetting with seed: ", seed)
+            self.supervisor.reset_environment(self.main_seed)
+
+            self._init_com()
+            self.send_data_request()
+
             return self.observation
 
     def close(self):
-        if self.supervisor_connection is True:
+        """Close connection to supervisor and external controller."""
+        if self.supervisor_connected is True:
             self.supervisor.close()
-            # TODO: sure to close external controller? Does it do harm if left open?
+            # TODO: sure to close external controller? Does it do harm if
+            # left open?
             self.external_controller.close()
 
+    def render(self):
+        """Render, does nothing just dummy."""
+        pass
+
+    # =========================================================================
+    # ==========================        HELPER       ==========================
+    # =========================================================================
+    def send_data_request(self):
+        self.com.send_data_request()
+
+    def send_command(self, action):
+        self.com.send_command(action)
+
+    def send_command_and_data_request(self, action):
+        self.com.send_command_and_data_request(action)
+
+    def recv(self):
+        """Receive state via Com class."""
+        self.com.recv()
+        self._update_history()
+
+    def _update_history(self):
+        """Add current state of Com to history."""
+        self.history[self.i] = self.state
+        self.i += 1
+
+    def get_target_distance(self):
+        """Calculate euklidian distance to target."""
+        return utils.euklidian_distance(self.gps_actual, self.gps_target)
+
     @property
-    def supervisor_connection(self) -> bool:
-        if self.supervisor is not None and self.supervisor.return_code.value == 0:
+    def state(self):
+        return self.com.state
+
+    @property
+    def iterations(self):
+        return len(self.history)
+
+    @property
+    def gps_actual(self):
+        return self.com.state.gps_actual
+
+    @property
+    def supervisor_connected(self) -> bool:
+        if self.supervisor is not None and self.supervisor.return_code == 0:
             return True
         return False
