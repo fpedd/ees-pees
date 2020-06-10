@@ -22,7 +22,7 @@ class WebotConfig(object):
         self.fast_simulation = False
         self.num_obstacles = 10
         self.world_size = 20
-        self.world_scaling = 0.25  # meters: 20*0.25 -> 5m x 5m
+        self._world_scaling = 0.25  # meters: 20*0.25 -> 5m x 5m
 
         # (received) world metadata
         self.gps_target = None
@@ -38,12 +38,12 @@ class WebotConfig(object):
         for (k, v) in self.__dict__.items():
             print(str(k) + "\t" + str(v))
 
-    # @property
-    # def world_scaling(self):
-    #     return self._world_scaling
-    #
-    # @world_scaling.setter
-    # def world_scaling(self, value):
-    #     if value < 0.25:
-    #         raise ValueError("world_scaling must be larger or equal 0.25")
-    #     self._world_scaling = value
+    @property
+    def world_scaling(self):
+        return self._world_scaling
+
+    @world_scaling.setter
+    def world_scaling(self, value):
+        if value < 0.25:
+            raise ValueError("world_scaling must be larger or equal 0.25")
+        self._world_scaling = value

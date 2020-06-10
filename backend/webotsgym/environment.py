@@ -154,12 +154,9 @@ class WebotsEnv(gym.Env):
         """Close connection to supervisor and external controller."""
         if self.supervisor_connected is True:
             self.supervisor.close()
-            # TODO: sure to close external controller? Does it do harm if
-            # left open?
-            self.external_controller.close()
 
     def render(self):
-        """Render, does nothing just dummy."""
+        """Render dummy, does nothing."""
         pass
 
     # =========================================================================
