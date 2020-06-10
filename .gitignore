@@ -7,9 +7,13 @@
 webots/controllers/internal/internal
 webots/controllers/supervisor/supervisor
 
+### Python Models
+backend/models/*
+
 ### C ###
 # Prerequisites
 *.d
+
 
 # Object files
 *.o
