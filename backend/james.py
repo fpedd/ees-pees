@@ -4,7 +4,7 @@ import numpy as np
 import time
 
 import webotsgym.communicate as communicate
-# import environment
+import webotsgym.environment as environment
 from webotsgym.action import ContinuousAction
 from webotsgym.webot import WebotAction
 
@@ -29,14 +29,14 @@ class RndWebotAgent(Agent):
         time.sleep(0.2)
         self.com.send_command(action)
 
-#
+
 # class WebotCtrAgent(Agent):
 #     def __init__(self):
 #         self.dheading = 0.05
 #         self.dspeed = 0.05
 #         self.env = environment.WebotsEnv(action_class=ContinuousAction)
 #         self.env.recv()
-#         self._init_action()
+#         self.send_data_request()
 #
 #     def _init_action(self):
 #         self.act = WebotAction()
