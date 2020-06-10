@@ -138,10 +138,3 @@ class Com(object):
         #     self.packet.msg_cnt_in = self.packet.count
         #     return
         #
-        # if abs(time.time() - self.packet.time) > TIME_OFFSET_ALLOWED:
-        #     print("ERROR: recv time diff to big local ", time.time()," remote ",
-        #           self.packet.time, " diff ", abs(time.time() - self.packet.time))
-        #     return
-
-        # data = struct.pack('Qdff', self.msg_cnt_out, time.time(),
-        #                    action.heading, action.speed)
