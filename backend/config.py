@@ -32,7 +32,7 @@ class WebotConfig(object):
         self.wait_env_creation = 5  # in sec
         self.wait_env_reset = 2  # in sec
         self.send_wait_time = 32  # in ms
-        self.reset_after = 2 * 10**3  # in sec
+        self.reset_after = 1 * 10**4  # in sec
 
     def print(self):
         for (k, v) in self.__dict__.items():

@@ -23,7 +23,7 @@ class Evaluate(object):
         return val * self.reward_range[1] / base_v
 
     def check_done(self):
-        if self.env.iterations == self.config.reset_after:
+        if self.env.iterations % self.config.reset_after == 0:
             return True
         if self.env.get_target_distance() < 0.1:
             return True

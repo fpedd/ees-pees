@@ -98,7 +98,7 @@ class WebotsEnv(gym.Env):
         if type(self.observation_class) == type:
             self.observation_class = (self.observation_class)(env)
         if type(self.evaluate_class) == type:
-            self.evaluate_class = (self.evaluate_class)(env)
+            self.evaluate_class = (self.evaluate_class)(env, self.config)
 
         self.action_space = self.action_class.action_space
         self.observation_space = self.observation_class.observation_space
