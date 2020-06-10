@@ -46,14 +46,14 @@ class Packet(object):
 # ==========================   OUTGOING PACKET   ==========================
 # =========================================================================
 class PacketType(Enum):
-    COM = 0
-    COM_REQ = 1
+    COM = 1
     REQ = 2
+    COM_REQ = 3
 
 
 class OutgoingPacket():
     def __init__(self, msg_cnt, packet_type,
-                 action: WebotAction = WebotAction(0, 0)):
+                 action: WebotAction = WebotAction(action=(0, 0))):
         self.msg_cnt = msg_cnt
         self.time = time.time()
         if isinstance(packet_type, int):
@@ -80,28 +80,29 @@ class Com(object):
         self.state = WebotState(gps_target, config)
         self.packet = Packet(config)
         self.history = []
-        self.sock = None
+        self._set_sock()
+        # self.sock = None
 
     def _set_sock(self):
-        if self.sock is not None:
-            self.sock.close()
+        # if self.sock is not None:
+        #     self.sock.close()
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_SNDBUF,
-                             self.config.PACKET_SIZE)
+        # self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_SNDBUF,
+        #                      self.config.PACKET_SIZE)
         self.sock.bind((self.config.IP, self.config.BACKEND_PORT))
 
     def _update_history(self):
         self.history.append([self.packet.time, self.packet])
 
     def recv(self):
-        self._set_sock()
         self.packet.buffer, addr = self.sock.recvfrom(self.config.PACKET_SIZE)
         self.state.fill_from_buffer(self.packet.buffer)
 
     def send(self, pack_out):
         data = pack_out.pack()
         ret = self.sock.sendto(data, (self.config.IP, self.config.CONTROL_PORT))
+        print(ret)
         if ret == len(data):
             self.msg_cnt_out += 2
         else:
@@ -110,7 +111,7 @@ class Com(object):
     def send_data_request(self):
         pack_out = OutgoingPacket(self.msg_cnt_out, PacketType.REQ)
         self.send(pack_out)
-        time.sleep(self.config.send_wait_time)
+        time.sleep(self.wait_time)
         self.recv()
 
     def send_command(self, action):
@@ -118,11 +119,16 @@ class Com(object):
         self.send(pack_out)
 
     def send_command_and_data_request(self, action):
+        print("PY: ALL IN")
         pack_out = OutgoingPacket(self.msg_cnt_out, PacketType.COM_REQ, action)
         self.send(pack_out)
-        time.sleep(self.config.send_wait_time)
+        time.sleep(self.wait_time)
         self.recv()
+        print(self.packet.time)
 
+    @property
+    def wait_time(self):
+        return self.config.send_wait_time/1000
         # if PACKET_SIZE < len(self.packet.buffer):
         #     print("ERROR: recv did not get full packet", len(self.packet.buffer))
         #     return
