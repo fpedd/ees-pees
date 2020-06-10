@@ -1,6 +1,6 @@
 import numpy as np
 
-from config import WebotConfig
+from webotsgym.config import WebotConfig
 
 
 class Evaluate(object):

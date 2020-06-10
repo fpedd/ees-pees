@@ -3,8 +3,8 @@ import struct
 import time
 from enum import Enum
 
-from config import WebotConfig
-from webot import WebotState, WebotAction
+from webotsgym.config import WebotConfig
+from webotsgym.webot import WebotState, WebotAction
 
 
 # =========================================================================

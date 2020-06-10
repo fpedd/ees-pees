@@ -1,14 +1,14 @@
 import numpy as np
 import gym
-import utils
-import automate
 import time
 
-from config import WebotConfig
-from action import DiscreteAction
-from evaluate import Evaluate
-from observation import Observation
-from communicate import Com
+import webotsgym.utils as utils
+import webotsgym.automate as automate
+from webotsgym.config import WebotConfig
+from webotsgym.action import DiscreteAction
+from webotsgym.evaluate import Evaluate
+from webotsgym.observation import Observation
+from webotsgym.communicate import Com
 
 
 class WebotsEnv(gym.Env):

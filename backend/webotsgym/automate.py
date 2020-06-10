@@ -5,9 +5,17 @@ import time
 import numpy as np
 from enum import IntEnum
 import psutil
+import os
 
-from config import WebotConfig
-import utils
+from webotsgym.config import WebotConfig
+import webotsgym.utils as utils
+
+
+def get_repo_dir():
+    p = os.path.abspath('..')
+    home_dir = p.split("/ees-pees")[0]
+    repo_dir = os.path.join(home_dir, "ees-pees")
+    return repo_dir
 
 
 class FunctionCode(IntEnum):
@@ -52,16 +60,16 @@ class WebotCtrl():
     def compile_program(self):
         self.close_program()
         # clean both controllers in webots
-        subprocess.call(["make", "clean"], cwd="../webots/controllers/supervisor")
-        subprocess.call(["make", "clean"], cwd="../webots/controllers/internal")
+        subprocess.call(["make", "clean"], cwd=os.path.join(get_repo_dir(), "webots/controllers/supervisor"))
+        subprocess.call(["make", "clean"], cwd=os.path.join(get_repo_dir(), "webots/controllers/internal"))
         # compile both controllers in webots
-        subprocess.call(["make", "all"], cwd="../webots/controllers/supervisor")
-        subprocess.call(["make", "all"], cwd="../webots/controllers/internal")
+        subprocess.call(["make", "all"], cwd=os.path.join(get_repo_dir(), "webots/controllers/supervisor"))
+        subprocess.call(["make", "all"], cwd=os.path.join(get_repo_dir(), "webots/controllers/internal"))
 
     def start_program(self):
         if self.is_program_started() is False:
             # start webots with the path of the world as argument
-            subprocess.Popen(["webots", "../webots/worlds/training_env.wbt"])
+            subprocess.Popen(["webots", os.path.join(get_repo_dir(), "webots/worlds/training_env.wbt")])
 
     def close_program(self):
         if self.is_program_started() is True:
@@ -151,11 +159,11 @@ class ExtCtrl():
 
     def compile(self):
         self.close()
-        subprocess.call(["make", "clean"], cwd="../controller")
-        subprocess.call(["make", "all"], cwd="../controller")
+        subprocess.call(["make", "clean"], cwd=os.path.join(get_repo_dir(), "controller"))
+        subprocess.call(["make", "all"], cwd=os.path.join(get_repo_dir(), "controller"))
 
     def start(self):
-        subprocess.Popen(["../controller/build/controller"])
+        subprocess.Popen([os.path.join(get_repo_dir(), "controller/build/controller")])
 
     def close(self):
         subprocess.call(["pkill", "controller"])

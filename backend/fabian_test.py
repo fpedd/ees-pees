@@ -1,8 +1,8 @@
 import time
-import automate
 import subprocess
 
 from james import RndWebotAgent
+import webotsgym.automate as automate
 
 print("start webot")
 w = automate.WebotCtrl()

@@ -1,8 +1,8 @@
 import numpy as np
 from gym.spaces import Tuple, Box, Discrete
 
-import utils
-from webot import WebotState, WebotAction
+import webotsgym.utils as utils
+from webotsgym.webot import WebotState, WebotAction
 
 
 class Action(object):
