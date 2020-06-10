@@ -81,15 +81,12 @@ class Com(object):
         self.packet = Packet(config)
         self.history = []
         self._set_sock()
-        # self.sock = None
+        if self.config.fast_simulation is True:
+            print("USE FAST MODE")
 
     def _set_sock(self):
-        # if self.sock is not None:
-        #     self.sock.close()
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        # self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_SNDBUF,
-        #                      self.config.PACKET_SIZE)
         self.sock.bind((self.config.IP, self.config.BACKEND_PORT))
 
     def _update_history(self):
@@ -102,7 +99,6 @@ class Com(object):
     def send(self, pack_out):
         data = pack_out.pack()
         ret = self.sock.sendto(data, (self.config.IP, self.config.CONTROL_PORT))
-        print(ret)
         if ret == len(data):
             self.msg_cnt_out += 2
         else:
@@ -125,7 +121,10 @@ class Com(object):
 
     @property
     def wait_time(self):
-        return self.config.send_wait_time/1000
+        divider = 1
+        if self.config.fast_simulation is True:
+            divider = 3
+        return self.config.send_wait_time/1000/divider
         # if PACKET_SIZE < len(self.packet.buffer):
         #     print("ERROR: recv did not get full packet", len(self.packet.buffer))
         #     return
