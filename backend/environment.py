@@ -1,13 +1,13 @@
 import numpy as np
 import gym
 import utils
-import communicate
 import automate
 
 from config import WebotConfig
 from action import DiscreteAction
 from evaluate import Evaluate
 from observation import Observation
+from communicate import Com
 
 
 class WebotsEnv(gym.Env):
@@ -21,7 +21,7 @@ class WebotsEnv(gym.Env):
                  observation_class=Observation,
                  config: WebotConfig = WebotConfig()):
         super(WebotsEnv, self).__init__()
-        self.set_seed(seed)
+        self.seed(seed)
 
         if gps_target is None and train is False:
             raise ValueError("Target GPS data must be supplied in normal mode")
@@ -47,12 +47,12 @@ class WebotsEnv(gym.Env):
             self.external_controller = automate.ExtCtrl()
             self.external_controller.init()
 
-        self.com.recv()
+        self.send_data_request()
 
     # =========================================================================
     # ==========================       SEEDING       ==========================
     # =========================================================================
-    def set_seed(self, seed):
+    def seed(self, seed):
         """Set main seed of env + 1000 other seeds for placements."""
         if seed is None:
             seed = utils.set_random_seed()
@@ -75,7 +75,7 @@ class WebotsEnv(gym.Env):
     # ==========================        SETUPS       ==========================
     # =========================================================================
     def _init_com(self):
-        self.com = communicate.Com(self.gps_target, self.config)
+        self.com = Com(self.gps_target, self.config)
 
     def _setup_train(self):
         if self.train is True:
@@ -115,15 +115,12 @@ class WebotsEnv(gym.Env):
         """
         pre_action = self.state.pre_action
         action = self.action_class.map(action, pre_action)
-        self.send(action)
-        self.recv()
+        self.send_command_and_data_request(action)
         reward = self.calc_reward()
         if len(self.history) % 10 == 0:
             print("Reward (", len(self.history), ")\t", reward)
-
         done = self.check_done()
 
-        # return self.state, reward, done, {}
         return self.observation, reward, done, {}
 
     def calc_reward(self):
@@ -139,10 +136,11 @@ class WebotsEnv(gym.Env):
         if self.supervisor_connected is True:
             seed = utils.set_random_seed(apply=False)
             self.seed(seed)
+            print("=========resetting with seed: ", seed)
             self.supervisor.reset_environment(self.main_seed)
 
             self._init_com()
-            self.com.recv()
+            self.send_data_request()
 
             return self.observation
 
@@ -161,9 +159,14 @@ class WebotsEnv(gym.Env):
     # =========================================================================
     # ==========================        HELPER       ==========================
     # =========================================================================
-    def send(self, action):
-        """Send action via Com class."""
-        self.com.send(action)
+    def send_data_request(self):
+        self.com.send_data_request()
+
+    def send_command(self, action):
+        self.com.send_command(action)
+
+    def send_command_and_data_request(self, action):
+        self.com.send_command_and_data_request(action)
 
     def recv(self):
         """Receive state via Com class."""

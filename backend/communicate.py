@@ -8,7 +8,7 @@ from webot import WebotState, WebotAction
 
 
 # =========================================================================
-# ==========================       PACKET        ==========================
+# ==========================   INCOMING PACKET   ==========================
 # =========================================================================
 class PacketError(Enum):
     UNITILIZED = -1
@@ -43,6 +43,32 @@ class Packet(object):
 
 
 # =========================================================================
+# ==========================   OUTGOING PACKET   ==========================
+# =========================================================================
+class PacketType(Enum):
+    COM = 0
+    COM_REQ = 1
+    REQ = 2
+
+
+class OutgoingPacket():
+    def __init__(self, msg_cnt, packet_type,
+                 action: WebotAction = WebotAction(0, 0)):
+        self.msg_cnt = msg_cnt
+        self.time = time.time()
+        if isinstance(packet_type, int):
+            self.type = packet_type
+        else:
+            self.type = packet_type.value
+        self.action = action
+
+    def pack(self):
+        data = struct.pack('Qdiff', self.msg_cnt, time.time(), self.type,
+                           self.action.heading, self.action.speed)
+        return data
+
+
+# =========================================================================
 # ==========================    COMMUNICATION    ==========================
 # =========================================================================
 class Com(object):
@@ -73,15 +99,29 @@ class Com(object):
         self.packet.buffer, addr = self.sock.recvfrom(self.config.PACKET_SIZE)
         self.state.fill_from_buffer(self.packet.buffer)
 
-        # TESTING START
-        # print("gps[0] ", end='')
-        # print(self.state.gps_actual[0], end='')
-        # print("  gps[1] ", end='')
-        # print(self.state.gps_actual[1])
+    def send(self, pack_out):
+        data = pack_out.pack()
+        ret = self.sock.sendto(data, (self.config.IP, self.config.CONTROL_PORT))
+        if ret == len(data):
+            self.msg_cnt_out += 2
+        else:
+            print("ERROR: could not send message, is ", ret, " should ", len(data))
 
-        # print(self.state.gps_actual[0])
-        # print(self.state.gps_actual[1])
-        # TESTING END
+    def send_data_request(self):
+        pack_out = OutgoingPacket(self.msg_cnt_out, PacketType.REQ)
+        self.send(pack_out)
+        time.sleep(self.config.send_wait_time)
+        self.recv()
+
+    def send_command(self, action):
+        pack_out = OutgoingPacket(self.msg_cnt_out, PacketType.COM, action)
+        self.send(pack_out)
+
+    def send_command_and_data_request(self, action):
+        pack_out = OutgoingPacket(self.msg_cnt_out, PacketType.COM_REQ, action)
+        self.send(pack_out)
+        time.sleep(self.config.send_wait_time)
+        self.recv()
 
         # if PACKET_SIZE < len(self.packet.buffer):
         #     print("ERROR: recv did not get full packet", len(self.packet.buffer))
@@ -101,12 +141,5 @@ class Com(object):
         #           self.packet.time, " diff ", abs(time.time() - self.packet.time))
         #     return
 
-    def send(self, action: WebotAction):
-        self._set_sock()
-        data = struct.pack('Qdff', self.msg_cnt_out, time.time(),
-                           action.heading, action.speed)
-        ret = self.sock.sendto(data, (self.config.IP, self.config.CONTROL_PORT))
-        if ret == len(data):
-            self.msg_cnt_out += 2
-        else:
-            print("ERROR: could not send message, is ", ret, " should ", len(data))
+        # data = struct.pack('Qdff', self.msg_cnt_out, time.time(),
+        #                    action.heading, action.speed)

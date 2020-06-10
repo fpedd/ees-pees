@@ -1,9 +1,12 @@
 import numpy as np
 
+from config import WebotConfig
+
 
 class Evaluate(object):
-    def __init__(self, env):
+    def __init__(self, env, config: WebotConfig = WebotConfig()):
         self.env = env
+        self.config = config
         self.reward_range = (-100, 100)
 
     def calc_reward(self):
@@ -20,7 +23,7 @@ class Evaluate(object):
         return val * self.reward_range[1] / base_v
 
     def check_done(self):
-        if self.env.iterations == 10**6:
+        if self.env.iterations == self.config.reset_after:
             return True
         if self.env.get_target_distance() < 0.1:
             return True
@@ -28,8 +31,8 @@ class Evaluate(object):
 
 
 class EvaluateMats(Evaluate):
-    def __init__(self, env):
-        super(EvaluateMats, self).__init__(env)
+    def __init__(self, env, config: WebotConfig = WebotConfig()):
+        super(EvaluateMats, self).__init__(env, config)
         self.reward_range = (-2000, 2000)
 
     def calc_reward(self):
