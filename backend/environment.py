@@ -2,6 +2,7 @@ import numpy as np
 import gym
 import utils
 import automate
+import time
 
 from config import WebotConfig
 from action import DiscreteAction
@@ -31,6 +32,8 @@ class WebotsEnv(gym.Env):
         self.i = 0
         self.history = {}
         self.config = config
+
+        self.reset_history = [time.time()]
 
         # init action, reward, observation
         self.action_class = action_class
@@ -117,7 +120,7 @@ class WebotsEnv(gym.Env):
         action = self.action_class.map(action, pre_action)
         self.send_command_and_data_request(action)
         reward = self.calc_reward()
-        if len(self.history) % 10 == 0:
+        if len(self.history) % 250 == 0:
             print("Reward (", len(self.history), ")\t", reward)
         done = self.check_done()
 
@@ -134,6 +137,9 @@ class WebotsEnv(gym.Env):
     def reset(self):
         """Reset environment to random."""
         if self.supervisor_connected is True:
+            self.reset_history.append(time.time())
+            print("TIME FOR RESET=========", self.reset_history[-1] - self.reset_history[-2])
+
             seed = utils.set_random_seed(apply=False)
             self.seed(seed)
             print("=========resetting with seed: ", seed)
@@ -161,12 +167,14 @@ class WebotsEnv(gym.Env):
     # =========================================================================
     def send_data_request(self):
         self.com.send_data_request()
+        self._update_history()
 
     def send_command(self, action):
         self.com.send_command(action)
 
     def send_command_and_data_request(self, action):
         self.com.send_command_and_data_request(action)
+        self._update_history()
 
     def recv(self):
         """Receive state via Com class."""
