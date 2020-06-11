@@ -96,10 +96,9 @@ class ContinuousAction(Action):
     def __init__(self):
         self.action_space = Box(-1, 1, shape=(2,), dtype=np.float32)
 
-    def map(self, action_dx, state: WebotState):
+    def map(self, action_dx, pre_action):
         # TODO: relative, absolute
         action_dx = tuple(action_dx)
-        action = utils.add_tuples(state.pre_action, action_dx)
+        action = utils.add_tuples(pre_action, action_dx)
         action = WebotAction(action)
-        action.print()
         return action
