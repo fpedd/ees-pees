@@ -23,7 +23,7 @@ class Evaluate(object):
         return val * self.reward_range[1] / base_v
 
     def check_done(self):
-        if self.env.iterations % self.config.reset_after == 0:
+        if self.env.iterations % self.config.reset_env_after == 0:
             return True
         if self.env.get_target_distance() < 0.1:
             return True
@@ -58,3 +58,42 @@ class EvaluateMats(Evaluate):
             if self.env.state:
                 reward = reward - 10
         return reward
+
+
+class EvaluatePJ0(Evaluate):
+    def __init__(self, env, config: WebotConfig = WebotConfig()):
+        super(EvaluatePJ0, self).__init__(env, config)
+        self.reward_range = (-1000, 1000)
+
+    def calc_reward(self):
+        """Calculate reward function.
+
+        Idea(Mats):
+        - negative reward for normal move so that james moves faster to goal
+        - still lower negative reward if james gets closer to goal
+        - high positive award for reaching it
+        - high negative award to hitting a wall
+        - epsilon only to divide never by 0
+
+        """
+        if self.env.state.touching is True:
+            return self.reward_range[0]
+        elif self.env.get_target_distance() < 0.1:
+            return self.reward_range[1]
+        else:
+            epsilon = 10**-5
+            cost_step = 1
+            distance = self.env.get_target_distance() + epsilon
+            cost_distance = (distance**0.4) / (distance)
+            reward_factor = -1
+            reward = reward_factor * (cost_step * cost_distance)
+        return reward
+
+    def check_done(self):
+        if self.env.iterations % self.config.reset_env_after == 0:
+            return True
+        if self.env.state.touching is True:
+            return True
+        if self.env.get_target_distance() < 0.1:
+            return True
+        return False
