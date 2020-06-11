@@ -54,9 +54,10 @@ class WebotState(object):
     def heading_idx(self):
         """Get index of heading in distance values."""
         if self.heading > 0:
-            return int(self.heading * 180 - 1)
+            idx = self.heading * 180
         else:
-            return int(359 + self.heading * 180)
+            idx = 360 + self.heading * 180
+        return int(idx - 1)
 
     def get(self, lidar="relative"):
         """Get webot state as numpy array."""
