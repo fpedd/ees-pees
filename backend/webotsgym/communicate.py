@@ -100,9 +100,11 @@ class Com(object):
             self.dir_type = DirectionType.STEERING
         else:
             self.dir_type = DirectionType.HEADING
+
         if config.fast_simulation is True:
             print("USE FAST MODE")
 
+    # ------------------------------  SETUPS  ---------------------------------
     def _set_sock(self):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -115,13 +117,16 @@ class Com(object):
         self.packet.buffer, addr = self.sock.recvfrom(self.config.PACKET_SIZE)
         self.state.fill_from_buffer(self.packet.buffer)
 
+    # -------------------------------  SEND -----------------------------------
     def send(self, pack_out):
         data = pack_out.pack()
-        ret = self.sock.sendto(data, (self.config.IP, self.config.CONTROL_PORT))
+        ret = self.sock.sendto(data, (self.config.IP,
+                                      self.config.CONTROL_PORT))
         if ret == len(data):
             self.msg_cnt_out += 2
         else:
-            print("ERROR: could not send message, is ", ret, " should ", len(data))
+            print("ERROR: could not send message, is ", ret, " should ",
+                  len(data))
 
     def send_data_request(self):
         pack_out = OutgoingPacket(self.msg_cnt_out, PacketType.REQ,
@@ -146,17 +151,19 @@ class Com(object):
         divider = 1
         if self.config.fast_simulation is True:
             divider = 3
-        return self.config.send_wait_time/1000/divider
-        # if PACKET_SIZE < len(self.packet.buffer):
-        #     print("ERROR: recv did not get full packet", len(self.packet.buffer))
-        #     return
-        #
-        # if IP != addr[0]:
-        #     print("ERROR: recv did from wrong address", addr)
-        #     return
-        #
-        # if self.packet.count != self.packet.msg_cnt_in:
-        #     print("ERROR: recv wrong msg count, is ", self.packet.count, " should ", self.packet.msg_cnt_in)
-        #     self.packet.msg_cnt_in = self.packet.count
-        #     return
-        #
+        return self.config.send_wait_time / 1000 / divider
+
+# if PACKET_SIZE < len(self.packet.buffer):
+#     print("ERROR: recv did not get full packet", len(self.packet.buffer))
+#     return
+#
+# if IP != addr[0]:
+#     print("ERROR: recv did from wrong address", addr)
+#     return
+#
+# if self.packet.count != self.packet.msg_cnt_in:
+#     print("ERROR: recv wrong msg count, is ", self.packet.count, " should ",
+#           self.packet.msg_cnt_in)
+#     self.packet.msg_cnt_in = self.packet.count
+#     return
+#
