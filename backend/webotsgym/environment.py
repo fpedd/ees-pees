@@ -80,7 +80,7 @@ class WebotsEnv(gym.Env):
     # ==========================        SETUPS       ==========================
     # =========================================================================
     def _init_com(self):
-        self.com = Com(self.gps_target, self.config)
+        self.com = Com(self.config.gps_target, self.config)
 
     def _setup_train(self):
         if self.train is True:
