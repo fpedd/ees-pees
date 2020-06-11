@@ -1,6 +1,7 @@
 class WebotConfig(object):
 
     def __init__(self):
+        self.direction_type = "heading"  # vs. "steering"
         # ----------------------------------------------------------------------
         # external controller protocol
         self.IP = "127.0.0.1"
