@@ -44,20 +44,20 @@ int udp_init() {
 		return -3;
 	}
 
-	struct timeval timeout;
-	timeout.tv_sec = RECV_TIMEOUT / 1000;
-	timeout.tv_usec = RECV_TIMEOUT * 1000;
-	if (setsockopt(sock_fd, SOL_SOCKET, SO_RCVTIMEO, (char *)&timeout, sizeof(timeout)) < 0)  {
-		fprintf(stderr, "ERROR: udp init setsockopt timeout rcv failed '%s'\n", strerror(errno));
-		return -4;
-	}
+	// struct timeval timeout;
+	// timeout.tv_sec = RECV_TIMEOUT / 1000;
+	// timeout.tv_usec = RECV_TIMEOUT * 1000;
+	// if (setsockopt(sock_fd, SOL_SOCKET, SO_RCVTIMEO, (char *)&timeout, sizeof(timeout)) < 0)  {
+	// 	fprintf(stderr, "ERROR: udp init setsockopt timeout rcv failed '%s'\n", strerror(errno));
+	// 	return -4;
+	// }
 
-	timeout.tv_sec = SEND_TIMEOUT / 1000;
-	timeout.tv_usec = SEND_TIMEOUT * 1000;
-	if (setsockopt(sock_fd, SOL_SOCKET, SO_SNDTIMEO, (char *)&timeout, sizeof(timeout)) < 0) {
-		fprintf(stderr, "ERROR: udp init setsockopt timeout snd failed '%s'\n", strerror(errno));
-		return -5;
-	}
+	// timeout.tv_sec = SEND_TIMEOUT / 1000;
+	// timeout.tv_usec = SEND_TIMEOUT * 1000;
+	// if (setsockopt(sock_fd, SOL_SOCKET, SO_SNDTIMEO, (char *)&timeout, sizeof(timeout)) < 0) {
+	// 	fprintf(stderr, "ERROR: udp init setsockopt timeout snd failed '%s'\n", strerror(errno));
+	// 	return -5;
+	// }
 
 	controller_addr.sin_family = AF_INET;
 	controller_addr.sin_addr.s_addr = htonl(INADDR_ANY);
@@ -91,7 +91,7 @@ int udp_recv(char *buf, int buf_size) {
 
 	int len = recvfrom(sock_fd, buf, buf_size, 0, NULL, NULL);
 	if (len < 0) {
-		// fprintf(stderr, "\nERROR: udp recv '%s'\n", strerror(errno));
+		fprintf(stderr, "\nERROR: udp recv '%s'\n", strerror(errno));
 		return len;
 	}
 	return len;

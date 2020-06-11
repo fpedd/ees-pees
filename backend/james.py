@@ -3,10 +3,10 @@ from pynput import keyboard
 import numpy as np
 import time
 
-import communicate
-# import environment
-from Action import ContinuousAction
-from webot import WebotAction
+import webotsgym.communicate as communicate
+import webotsgym.environment as environment
+from webotsgym.action import ContinuousAction
+from webotsgym.webot import WebotAction
 
 
 class Agent(abc.ABC):
@@ -20,27 +20,23 @@ class Agent(abc.ABC):
 
 class RndWebotAgent(Agent):
     def __init__(self):
-        self.com = communicate.Com()
+        self.com = communicate.Com((1, 2))
 
     def action(self):
         action = WebotAction()
-        self.com.recv()
-        print("current state")
-        print(self.com.state.gps_actual)
         action.heading = np.random.random() * 2 - 1
         action.speed = np.random.random() * 2 - 1
         time.sleep(0.2)
-        action.print()
-        self.com.send(action)
+        self.com.send_command(action)
 
-#
+
 # class WebotCtrAgent(Agent):
 #     def __init__(self):
 #         self.dheading = 0.05
 #         self.dspeed = 0.05
 #         self.env = environment.WebotsEnv(action_class=ContinuousAction)
 #         self.env.recv()
-#         self._init_action()
+#         self.send_data_request()
 #
 #     def _init_action(self):
 #         self.act = WebotAction()

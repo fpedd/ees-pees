@@ -1,110 +1,14 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import communicate
-import utils
-import abc
-
+import copy
 import gym
 from gym import spaces
 
-
-class MyGym(gym.Env):
-    def __init__(self, seed):
-        super(MyGym, self).__init__()
-        self.seed(seed)
-        self.reward_range = (-100, 100)
-
-    @abc.abstractmethod
-    def reset(self):
-        pass
-
-    @abc.abstractmethod
-    def step(self):
-        pass
-
-    @abc.abstractmethod
-    def render(self):
-        pass
-
-    @abc.abstractmethod
-    def close(self):
-        pass
-
-    def seed(self, seed):
-        """Set main seed of env + 1000 other seeds for placements."""
-        if seed is None:
-            seed = np.random.randint(0, 10**6, 1)
-        self.seeds = [seed]
-        np.random.seed(seed)
-        self.seeds.extend(list(set(np.random.randint(0, 10**6, 1000))))
-
-    def get_next_seed(self):
-        """Get next random seed, increment next_seed_idx."""
-        seed = self.seeds[self.next_seed_idx]
-        self.next_seed_idx += 1
-        return seed
-
-    @property
-    def main_seed(self):
-        """Get the main seed of the env, first in seeds (list)."""
-        return int(self.seeds[0])
+import fakegym.utils as utils
 
 
 def no_mapping(self, action):
     return action
-
-
-class WebotsBlue(MyGym):
-    def __init__(self, seed, action_mapping=no_mapping):
-        super(WebotsBlue, self).__init__(seed=seed)
-        self.action_mapping = action_mapping
-
-    def reset(self):
-        self.com.reset()
-        return self.state
-
-    def step(self, action):
-        """Perform action on environment.
-
-        Handled inside com class.
-        """
-        action = self.action_mapping(action)
-        self.com.send(action)
-        self.com.recv()
-        reward = self.calc_reward()
-        done = self.check_done()
-        return self.state, reward, done, {}
-
-    def close(self):
-        pass
-
-    def get_target_distance(self):
-        """Calculate euklidian distance to target."""
-        return utils.euklidian_distance(self.gps_actual, self.gps_target)
-
-    def calc_reward(self):
-        return np.random.random()
-
-    def check_done(self):
-        if self.gps_actual == self.gps_target:
-            return True
-        return False
-
-    @property
-    def state(self):
-        return self.com.state.get()
-
-    @property
-    def state_object(self):
-        return self.com.state
-
-    @property
-    def gps_actual(self):
-        return self.com.state.gps_actual
-
-    @property
-    def gps_target(self):
-        return self.com.state.gps_target
 
 
 class ActionMapper(object):
@@ -155,38 +59,120 @@ class ContinuousAction(ActionMapper):
         return orientation, length
 
 
-class WebotsEnv(WebotsBlue):
-    def __init__(self, seed):
-        super(WebotsEnv, self).__init__(seed=seed)
-        self.com = communicate.Com(self.seeds)
+class Observation():
+    def __init__(self, env):
+        self.gps_actual = None
+        self.gps_target = None
+        self.distance = None
+        self.touching = None
 
-    def reset(self):
-        #  reset_environment in automate, wait and then grab ext ctrl info
-        pass
+    def _update(self, env):
+        self.gps_actual = env.state_object.gps_actual
+        self.gps_target = env.state_object.gps_target
+        self.distance = env.state_object.distance
+        self.touching = env.state_object.touching
+
+    def shape(self):
+        return (9, )
+
+    def get(self, env):
+        """Get observation as numpy array."""
+        self._update(env)
+        arr = np.empty(0)
+        for k, v in self.__dict__.items():
+            if k != "env":
+                arr = np.hstack((arr, np.array(v)))
+        return arr
 
 
-class WebotsFake(WebotsBlue):
-    def __init__(self, seed, N, num_of_sensors, obstacles_each,
-                 step_range=(1, 7), action_type="discrete",
-                 discrete_action_shaping="flatten"):
+class FakeGym(gym.Env):
+    def __init__(self, seed=None, N=10, num_of_sensors=4, obstacles_each=4,
+                 step_range=(1, 1), action_type="discrete",
+                 discrete_action_shaping="flatten", obs=Observation):
+        super(FakeGym, self).__init__()
+
+        self.history = {}
+
         if action_type == "continous":
             self.action_mapper = ContinuousAction(num_of_sensors, step_range)
         else:
             self.action_mapper = DiscreteAction(num_of_sensors, step_range,
                                                 discrete_action_shaping)
+        self.seed(seed)
+        self.reward_range = (-100, 100)
+        self.action_mapping = self.action_mapper.action_map
+        self.action_space = self.action_mapper.action_space
 
-        super(WebotsFake, self).__init__(seed=seed, action_mapping=self.action_mapper.action_map)
         self.com_inits = (N, num_of_sensors, obstacles_each)
         self.com = FakeCom(self.seeds, self.com_inits[0], self.com_inits[1],
                            self.com_inits[2])
-        self.plotpadding = 1
+        self.plotpadding = 0
 
-        # set observation and action space
-        obs_shape = self.state_object.observation_shape
-        self.observation_space = spaces.Box(0, np.inf, shape=obs_shape,
+        self.obs = (obs)(self)
+        self.observation_space = spaces.Box(0, np.inf, shape=self.obs.shape(),
                                             dtype=np.float32)
 
-        self.action_space = self.action_mapper.action_space
+    def seed(self, seed):
+        """Set main seed of env + 1000 other seeds for placements."""
+        if seed is None:
+            seed = np.random.randint(0, 10**6, 1)
+        self.seeds = [seed]
+        np.random.seed(seed)
+        self.seeds.extend(list(set(np.random.randint(0, 10**6, 1000))))
+
+    def get_next_seed(self):
+        """Get next random seed, increment next_seed_idx."""
+        seed = self.seeds[self.next_seed_idx]
+        self.next_seed_idx += 1
+        return seed
+
+    @property
+    def main_seed(self):
+        """Get the main seed of the env, first in seeds (list)."""
+        return int(self.seeds[0])
+
+    def step(self, action):
+        """Perform action on environment.
+
+        Handled inside com class.
+        """
+        action = self.action_mapping(action)
+        self.com.send(action)
+        reward = self.calc_reward()
+        done = self.check_done()
+        self.history[self.com.time_steps] = copy.deepcopy(self.state_object)
+        self.com.time_steps += 1
+        return self.state, reward, done, {}
+
+    def close(self):
+        pass
+
+    def get_target_distance(self):
+        """Calculate euklidian distance to target."""
+        return utils.euklidian_distance(self.gps_actual, self.gps_target)
+
+    def check_done(self):
+        if self.com.time_steps == 1000:
+            return True
+        if self.gps_actual == self.gps_target:
+            return True
+        return False
+
+    @property
+    def state(self):
+        return self.obs.get(self)
+
+    @property
+    def state_object(self):
+        return self.com.state
+
+    @property
+    def gps_actual(self):
+        return self.com.state.gps_actual
+
+    @property
+    def gps_target(self):
+        return self.com.state.gps_target
 
     def calc_reward(self):
         """Calculate reward function.
@@ -200,7 +186,7 @@ class WebotsFake(WebotsBlue):
 
         """
         if self.gps_actual == self.gps_target:
-            reward = 100
+            reward = 1000
         else:
             epsilon = 10**-5
             cost_step = 1
@@ -213,6 +199,8 @@ class WebotsFake(WebotsBlue):
         return reward
 
     def reset(self):
+        seed = utils.np_random_seed(set=False)
+        self.seed(seed)
         self.com = FakeCom(self.seeds, self.com_inits[0], self.com_inits[1],
                            self.com_inits[2])
         return self.state
@@ -243,161 +231,6 @@ class WebotsFake(WebotsBlue):
         return self.com.field
 
 
-class WebotsFakeMini(WebotsFake):
-    def __init__(self, N=10, num_of_sensors=4, obstacles_each=2, seed=None,
-                 step_range=(1, 1), action_type="discrete",
-                 discrete_action_shaping="flatten"):
-        super(WebotsFakeMini, self).__init__(seed, N, num_of_sensors,
-                                             obstacles_each, step_range,
-                                             action_type, discrete_action_shaping)
-        self.plotpadding = 0
-
-
-class WebotsFakeMedium(WebotsFake):
-    def __init__(self, N=40, num_of_sensors=8, obstacles_each=3, seed=None,
-                 step_range=(1, 8), action_type="discrete",
-                 discrete_action_shaping="flatten"):
-        super(WebotsFakeMedium, self).__init__(seed, N, num_of_sensors,
-                                               obstacles_each, step_range,
-                                               action_type, discrete_action_shaping)
-        self.plotpadding = 0
-
-
-class WebotsFakeLarge(WebotsFake):
-    def __init__(self, N=500, num_of_sensors=16, obstacles_each=20, seed=None,
-                 step_range=(1, 50), action_type="discrete",
-                 discrete_action_shaping="flatten"):
-        super(WebotsFakeLarge, self).__init__(seed, N, num_of_sensors,
-                                              obstacles_each, step_range,
-                                              action_type, discrete_action_shaping)
-        self.plotpadding = 4
-
-
-class DQNEnv(WebotsFakeMini):
-    def __init__(self, seed=None):
-        super(DQNEnv, self).__init__(seed=seed)
-
-    def pos_out(self, pt):
-        if pt[0] < 0 or pt [1] < 0:
-            return True
-        elif pt[0] > self.N-1 or pt[1] > self.N-1:
-            return True
-        else:
-            return False
-
-    def fields_around(self, radius):
-        n_f = radius * 2 + 1
-        fields = np.zeros(shape=(n_f, n_f))
-        pos = self.gps_actual
-        x = 0
-        y = 0
-        d = (0, 0)
-        for i in range(-radius, radius + 1):
-            y = 0
-            for j in range(-radius, radius + 1):
-                d = (i, j)
-                pt = tuple(map(lambda i, j: i + j, pos, d))
-                if pt == pos:
-                    fields[x][y] = -1
-                if(self.pos_out(pt)):
-                    fields[x][y] = 1
-                elif self.field[pt[0]][pt[1]] > 0:
-                    fields[x][y] = 1
-                y += 1
-            x += 1
-
-        return fields
-
-    def adj_direction(self, direction):
-        adj = (0,0)
-        if direction == 1:
-            adj = (-1,0)
-        elif direction == 2:
-            adj = (0,1)
-        elif direction == 3:
-            adj = (1,0)
-        elif direction == 4:
-            adj = (0, -1)
-        return adj
-
-    def step_f(self, action, radius):
-        dead = False
-        done = False
-        crash = False
-        o_pos = self.gps_actual
-        direction, len_ = action
-        adj = (0, 0)
-        if direction == 1:
-            adj = (-1, 0)
-        elif direction == 2:
-            adj = (0, 1)
-        elif direction == 3:
-            adj = (1, 0)
-        elif direction == 4:
-            adj = (0, -1)
-        n_p = tuple(map(lambda i, j: i + j, o_pos, adj))
-        if self.field[n_p[0], n_p[1]] > 0:
-            crash = True
-        else:
-            self.com.state.gps_actual = n_p
-        if self.gps_actual == self.gps_target:
-            done = True
-        n_pos = self.gps_actual
-        state = (self.gps_actual, self.fields_around(radius))
-        reward = self.calc_reward(crash, done, o_pos, n_pos)
-        return state, reward, done, dead
-
-    def get_state(self, radius):
-        state = np.append(self.pos[0], self.pos[1])
-        state = np.append(state,self.target[0])
-        state = np.append(state, self.target[1])
-        state = np.append(state,self.fields_around(radius))
-
-        return state
-
-    def random_action(self):
-        direction = np.random.randint(NUM_OF_SENSORS)
-        return direction
-
-    def dist_reward(self, o_pos, n_pos):
-        d_reward = 0
-        t_pos = self.gps_target
-        dx_old = abs(o_pos[0] - t_pos[0])
-        dx_new = abs(n_pos[0] - t_pos[0])
-        dy_old = abs(o_pos[1] - t_pos[1])
-        dy_new = abs(n_pos[1] - t_pos[1])
-
-        if dx_old > dx_new:
-            d_reward = 20
-        if dx_old < dx_new:
-            d_reward = -20
-        if dy_old > dy_new:
-            d_reward = 20
-        if dy_old < dy_new:
-            d_reward = -20
-
-        return d_reward
-
-    def calc_reward(self, crash, done, o_pos, n_pos):
-        reward = 0
-        if done == True:
-            reward = reward + 100
-        if crash == True:
-            reward = reward - 10
-        #reward = reward + self.dist_reward(o_pos, n_pos)
-        #reward = reward - 1
-        return reward
-
-    def reset_pos(self, startpos):
-        self.pos = startpos
-
-    def get_pos(self):
-        return self.pos
-
-    def plot(self):
-        self.render()
-
-
 WALLSIZE = 1
 VAL_WALL = 1
 VAL_OBSTACLE = 2
@@ -405,16 +238,23 @@ VAL_ROBBIE = 4
 VAL_TARGET = 6
 
 
-class FakeState(communicate.WebotState):
+class FakeState():
     def __init__(self):
         self.gps_actual = None
         self.gps_target = None
         self.distance = None
         self.touching = 0
 
+    @property
+    def observation_shape(self):
+        if self.state_filled:
+            arr = self.get()
+            return arr.shape
+        return None
+
 
 class FakeCom():
-    def __init__(self, seeds, N=100, num_of_sensors=4, obstacles_each=4):
+    def __init__(self, seeds, N=100, num_of_sensors=4, obstacles_each=2):
         self.seeds = seeds
         self.next_seed_idx = 1
         self.inits = (N, num_of_sensors, obstacles_each)
@@ -422,6 +262,7 @@ class FakeCom():
         self.offset = int(2 * N)
         self.num_of_sensors = num_of_sensors
         self._init(N, obstacles_each)
+        self.time_steps = 0
 
     def _init(self, N, obstacles_each):
         self.state = FakeState()
@@ -439,7 +280,7 @@ class FakeCom():
         self.distance_sensor()
 
         # reset seed to something random
-        utils.set_random_seed()
+        utils.np_random_seed()
 
     def reset(self):
         N, num_of_sensors, obstacles_each = self.inits
@@ -568,10 +409,6 @@ class FakeCom():
                 safept = pt
         self.state.gps_actual = safept
         self.distance_sensor()
-
-    def recv(self):
-        """Fake for consistency."""
-        pass
 
     # #########################################################################
     # ###############################   HELPER  ###############################

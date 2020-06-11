@@ -1,11 +1,14 @@
 import struct
 import numpy as np
 
-from Config import WebotConfig
+from webotsgym.config import WebotConfig
 
 
+# =========================================================================
+# ==============================    STATE    ==============================
+# =========================================================================
 class WebotState(object):
-    def __init__(self, config: WebotConfig = WebotConfig()):
+    def __init__(self, gps_target=None, config: WebotConfig = WebotConfig()):
         # meta
         self.config = config
         self.buffer = None
@@ -14,6 +17,7 @@ class WebotState(object):
         self.sim_time = None
         self.speed = None
         self.gps_actual = None
+        self.gps_target = gps_target
         self.heading = None
         self.distance = None
         self.touching = None
@@ -24,25 +28,19 @@ class WebotState(object):
         Fills state information of transmission was success.
         """
 
-        print("pending transmission")
         self.buffer = buffer
-        print(len(buffer))
         if self.transmission_success:
-            print("transmission success")
             self.sim_time = struct.unpack('f', buffer[16:20])[0]
             self.speed = struct.unpack('f', buffer[20:24])[0]
             self.gps_actual = struct.unpack('2f', buffer[24:32])
             self.heading = struct.unpack('f', buffer[32:36])[0]
             self.touching = struct.unpack("I", buffer[36:40])[0]
-            self.distance = struct.unpack("{}f".format(self.num_lidar), buffer[40: (40 + self.num_lidar*4)])
+            self._unpack_distance(buffer, start=40)
 
-            # self.sim_time = struct.unpack('f', buffer[16:20])[0]
-            # self.speed = struct.unpack('f', buffer[20:24])[0]
-            # self.gps_actual = struct.unpack('2f', buffer[24:32])
-            # self.gps_target = struct.unpack('2f', buffer[32:40])
-            # self.heading = struct.unpack('f', buffer[40:44])[0]
-            # self.touching = struct.unpack("I", buffer[44:48])[0]
-            # self.distance = struct.unpack("{}f".format(self.num_lidar), buffer[48: (48 + self.num_lidar*4)])
+    def _unpack_distance(self, buffer, start=40):
+        to = start + self.num_lidar * 4
+        N = self.num_lidar
+        self.distance = struct.unpack("{}f".format(N), buffer[start: to])
 
     def get_distance(self, absolute=False):
         # TODO: mapping absolute and relative lidar stuff with heading
@@ -50,10 +48,13 @@ class WebotState(object):
 
     def get(self):
         """Get webot state as numpy array."""
-        # TODO: update here nur sim time, speed etc zu nehmen ...
         arr = np.empty(0)
-        for v in self.__dict__.values():
-            arr = np.hstack((arr, np.array(v)))
+        arr = np.hstack((arr, np.array(self.sim_time)))
+        arr = np.hstack((arr, np.array(self.gps_actual)))
+        arr = np.hstack((arr, np.array(self.gps_target)))
+        arr = np.hstack((arr, np.array(self.heading)))
+        arr = np.hstack((arr, np.array(self.touching)))
+        arr = np.hstack((arr, np.array(self.distance)))
         return arr
 
     @property
@@ -89,14 +90,10 @@ class WebotState(object):
             return None
         return len(self.heading)
 
-    # @property
-    # def observation_shape(self):
-    #     if self.state_filled:
-    #         arr = self.get()
-    #         return arr.shape
-    #     return None
 
-
+# =========================================================================
+# ==============================    ACTION   ==============================
+# =========================================================================
 class WebotAction(object):
     def __init__(self, action=None):
         self._heading = None
