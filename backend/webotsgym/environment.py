@@ -204,6 +204,10 @@ class WebotsEnv(gym.Env):
         return self.com.state.gps_actual
 
     @property
+    def max_distance(self):
+        return np.sqrt(2) * self.config.world_size
+
+    @property
     def supervisor_connected(self) -> bool:
         if self.supervisor is not None and self.supervisor.return_code == 0:
             return True
