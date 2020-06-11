@@ -57,9 +57,9 @@ class WebotState(object):
     @property
     def heading_idx(self):
         if self.heading > 0:
-            return self.heading * 180 - 1
+            return int(self.heading * 180 - 1)
         else:
-            return 359 + self.heading * 180
+            return int(359 + self.heading * 180)
 
     def get(self):
         """Get webot state as numpy array."""
