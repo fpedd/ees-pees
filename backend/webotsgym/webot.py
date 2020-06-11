@@ -20,7 +20,7 @@ class WebotState(object):
         self.gps_target = gps_target
         self.heading = None
         self.distance = None
-        self.touching = None
+        self._touching = None
 
     def fill_from_buffer(self, buffer):
         """Set state from buffer information in packet from external controller.
@@ -34,13 +34,20 @@ class WebotState(object):
             self.speed = struct.unpack('f', buffer[20:24])[0]
             self.gps_actual = struct.unpack('2f', buffer[24:32])
             self.heading = struct.unpack('f', buffer[32:36])[0]
-            self.touching = struct.unpack("I", buffer[36:40])[0]
+            self._touching = struct.unpack("I", buffer[36:40])[0]
             self._unpack_distance(buffer, start=40)
 
     def _unpack_distance(self, buffer, start=40):
         to = start + self.num_lidar * 4
         N = self.num_lidar
-        self.distance = struct.unpack("{}f".format(N), buffer[start: to])
+        self.distance = np.array(struct.unpack("{}f".format(N),
+                                               buffer[start: to]))
+
+    @property
+    def touching(self):
+        if any(self.distance < 0.1):
+            return True
+        return False
 
     @property
     def lidar_absolute(self):
@@ -58,6 +65,10 @@ class WebotState(object):
         else:
             idx = 360 + self.heading * 180
         return int(idx - 1)
+
+    def obstacle_in_range(self):
+        # TODO
+        pass
 
     def get(self, lidar="relative"):
         """Get webot state as numpy array."""
