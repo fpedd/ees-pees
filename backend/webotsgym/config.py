@@ -1,19 +1,23 @@
 class WebotConfig(object):
 
     def __init__(self):
+        # -------------------------- General Settings  ------------------------
         self.direction_type = "heading"  # vs. "steering"
-        # ----------------------------------------------------------------------
-        # external controller protocol
+        self.reset_env_after = 1 * 10**4  # in sec
+        self.DIST_VECS = 360
+        self.wait_env_creation = 5  # in sec
+        self.wait_env_reset = 2  # in sec
+        self.send_wait_time = 32  # in ms
+
+        # ------------------------ External Controller ------------------------
         self.IP = "127.0.0.1"
         self.CONTROL_PORT = 6969
         self.BACKEND_PORT = 6970
         self.PACKET_SIZE = 1480
         self.TIME_OFFSET_ALLOWED = 1.0
 
-        self.DIST_VECS = 360
-
-        # ----------------------------------------------------------------------
-        # supervisor communication protocol
+        # ------------------------ Supervisor ------------------------
+        # network settings
         self.IP_S = "127.0.0.1"
         self.PORT_S = 10201
         self.PACKET_SIZE_S = 16
@@ -28,12 +32,6 @@ class WebotConfig(object):
         # (received) world metadata
         self.gps_target = None
         self.sim_time_step = 32  # ms
-
-        # training settings, varies with speed of computer
-        self.wait_env_creation = 5  # in sec
-        self.wait_env_reset = 2  # in sec
-        self.send_wait_time = 32  # in ms
-        self.reset_after = 1 * 10**4  # in sec
 
     def print(self):
         for (k, v) in self.__dict__.items():
