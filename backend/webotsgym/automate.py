@@ -130,7 +130,7 @@ class WebotCtrl():
         self.config.sim_time_step = struct.unpack('i', buffer[4:8])[0]
         self.config.gps_target = struct.unpack('2f', buffer[8:16])
 
-    def reset_environment(self, seed=None):
+    def reset_environment(self, seed=None, waiting_time=1):
         """Reset environment with seed."""
         self.extr_ctrl.reset()
         if seed is None:
@@ -139,6 +139,8 @@ class WebotCtrl():
         data = struct.pack('iiiiif', FunctionCode.RESET, seed, 0, 0, 0, 0.0)
         print("sending: reset")
         self.client_sock.send(data)
+        time.sleep(waiting_time)
+        self.get_metadata()
 
         time.sleep(self.config.wait_env_reset)
 
