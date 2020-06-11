@@ -46,6 +46,21 @@ class WebotState(object):
         # TODO: mapping absolute and relative lidar stuff with heading
         return self.distance
 
+    @property
+    def lidar_absolute(self):
+        return np.roll(self.distance, self.heading_idx)
+
+    @property
+    def lidar_relative(self):
+        return self.distance
+
+    @property
+    def heading_idx(self):
+        if self.heading > 0:
+            return self.heading * 180 - 1
+        else:
+            return 359 + self.heading * 180
+
     def get(self):
         """Get webot state as numpy array."""
         arr = np.empty(0)
