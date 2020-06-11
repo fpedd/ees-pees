@@ -32,6 +32,8 @@ class WebotsEnv(gym.Env):
         self.i = 0
         self.history = {}
         self.config = config
+        self.distances = []
+        self.rewards = []
 
         self.reset_history = [time.time()]
 
@@ -120,6 +122,8 @@ class WebotsEnv(gym.Env):
         action = self.action_class.map(action, pre_action)
         self.send_command_and_data_request(action)
         reward = self.calc_reward()
+        self.rewards.append(reward)
+        self.distances.append(self.get_target_distance())
         if len(self.history) % 250 == 0:
             print("Reward (", len(self.history), ")\t", reward)
         done = self.check_done()
