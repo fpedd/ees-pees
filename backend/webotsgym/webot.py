@@ -42,10 +42,6 @@ class WebotState(object):
         N = self.num_lidar
         self.distance = struct.unpack("{}f".format(N), buffer[start: to])
 
-    def get_distance(self, absolute=False):
-        # TODO: mapping absolute and relative lidar stuff with heading
-        return self.distance
-
     @property
     def lidar_absolute(self):
         return np.roll(self.distance, self.heading_idx)
@@ -56,12 +52,13 @@ class WebotState(object):
 
     @property
     def heading_idx(self):
+        """Get index of heading in distance values."""
         if self.heading > 0:
             return int(self.heading * 180 - 1)
         else:
             return int(359 + self.heading * 180)
 
-    def get(self):
+    def get(self, lidar="relative"):
         """Get webot state as numpy array."""
         arr = np.empty(0)
         arr = np.hstack((arr, np.array(self.sim_time)))
@@ -69,7 +66,11 @@ class WebotState(object):
         arr = np.hstack((arr, np.array(self.gps_target)))
         arr = np.hstack((arr, np.array(self.heading)))
         arr = np.hstack((arr, np.array(self.touching)))
-        arr = np.hstack((arr, np.array(self.distance)))
+        if lidar == "absolute":
+            distance = self.lidar_absolute
+        else:
+            distance = self.lidar_relative
+        arr = np.hstack((arr, np.array(distance)))
         return arr
 
     @property
