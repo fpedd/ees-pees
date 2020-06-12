@@ -8,7 +8,7 @@ from webotsgym.config import WebotConfig
 # ==============================    STATE    ==============================
 # =========================================================================
 class WebotState(object):
-    def __init__(self, gps_target=None, config: WebotConfig = WebotConfig()):
+    def __init__(self, config: WebotConfig = WebotConfig()):
         # meta
         self.config = config
         self.buffer = None
@@ -17,7 +17,6 @@ class WebotState(object):
         self.sim_time = None
         self.speed = None
         self.gps_actual = None
-        self.gps_target = gps_target
         self.heading = None
         self.distance = None
         self._touching = None
@@ -66,32 +65,12 @@ class WebotState(object):
             idx = 360 + self.heading * 180
         return int(idx - 1)
 
-    def obstacle_in_range(self):
-        # TODO
-        pass
-
-    def get(self, lidar="relative"):
-        """Get webot state as numpy array."""
-        arr = np.empty(0)
-        arr = np.hstack((arr, np.array(self.sim_time)))
-        arr = np.hstack((arr, np.array(self.gps_actual)))
-        arr = np.hstack((arr, np.array(self.gps_target)))
-        arr = np.hstack((arr, np.array(self.heading)))
-        arr = np.hstack((arr, np.array(self.touching)))
-        if lidar == "absolute":
-            distance = self.lidar_absolute
-        else:
-            distance = self.lidar_relative
-        arr = np.hstack((arr, np.array(distance)))
-        return arr
-
     @property
     def num_lidar(self):
         return self.config.DIST_VECS
 
     @property
     def transmission_success(self):
-        # TODO: abfangen in paket
         if len(self.buffer) == self.config.PACKET_SIZE:
             return True
         return False
