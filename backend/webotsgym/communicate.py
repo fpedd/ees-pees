@@ -87,12 +87,12 @@ class OutgoingPacket():
 # ==========================    COMMUNICATION    ==========================
 # =========================================================================
 class Com(object):
-    def __init__(self, gps_target, config: WebotConfig = WebotConfig()):
+    def __init__(self, config: WebotConfig = WebotConfig()):
         self.config = config
         self.msg_cnt_in = 0
         self.msg_cnt_out = 1
         self.latency = None
-        self.state = WebotState(gps_target, config)
+        self.state = WebotState(config)
         self.packet = Packet(config)
         self.history = []
         self._set_sock()
@@ -151,7 +151,7 @@ class Com(object):
         divider = 1
         if self.config.fast_simulation is True:
             divider = 3
-        return self.config.send_wait_time / 1000 / divider
+        return self.config.send_recv_wait_time / 1000 / divider
 
 # if PACKET_SIZE < len(self.packet.buffer):
 #     print("ERROR: recv did not get full packet", len(self.packet.buffer))
