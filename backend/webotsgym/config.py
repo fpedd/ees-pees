@@ -7,7 +7,8 @@ class WebotConfig(object):
         self.DIST_VECS = 360
         self.wait_env_creation = 5  # in sec
         self.wait_env_reset = 2  # in sec
-        self.send_wait_time = 32  # in ms
+        self.send_recv_wait_time = 32  # in ms
+        self.step_wait_time = 0  # in sec
 
         # ------------------------ External Controller ------------------------
         self.IP = "127.0.0.1"
@@ -22,7 +23,7 @@ class WebotConfig(object):
         self.PORT_S = 10201
         self.PACKET_SIZE_S = 16
 
-        # settable for environment start via supervisor
+        # setting for world generation via supervisor
         self.seed = None
         self.fast_simulation = False
         self.num_obstacles = 10
