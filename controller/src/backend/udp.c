@@ -12,7 +12,6 @@
 #include <sys/time.h>
 #include <errno.h>
 
-
 #define IP              "127.0.0.1"
 #define CONTROL_PORT    6969
 #define BACKEND_PORT    6970
@@ -81,7 +80,6 @@ int udp_send(char *data, int data_len) {
 	int len = sendto(sock_fd, data, data_len, 0, (struct sockaddr *)&backend_addr, sizeof(struct sockaddr_in));
 	if (len < 0) {
 		fprintf(stderr, "ERROR: udp send %s\n", strerror(errno));
-		return len;
 	}
 	return len;
 }
@@ -91,7 +89,6 @@ int udp_recv(char *buf, int buf_size) {
 	int len = recvfrom(sock_fd, buf, buf_size, 0, NULL, NULL);
 	if (len < 0) {
 		fprintf(stderr, "\nERROR: udp recv '%s'\n", strerror(errno));
-		return len;
 	}
 	return len;
 }

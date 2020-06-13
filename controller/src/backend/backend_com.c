@@ -43,7 +43,7 @@ int com_send(ext_to_bcknd_msg_t data) {
 		return -1;
 	}
 
-	// We sent a message, so increment count
+	// we sent a message, so increment count
 	msg_cnt++;
 
 	return 0;
@@ -70,13 +70,12 @@ int com_recv(bcknd_to_ext_msg_t *data) {
 	if (data->msg_cnt != msg_cnt) {
 		fprintf(stderr, "BACKEND_COM: ERROR: com recv msg_cnt %d does not match msg %lld \n",
 		        msg_cnt, data->msg_cnt);
-		// mgs_cnt wasn't right, but next shoud be one higher (unless we send before)
-		// msg_cnt = data->msg_cnt + 1;
-		msg_cnt = data->msg_cnt;
+		// we got our messages out of sync, but for now lets just resync
+		msg_cnt = data->msg_cnt + 1;
 		return -3;
 	}
 
-	// We received a message, so increment count
+	// we received a message, so increment count
 	msg_cnt++;
 
 	return len;
