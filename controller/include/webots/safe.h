@@ -8,4 +8,6 @@
 
 int safety_check(bcknd_to_ext_msg_t *bcknd_to_ext);
 
+int touching();
+
 #endif // SAFE_H
