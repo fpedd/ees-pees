@@ -66,3 +66,12 @@ int pid_reset(pid_ctrl_t *pid) {
 
 	return 0;
 }
+
+int pid_update(pid_ctrl_t *pid, float k_p, float k_i, float k_d) {
+
+	pid->k_p = k_p;
+	pid->k_i = k_i;
+	pid->k_d = k_d;
+
+	return 0;
+}

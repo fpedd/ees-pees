@@ -20,4 +20,6 @@ int pid_run(pid_ctrl_t *pid, float dt, float set, float in, float *out);
 
 int pid_reset(pid_ctrl_t *pid);
 
+int pid_update(pid_ctrl_t *pid, float k_p, float k_i, float k_d);
+
 #endif  // PID_H
