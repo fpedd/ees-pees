@@ -78,3 +78,35 @@ TEST(pid, run) {
 	ASSERT_NEAR(out, -28.0, 1.0e-10);
 
 }
+
+TEST(pid, reset) {
+	pid_ctrl_t pid;
+	float out = 0.0;
+
+	pid_init(&pid, 0.0, 2.0, 3.0, -100.0, 100.0, true);
+	pid_run(&pid, 1.0, 1.0, 2.0, &out);
+	ASSERT_NEAR(out, -8.0, 1.0e-10);
+
+	// reset should reset
+	pid_reset(&pid);
+	pid_run(&pid, 1.0, 1.0, 2.0, &out);
+	ASSERT_NEAR(out, -8.0, 1.0e-10);
+}
+
+
+TEST(pid, update) {
+	pid_ctrl_t pid;
+
+	pid_init(&pid, 1.0, 2.0, 3.0, 4.0, 5.0, true);
+
+	// update should only update p, i, d
+	pid_update(&pid, -3.0, -2.0, -1.0);
+	ASSERT_NEAR(pid.k_p, -3.0, 1.0e-10);
+	ASSERT_NEAR(pid.k_i, -2.0, 1.0e-10);
+	ASSERT_NEAR(pid.k_d, -1.0, 1.0e-10);
+	ASSERT_NEAR(pid.out_min, 4.0, 1.0e-10);
+	ASSERT_NEAR(pid.out_max, 5.0, 1.0e-10);
+	ASSERT_NEAR(pid.err_acc, 0.0, 1.0e-10);
+	ASSERT_NEAR(pid.prev_in, 0.0, 1.0e-10);
+	ASSERT_EQ(pid.wa, true);
+}
