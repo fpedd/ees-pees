@@ -43,7 +43,7 @@ void *webot_worker(void *ptr) {
 		memcpy(arg_struct->ext_to_bcknd, &ext_to_bcknd, sizeof(ext_to_bcknd_msg_t));
 		pthread_mutex_unlock(arg_struct->ext_to_bcknd_lock);
 
-		// print_ext_to_bcknd(ext_to_bcknd, 0);
+		print_ext_to_bcknd(ext_to_bcknd, 0);
 
 		/***** 3) Get message from backend worker *****/
 		bcknd_to_ext_msg_t bcknd_to_ext;
@@ -87,7 +87,7 @@ int webot_format_wb_to_bcknd(ext_to_bcknd_msg_t* ext_to_bcknd, wb_to_ext_msg_t w
 	ext_to_bcknd->heading = (float) heading;
 
 	// TODO: set touching according to logic
-	// ext_to_bcknd->touching = 0;
+	ext_to_bcknd->touching = touching(wb_to_ext.distance);
 
 	// copy lidar data
 	memcpy(&ext_to_bcknd->distance, wb_to_ext.distance, sizeof(float) * DIST_VECS);
