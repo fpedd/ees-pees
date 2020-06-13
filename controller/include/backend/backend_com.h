@@ -3,7 +3,6 @@
 
 #define DIST_VECS    360
 
-
 enum response_request {
 	UNDEF = 0,                  // Invalid Packet
 	COMMAND_ONLY = 1,           // Only new instructions for Robot, dont send next packet
@@ -33,6 +32,8 @@ typedef struct {
 } __attribute__((packed)) bcknd_to_ext_msg_t;
 
 int com_init();
+
+int com_deinit();
 
 int com_send(ext_to_bcknd_msg_t data);
 

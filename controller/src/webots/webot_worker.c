@@ -73,6 +73,7 @@ void *webot_worker(void *ptr) {
 		// wb_send(external_ext_to_wb);
 	}
 
+	return NULL;
 }
 
 

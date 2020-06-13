@@ -31,14 +31,14 @@ int com_init() {
 	return 0;
 }
 
-int com_run(bcknd_to_ext_msg_t *data) {
-	(void) data;
-	// TODO
+int com_deinit() {
+
+	udp_deinit();
+
 	return 0;
 }
 
 int com_send(ext_to_bcknd_msg_t data) {
-
 
 	data.msg_cnt = msg_cnt_expected;
 	data.time_stmp = get_time();
@@ -72,7 +72,6 @@ int com_recv(bcknd_to_ext_msg_t *data) {
 		        get_time(), data->time_stmp, fabs(get_time() - data->time_stmp));
 		return -2;
 	}
-
 
 	if (data->msg_cnt != msg_cnt_expected) {
 		fprintf(stderr, "BACKEND_COM: ERROR: com recv msg_cnt_expected %d does not match msg %lld \n",
