@@ -55,6 +55,8 @@ void *webot_worker(void *ptr) {
 		memcpy(&buffer_bcknd_to_ext, arg_struct->bcknd_to_ext, sizeof(bcknd_to_ext_msg_t));
 		pthread_mutex_unlock(arg_struct->bcknd_to_ext_lock);
 
+		print_bcknd_to_ext(buffer_bcknd_to_ext);
+
 		/***** 4) Prepare and send to Webots *****/
 		// TODO: run safety checks
 		safety_check(&buffer_bcknd_to_ext);
@@ -64,13 +66,6 @@ void *webot_worker(void *ptr) {
 		drive_automatic(init_data, buffer_bcknd_to_ext.speed, buffer_bcknd_to_ext.heading,
 		                           buffer_ext_to_bcknd.speed, buffer_ext_to_bcknd.heading);
 
-		// +++ OLD STUFF +++
-		// ext_to_wb_msg_t external_ext_to_wb;
-		// memset(&external_ext_to_wb, 0, sizeof(ext_to_wb_msg_t));
-		// // webot_format_bcknd_to_wb(&external_ext_to_wb, buffer_bcknd_to_ext, init_data);
-		// // print_ext_to_wb(external_ext_to_wb);
-		// // printf("WEBOT_WORKER: Sending external_ext_to_wb on ext Controller\n");
-		// wb_send(external_ext_to_wb);
 	}
 
 }

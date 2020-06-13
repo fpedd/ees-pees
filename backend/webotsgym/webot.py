@@ -18,6 +18,7 @@ class WebotState(object):
         self.speed = None
         self.gps_actual = None
         self.heading = None
+        self.steering = None
         self.distance = None
         self._touching = None
 
@@ -33,8 +34,9 @@ class WebotState(object):
             self.speed = struct.unpack('f', buffer[20:24])[0]
             self.gps_actual = struct.unpack('2f', buffer[24:32])
             self.heading = struct.unpack('f', buffer[32:36])[0]
-            self._touching = struct.unpack("I", buffer[36:40])[0]
-            self._unpack_distance(buffer, start=40)
+            self.steering = struct.unpack('f', buffer[36:40])[0]
+            self._touching = struct.unpack("I", buffer[40:44])[0]
+            self._unpack_distance(buffer, start=44)
 
     def _unpack_distance(self, buffer, start=40):
         to = start + self.num_lidar * 4

@@ -46,6 +46,7 @@ class Packet(object):
 # ==========================   OUTGOING PACKET   ==========================
 # =========================================================================
 class PacketType(Enum):
+    UNDEF = 0
     COM = 1
     REQ = 2
     COM_REQ = 3
@@ -74,10 +75,11 @@ class OutgoingPacket():
         self.action = action
 
     def pack(self):
-        data = struct.pack('Qdiff',
+        data = struct.pack('Qdiiff',
                            self.msg_cnt,
                            time.time(),
                            self.packet_type,
+                           self.direction_type,
                            self.action.heading,
                            self.action.speed)
         return data
