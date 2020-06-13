@@ -7,6 +7,7 @@
 #include "print.h"
 #include "webots/safe.h"
 #include "webots/drive.h"
+#include "backend/backend_com.h"
 
 void *webot_worker(void *ptr) {
 
@@ -32,39 +33,42 @@ void *webot_worker(void *ptr) {
 	while (1) {
 
 		/***** 1) Receive from Webots *****/
-		wb_to_ext_msg_t external_wb_to_ext;
-		memset(&external_wb_to_ext, 0, sizeof(wb_to_ext_msg_t));
-		wb_recv(&external_wb_to_ext);
+		wb_to_ext_msg_t wb_to_ext;
+		memset(&wb_to_ext, 0, sizeof(wb_to_ext_msg_t));
+		wb_recv(&wb_to_ext);
 
-		// print_wb_to_ext(external_wb_to_ext, 0);
+		// print_wb_to_ext(wb_to_ext, 0);
 
 		/***** 2) Push message to backend worker *****/
-		ext_to_bcknd_msg_t buffer_ext_to_bcknd;
-		memset(&buffer_ext_to_bcknd, 0, sizeof(ext_to_bcknd_msg_t));
-		webot_format_wb_to_bcknd(&buffer_ext_to_bcknd, external_wb_to_ext, init_data);
+		ext_to_bcknd_msg_t ext_to_bcknd;
+		memset(&ext_to_bcknd, 0, sizeof(ext_to_bcknd_msg_t));
+		webot_format_wb_to_bcknd(&ext_to_bcknd, wb_to_ext, init_data);
 		pthread_mutex_lock(arg_struct->ext_to_bcknd_lock);
-		memcpy(arg_struct->ext_to_bcknd, &buffer_ext_to_bcknd, sizeof(ext_to_bcknd_msg_t));
+		memcpy(arg_struct->ext_to_bcknd, &ext_to_bcknd, sizeof(ext_to_bcknd_msg_t));
 		pthread_mutex_unlock(arg_struct->ext_to_bcknd_lock);
 
-		// print_ext_to_bcknd(buffer_ext_to_bcknd, 0);
+		// print_ext_to_bcknd(ext_to_bcknd, 0);
 
 		/***** 3) Get message from backend worker *****/
-		bcknd_to_ext_msg_t buffer_bcknd_to_ext;
-		memset(&buffer_bcknd_to_ext, 0, sizeof(bcknd_to_ext_msg_t));
+		bcknd_to_ext_msg_t bcknd_to_ext;
+		memset(&bcknd_to_ext, 0, sizeof(bcknd_to_ext_msg_t));
 		pthread_mutex_lock(arg_struct->bcknd_to_ext_lock);
-		memcpy(&buffer_bcknd_to_ext, arg_struct->bcknd_to_ext, sizeof(bcknd_to_ext_msg_t));
+		memcpy(&bcknd_to_ext, arg_struct->bcknd_to_ext, sizeof(bcknd_to_ext_msg_t));
 		pthread_mutex_unlock(arg_struct->bcknd_to_ext_lock);
 
-		print_bcknd_to_ext(buffer_bcknd_to_ext);
+		// print_bcknd_to_ext(bcknd_to_ext);
 
 		/***** 4) Prepare and send to Webots *****/
 		// TODO: run safety checks
-		safety_check(&buffer_bcknd_to_ext);
+		safety_check(&bcknd_to_ext);
 
-		// Do all the driving for the bot
-		// drive_manual(init_data, buffer_bcknd_to_ext.speed, buffer_bcknd_to_ext.heading);
-		drive_automatic(init_data, buffer_bcknd_to_ext.speed, buffer_bcknd_to_ext.heading,
-		                           buffer_ext_to_bcknd.speed, buffer_ext_to_bcknd.heading);
+		ext_to_wb_msg_t ext_to_wb;
+		memset(&ext_to_wb, 0, sizeof(ext_to_wb_msg_t));
+
+		drive(&ext_to_wb, bcknd_to_ext, ext_to_bcknd, init_data);
+
+		// print_ext_to_wb(ext_to_wb);
+		wb_send(ext_to_wb);
 
 	}
 
@@ -86,7 +90,7 @@ int webot_format_wb_to_bcknd(ext_to_bcknd_msg_t* ext_to_bcknd, wb_to_ext_msg_t w
 	double heading = heading_in_norm(wb_to_ext.compass[0], wb_to_ext.compass[1], wb_to_ext.compass[2]);
 	ext_to_bcknd->heading = (float) heading;
 
-	// TODO set touching according to logic
+	// TODO: set touching according to logic
 	// ext_to_bcknd->touching = 0;
 
 	// copy lidar data
