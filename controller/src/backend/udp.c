@@ -51,7 +51,7 @@ int udp_init() {
 	// 	fprintf(stderr, "ERROR: udp init setsockopt timeout rcv failed '%s'\n", strerror(errno));
 	// 	return -4;
 	// }
-
+	//
 	// timeout.tv_sec = SEND_TIMEOUT / 1000;
 	// timeout.tv_usec = SEND_TIMEOUT * 1000;
 	// if (setsockopt(sock_fd, SOL_SOCKET, SO_SNDTIMEO, (char *)&timeout, sizeof(timeout)) < 0) {
@@ -78,8 +78,7 @@ int udp_deinit() {
 
 int udp_send(char *data, int data_len) {
 
-	int len = sendto(sock_fd, data, data_len, 0,
-		(struct sockaddr *)&backend_addr, sizeof(struct sockaddr_in));
+	int len = sendto(sock_fd, data, data_len, 0, (struct sockaddr *)&backend_addr, sizeof(struct sockaddr_in));
 	if (len < 0) {
 		fprintf(stderr, "ERROR: udp send %s\n", strerror(errno));
 		return len;
