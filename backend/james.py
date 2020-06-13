@@ -58,7 +58,7 @@ class WebotCtrAgent(Agent):
         else:
             return
         self.act.print()
-        self.env.step((self.act.heading, self.act.speed))
+        self.env.send_command_and_data_request(self.act)
 
     def on_release(self, key):
         if key == keyboard.Key.esc:
