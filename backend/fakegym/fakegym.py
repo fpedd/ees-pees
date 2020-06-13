@@ -112,6 +112,8 @@ class FakeGym(gym.Env):
         self.observation_space = spaces.Box(0, np.inf, shape=self.obs.shape(),
                                             dtype=np.float32)
 
+        self.total_reward = 0
+
     def seed(self, seed):
         """Set main seed of env + 1000 other seeds for placements."""
         if seed is None:
@@ -139,6 +141,7 @@ class FakeGym(gym.Env):
         action = self.action_mapping(action)
         self.com.send(action)
         reward = self.calc_reward()
+        self.total_reward += reward
         done = self.check_done()
         self.history[self.com.time_steps] = copy.deepcopy(self.state_object)
         self.com.time_steps += 1
@@ -199,6 +202,7 @@ class FakeGym(gym.Env):
         return reward
 
     def reset(self):
+        self.total_reward = 0
         seed = utils.np_random_seed(set=False)
         self.seed(seed)
         self.com = FakeCom(self.seeds, self.com_inits[0], self.com_inits[1],

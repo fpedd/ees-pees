@@ -46,25 +46,42 @@ class Packet(object):
 # ==========================   OUTGOING PACKET   ==========================
 # =========================================================================
 class PacketType(Enum):
+    UNDEF = 0
     COM = 1
     REQ = 2
     COM_REQ = 3
 
 
+class DirectionType(Enum):
+    STEERING = 0
+    HEADING = 1
+
+
 class OutgoingPacket():
-    def __init__(self, msg_cnt, packet_type,
+    def __init__(self, msg_cnt, packet_type, direction_type,
                  action: WebotAction = WebotAction(action=(0, 0))):
         self.msg_cnt = msg_cnt
         self.time = time.time()
         if isinstance(packet_type, int):
-            self.type = packet_type
+            self.packet_type = packet_type
         else:
-            self.type = packet_type.value
+            self.packet_type = packet_type.value
+
+        if isinstance(direction_type, int):
+            self.direction_type = direction_type
+        else:
+            self.direction_type = direction_type.value
+
         self.action = action
 
     def pack(self):
-        data = struct.pack('Qdiff', self.msg_cnt, time.time(), self.type,
-                           self.action.heading, self.action.speed)
+        data = struct.pack('Qdiiff',
+                           self.msg_cnt,
+                           time.time(),
+                           self.packet_type,
+                           self.direction_type,
+                           self.action.heading,
+                           self.action.speed)
         return data
 
 
@@ -72,18 +89,24 @@ class OutgoingPacket():
 # ==========================    COMMUNICATION    ==========================
 # =========================================================================
 class Com(object):
-    def __init__(self, gps_target, config: WebotConfig = WebotConfig()):
+    def __init__(self, config: WebotConfig = WebotConfig()):
         self.config = config
         self.msg_cnt_in = 0
         self.msg_cnt_out = 1
         self.latency = None
-        self.state = WebotState(gps_target, config)
+        self.state = WebotState(config)
         self.packet = Packet(config)
         self.history = []
         self._set_sock()
-        if self.config.fast_simulation is True:
+        if config.direction_type == "steering":
+            self.dir_type = DirectionType.STEERING
+        else:
+            self.dir_type = DirectionType.HEADING
+
+        if config.fast_simulation is True:
             print("USE FAST MODE")
 
+    # ------------------------------  SETUPS  ---------------------------------
     def _set_sock(self):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -96,26 +119,32 @@ class Com(object):
         self.packet.buffer, addr = self.sock.recvfrom(self.config.PACKET_SIZE)
         self.state.fill_from_buffer(self.packet.buffer)
 
+    # -------------------------------  SEND -----------------------------------
     def send(self, pack_out):
         data = pack_out.pack()
-        ret = self.sock.sendto(data, (self.config.IP, self.config.CONTROL_PORT))
+        ret = self.sock.sendto(data, (self.config.IP,
+                                      self.config.CONTROL_PORT))
         if ret == len(data):
             self.msg_cnt_out += 2
         else:
-            print("ERROR: could not send message, is ", ret, " should ", len(data))
+            print("ERROR: could not send message, is ", ret, " should ",
+                  len(data))
 
     def send_data_request(self):
-        pack_out = OutgoingPacket(self.msg_cnt_out, PacketType.REQ)
+        pack_out = OutgoingPacket(self.msg_cnt_out, PacketType.REQ,
+                                  self.dir_type)
         self.send(pack_out)
         time.sleep(self.wait_time)
         self.recv()
 
     def send_command(self, action):
-        pack_out = OutgoingPacket(self.msg_cnt_out, PacketType.COM, action)
+        pack_out = OutgoingPacket(self.msg_cnt_out, PacketType.COM,
+                                  self.dir_type, action)
         self.send(pack_out)
 
     def send_command_and_data_request(self, action):
-        pack_out = OutgoingPacket(self.msg_cnt_out, PacketType.COM_REQ, action)
+        pack_out = OutgoingPacket(self.msg_cnt_out, PacketType.COM_REQ,
+                                  self.dir_type, action)
         self.send(pack_out)
         self.recv()
 
@@ -124,17 +153,19 @@ class Com(object):
         divider = 1
         if self.config.fast_simulation is True:
             divider = 3
-        return self.config.send_wait_time/1000/divider
-        # if PACKET_SIZE < len(self.packet.buffer):
-        #     print("ERROR: recv did not get full packet", len(self.packet.buffer))
-        #     return
-        #
-        # if IP != addr[0]:
-        #     print("ERROR: recv did from wrong address", addr)
-        #     return
-        #
-        # if self.packet.count != self.packet.msg_cnt_in:
-        #     print("ERROR: recv wrong msg count, is ", self.packet.count, " should ", self.packet.msg_cnt_in)
-        #     self.packet.msg_cnt_in = self.packet.count
-        #     return
-        #
+        return self.config.send_recv_wait_time / 1000 / divider
+
+# if PACKET_SIZE < len(self.packet.buffer):
+#     print("ERROR: recv did not get full packet", len(self.packet.buffer))
+#     return
+#
+# if IP != addr[0]:
+#     print("ERROR: recv did from wrong address", addr)
+#     return
+#
+# if self.packet.count != self.packet.msg_cnt_in:
+#     print("ERROR: recv wrong msg count, is ", self.packet.count, " should ",
+#           self.packet.msg_cnt_in)
+#     self.packet.msg_cnt_in = self.packet.count
+#     return
+#

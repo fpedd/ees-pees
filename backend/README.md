@@ -1,18 +1,22 @@
 # EES-PEES Robot Project Backend    
 
-## Webots environment
+
+## webotsgym
 * Goal: create a openai-gym-wrapper around the communication to Webots (http://gym.openai.com/docs/)
-* `import environment`
-* load environment by `env = environment.WebotsEnv()`
+* `sudo lsof -t -i tcp:10201 | xargs kill -9`
+
+### environment - webotsgym/environment.py
+* `from webotsgym.environment import WebotsEnv`
+* load environment by `env = WebotsEnv()`
 * Main arguments:
-    * `seed`, used to setup different Webot environments in **training** in combination with the supervisor mode
-    * `action_class`, used to setup the **action_space** and the mapping of the actions to webots actions via **map()**. For example: `action_class=DiscreteAction(directions=3, speeds=3, mode="flatten")` will setup a discrete Action space of size 9. Possile actions to be calculated by an agent (e.g. openai model) are 0:8. **map()** is used to translate the action index to a webot action. Example 0: decrease speed, turn left. For more information of the mapping see *DiscreteAction* in **Action.py**. Another possiblity is `action_class=ContinuousAction`, this will set the **action_space=[-1, 1]^2** with a direct mapping.
-    * `reward_class`, uses the environment information to calculate a reward for the *last action* resulting in the *current state*. For different reward options see **Reward.py**.
-    * `observation_func`, used the environment to setup an observation to be fed to some agent. Not final yet, probably will change to class to set observation_space simultaneously.
-* make a action step by `state, reward, done, {} = env.step(action)`. Gets the current state from the external controller and sends action back.
+    * `seed`, used to setup different Webot environments in *training* in combination with the supervisor mode
+    * `action_class`, used to setup the `action_space` and the mapping of the actions to webots actions via `map()`. For example: `action_class=DiscreteAction(directions=3, speeds=3, mode="flatten")` will setup a discrete Action space of size 9. Possile actions to be calculated by an agent (e.g. openai model) are 0:8. *map()* is used to translate the action index to a webot action. Example 0: decrease speed, turn left. For more information of the mapping see *DiscreteAction* in **action.py**. Another possiblity is `action_class=ContinuousAction`, this will set the *action_space=[-1, 1]^2* with a direct mapping.
+    * `evaluate_class`, uses the environment information to `calc_reward()` for the *last action* resulting in the *current state*. Evaluate class is used to check whether iteration is finished via `check_done()`. For different reward options see **evaluate.py**.
+    * `observation_class`, used the environment to setup an observation to be fed to the agent in the `step()` function. Specify custom observations in **observation.py**.
+* make a action step by `state, reward, done, {} = env.step(action)`.
 * To get the information of the communication, call appropriate action on `env.com`
 
-## Current Configurations - Config.py
+### Current Configurations - webotsgym/config.py
 
     # ----------------------------------------------------------------------
     # external controller protocol
@@ -44,7 +48,7 @@
     lidar_max_range = 3.5
 
 
-## Interface for automated testing - automate.py
+### Interface for automated testing - webotsgym/automate.py
 ```
 
 enum function_code {
@@ -80,7 +84,7 @@ typedef struct {
 
 ```
 
-## Interface to external controller - communicate.py
+### Interface to external controller - webotsgym/communicate.py
 * `Packet` - holds the received data in `buffer` as well as some control information `time`, `count` and `success` (the packet has arrived as intented from the external controller.
 * `Com` - Main communication class, used to receive (`recv()`) and `send(action:WebotAction)` data from the external controller.
 

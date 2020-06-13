@@ -9,8 +9,11 @@
 
 #define TIME_OFFSET_ALLOWED 1.0 // in seconds
 
-// static unsigned int msg_cnt_out;
 static unsigned int msg_cnt_expected;
+
+const char* response_request_str[] = {"UNDEF", "COMMAND_ONLY", "REQUEST_ONLY", "COMMAND_REQUEST"};
+const char* direction_type_str[] = {"STEERING", "HEADING"};
+
 
 int com_init() {
 

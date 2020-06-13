@@ -8,7 +8,7 @@ from webotsgym.config import WebotConfig
 # ==============================    STATE    ==============================
 # =========================================================================
 class WebotState(object):
-    def __init__(self, gps_target=None, config: WebotConfig = WebotConfig()):
+    def __init__(self, config: WebotConfig = WebotConfig()):
         # meta
         self.config = config
         self.buffer = None
@@ -17,10 +17,10 @@ class WebotState(object):
         self.sim_time = None
         self.speed = None
         self.gps_actual = None
-        self.gps_target = gps_target
         self.heading = None
+        self.steering = None
         self.distance = None
-        self.touching = None
+        self._touching = None
 
     def fill_from_buffer(self, buffer):
         """Set state from buffer information in packet from external controller.
@@ -34,28 +34,38 @@ class WebotState(object):
             self.speed = struct.unpack('f', buffer[20:24])[0]
             self.gps_actual = struct.unpack('2f', buffer[24:32])
             self.heading = struct.unpack('f', buffer[32:36])[0]
-            self.touching = struct.unpack("I", buffer[36:40])[0]
-            self._unpack_distance(buffer, start=40)
+            self.steering = struct.unpack('f', buffer[36:40])[0]
+            self._touching = struct.unpack("I", buffer[40:44])[0]
+            self._unpack_distance(buffer, start=44)
 
     def _unpack_distance(self, buffer, start=40):
         to = start + self.num_lidar * 4
         N = self.num_lidar
-        self.distance = struct.unpack("{}f".format(N), buffer[start: to])
+        self.distance = np.array(struct.unpack("{}f".format(N),
+                                               buffer[start: to]))
 
-    def get_distance(self, absolute=False):
-        # TODO: mapping absolute and relative lidar stuff with heading
+    @property
+    def touching(self):
+        if any(self.distance < 0.1):
+            return True
+        return False
+
+    @property
+    def lidar_absolute(self):
+        return np.roll(self.distance, self.heading_idx)
+
+    @property
+    def lidar_relative(self):
         return self.distance
 
-    def get(self):
-        """Get webot state as numpy array."""
-        arr = np.empty(0)
-        arr = np.hstack((arr, np.array(self.sim_time)))
-        arr = np.hstack((arr, np.array(self.gps_actual)))
-        arr = np.hstack((arr, np.array(self.gps_target)))
-        arr = np.hstack((arr, np.array(self.heading)))
-        arr = np.hstack((arr, np.array(self.touching)))
-        arr = np.hstack((arr, np.array(self.distance)))
-        return arr
+    @property
+    def heading_idx(self):
+        """Get index of heading in distance values."""
+        if self.heading > 0:
+            idx = self.heading * 180
+        else:
+            idx = 360 + self.heading * 180
+        return int(idx - 1)
 
     @property
     def num_lidar(self):
@@ -63,7 +73,6 @@ class WebotState(object):
 
     @property
     def transmission_success(self):
-        # TODO: abfangen in paket
         if len(self.buffer) == self.config.PACKET_SIZE:
             return True
         return False

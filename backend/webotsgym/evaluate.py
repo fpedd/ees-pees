@@ -1,4 +1,5 @@
 import numpy as np
+import abc
 
 from webotsgym.config import WebotConfig
 
@@ -9,25 +10,13 @@ class Evaluate(object):
         self.config = config
         self.reward_range = (-100, 100)
 
+    @abc.abstractmethod
     def calc_reward(self):
-        """Calculate reward."""
-        # calculate base value for reward
-        N = self.env.config.world_size
-        base_v = np.sqrt(2) * N
+        pass
 
-        # get distance and crash penalties
-        distance_penalty = self.env.get_target_distance()
-        crash = self.env.state.touching
-
-        val = base_v * (1 - crash) - distance_penalty
-        return val * self.reward_range[1] / base_v
-
+    @abc.abstractmethod
     def check_done(self):
-        if self.env.iterations % self.config.reset_after == 0:
-            return True
-        if self.env.get_target_distance() < 0.1:
-            return True
-        return False
+        pass
 
 
 class EvaluateMats(Evaluate):
@@ -58,3 +47,31 @@ class EvaluateMats(Evaluate):
             if self.env.state:
                 reward = reward - 10
         return reward
+
+    def check_done(self):
+        if self.env.iterations % self.config.reset_env_after == 0:
+            return True
+        if self.env.get_target_distance() < 0.1:
+            return True
+        return False
+
+
+class EvaluatePJ0(Evaluate):
+    def __init__(self, env, config: WebotConfig = WebotConfig()):
+        super(EvaluatePJ0, self).__init__(env, config)
+        self.reward_range = (-100, 100)
+
+    def calc_reward(self):
+        if self.env.get_target_distance() < 0.1:
+            return self.reward_range[1]
+        else:
+            dist = self.env.get_target_distance()
+            denom = self.env.max_distance / 2
+            return -1 * np.tanh(dist / denom)
+
+    def check_done(self):
+        if self.env.iterations % self.config.reset_env_after == 0:
+            return True
+        if self.env.get_target_distance() < 0.1:
+            return True
+        return False
