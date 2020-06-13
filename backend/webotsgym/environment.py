@@ -14,7 +14,7 @@ from webotsgym.communicate import Com
 class WebotsEnv(gym.Env):
     def __init__(self,
                  seed=None,
-                 gps_target=None,
+                 gps_target=(1, 1),
                  train=False,
                  start_controller=False,
                  action_class=DiscreteAction,
@@ -101,6 +101,7 @@ class WebotsEnv(gym.Env):
         self.com = Com(self.config)
 
     def _setup_train(self):
+        self.supervisor = None
         if self.train is True:
             # start webots program, establish tcp connection
             self.supervisor = automate.WebotCtrl(self.config)
