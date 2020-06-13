@@ -69,3 +69,12 @@ void print_ext_to_wb(ext_to_wb_msg_t ext_to_wb) {
 	printf("WEBOT_WORKER: speed:   %f \n", ext_to_wb.speed);
 	printf("WEBOT_WORKER: =================================================\n");
 }
+
+void print_init_data(init_to_ext_msg_t init_data) {
+	printf("WEBOT_WORKER: =================== ext_to_wb ===================\n");
+	printf("WEBOT_WORKER: init_data.timestep: %d\n", init_data.timestep);
+	printf("WEBOT_WORKER: init_data.robot_maxspeed: %f\n", init_data.maxspeed);
+	printf("WEBOT_WORKER: init_data.lidar_min_range: %f\n", init_data.lidar_min_range);
+	printf("WEBOT_WORKER: init_data.lidar_max_range: %f\n", init_data.lidar_max_range);
+	printf("WEBOT_WORKER: =================================================\n");
+}
