@@ -60,8 +60,10 @@ class DirectionType(Enum):
 class OutgoingPacket():
     def __init__(self, msg_cnt, packet_type, direction_type,
                  action: WebotAction = WebotAction(action=(0, 0))):
+
         self.msg_cnt = msg_cnt
         self.time = time.time()
+
         if isinstance(packet_type, int):
             self.packet_type = packet_type
         else:
@@ -91,13 +93,13 @@ class OutgoingPacket():
 class Com(object):
     def __init__(self, config: WebotConfig = WebotConfig()):
         self.config = config
-        self.msg_cnt_in = 0
-        self.msg_cnt_out = 1
+        self.msg_cnt = 0
         self.latency = None
         self.state = WebotState(config)
         self.packet = Packet(config)
         self.history = []
         self._set_sock()
+
         if config.direction_type == "steering":
             self.dir_type = DirectionType.STEERING
         else:
@@ -115,35 +117,46 @@ class Com(object):
     def _update_history(self):
         self.history.append([self.packet.time, self.packet])
 
+    # -------------------------------  RECV -----------------------------------
     def recv(self):
         self.packet.buffer, addr = self.sock.recvfrom(self.config.PACKET_SIZE)
         self.state.fill_from_buffer(self.packet.buffer)
+
+        if self.packet.count != self.msg_cnt:
+            print("ERROR: recv msg count, is ", self.packet.count, " should ",
+                  self.msg_cnt)
+            self.msg_cnt = self.packet.count
+
+        # We received a message, so increment count
+        self.msg_cnt += 1
+
 
     # -------------------------------  SEND -----------------------------------
     def send(self, pack_out):
         data = pack_out.pack()
         ret = self.sock.sendto(data, (self.config.IP,
                                       self.config.CONTROL_PORT))
-        if ret == len(data):
-            self.msg_cnt_out += 2
-        else:
-            print("ERROR: could not send message, is ", ret, " should ",
-                  len(data))
+        if ret != len(data):
+            print("ERROR: send message, is ", ret, " should ", len(data))
+            return
+
+        # We sent a message, so increment count
+        self.msg_cnt += 1
 
     def send_data_request(self):
-        pack_out = OutgoingPacket(self.msg_cnt_out, PacketType.REQ,
+        pack_out = OutgoingPacket(self.msg_cnt, PacketType.REQ,
                                   self.dir_type)
         self.send(pack_out)
         time.sleep(self.wait_time)
         self.recv()
 
     def send_command(self, action):
-        pack_out = OutgoingPacket(self.msg_cnt_out, PacketType.COM,
+        pack_out = OutgoingPacket(self.msg_cnt, PacketType.COM,
                                   self.dir_type, action)
         self.send(pack_out)
 
     def send_command_and_data_request(self, action):
-        pack_out = OutgoingPacket(self.msg_cnt_out, PacketType.COM_REQ,
+        pack_out = OutgoingPacket(self.msg_cnt, PacketType.COM_REQ,
                                   self.dir_type, action)
         self.send(pack_out)
         self.recv()

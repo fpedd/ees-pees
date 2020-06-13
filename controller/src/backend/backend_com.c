@@ -9,7 +9,7 @@
 
 #define TIME_OFFSET_ALLOWED 1.0 // in seconds
 
-static unsigned int msg_cnt_expected;
+static unsigned int msg_cnt;
 
 const char* response_request_str[] = {"UNDEF", "COMMAND_ONLY", "REQUEST_ONLY", "COMMAND_REQUEST"};
 const char* direction_type_str[] = {"STEERING", "HEADING"};
@@ -19,17 +19,7 @@ int com_init() {
 
 	udp_init();
 
-	msg_cnt_expected = 0;
-
-	// msg_cnt_out = 0;
-	// msg_cnt_in = (unsigned int)-1;
-
-	// ext_to_bcknd_msg_t first_msg;
-	// memset(&first_msg, 0, sizeof(ext_to_bcknd_msg_t));
-	// com_send(first_msg);
-	//
-	// bcknd_to_ext_msg_t first_msg_resp;
-	// com_recv(&first_msg_resp);
+	msg_cnt = 0;
 
 	return 0;
 }
@@ -43,11 +33,8 @@ int com_deinit() {
 
 int com_send(ext_to_bcknd_msg_t data) {
 
-	data.msg_cnt = msg_cnt_expected;
+	data.msg_cnt = msg_cnt;
 	data.time_stmp = get_time();
-
-	// We send a message, so next package should be one higher than this
-	msg_cnt_expected++;
 
 	int len = udp_send((char *)&data, sizeof(ext_to_bcknd_msg_t));
 	if (len < (int)sizeof(ext_to_bcknd_msg_t)) {
@@ -56,10 +43,14 @@ int com_send(ext_to_bcknd_msg_t data) {
 		return -1;
 	}
 
+	// We sent a message, so increment count
+	msg_cnt++;
+
 	return 0;
 }
 
 int com_recv(bcknd_to_ext_msg_t *data) {
+
 	memset(data, 0, sizeof(bcknd_to_ext_msg_t));
 
 	int len = udp_recv((char *)data, sizeof(bcknd_to_ext_msg_t));
@@ -76,16 +67,17 @@ int com_recv(bcknd_to_ext_msg_t *data) {
 		return -2;
 	}
 
-	if (data->msg_cnt != msg_cnt_expected) {
-		fprintf(stderr, "BACKEND_COM: ERROR: com recv msg_cnt_expected %d does not match msg %lld \n",
-		msg_cnt_expected, data->msg_cnt);
+	if (data->msg_cnt != msg_cnt) {
+		fprintf(stderr, "BACKEND_COM: ERROR: com recv msg_cnt %d does not match msg %lld \n",
+		        msg_cnt, data->msg_cnt);
 		// mgs_cnt wasn't right, but next shoud be one higher (unless we send before)
-		msg_cnt_expected = data->msg_cnt + 1;
+		// msg_cnt = data->msg_cnt + 1;
+		msg_cnt = data->msg_cnt;
 		return -3;
 	}
 
-	// Next message shoud have a count one higher (unless we send before)
-	msg_cnt_expected++;
+	// We received a message, so increment count
+	msg_cnt++;
 
 	return len;
 }

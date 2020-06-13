@@ -25,7 +25,7 @@ void *backend_worker(void *ptr) {
 		printf("BACKEND_WORKER: Waiting to recv \n");
 
 		if (com_recv(&external_bcknd_to_ext) < 0) {
-			// printf("BACKEND_WORKER: Error on recv");  //Already gets printed by com_recv
+			// printf("BACKEND_WORKER: Error on recv\n");  //Already gets printed by com_recv
 			continue;
 		}
 
@@ -73,46 +73,7 @@ void *backend_worker(void *ptr) {
 				printf("BACKEND_WORKER: Invalid Request from Backend\n");
 				break;
 		}
-		// if (external_bcknd_to_ext.request == COMMAND_ONLY) {
-		// 	printf("BACKEND_WORKER: COMMAND_ONLY msg received\n");
-		//
-		// 	// Move data to ITC struct for webot_worker to read
-		// 	pthread_mutex_lock(arg_struct->bcknd_to_ext_lock);
-		// 	memcpy(arg_struct->bcknd_to_ext, &external_bcknd_to_ext, sizeof(bcknd_to_ext_msg_t));
-		// 	pthread_mutex_unlock(arg_struct->bcknd_to_ext_lock);
-		//
-		// } else if (external_bcknd_to_ext.request == REQUEST_ONLY) {
-		// 	printf("BACKEND_WORKER: REQUEST_ONLY msg received\n");
-		//
-		// 	// Get data from ITC struct for transmission to backend
-		// 	pthread_mutex_lock(arg_struct->ext_to_bcknd_lock);
-		// 	memcpy(&external_ext_to_bcknd, arg_struct->ext_to_bcknd, sizeof(ext_to_bcknd_msg_t));
-		// 	pthread_mutex_unlock(arg_struct->ext_to_bcknd_lock);
-		//
-		// 	printf("BACKEND_WORKER: REQUEST_ONLY answer\n");
-		// 	// Transmit data to backend
-		// 	com_send(external_ext_to_bcknd);
-		//
-		// } else if (external_bcknd_to_ext.request == COMMAND_REQUEST) {
-		// 	printf("BACKEND_WORKER: COMMAND_REQUEST msg received\n");
-		//
-		// 	// Move data to ITC struct for webot_worker to read
-		// 	pthread_mutex_lock(arg_struct->bcknd_to_ext_lock);
-		// 	memcpy(arg_struct->bcknd_to_ext, &external_bcknd_to_ext, sizeof(bcknd_to_ext_msg_t));
-		// 	pthread_mutex_unlock(arg_struct->bcknd_to_ext_lock);
-		//
-		// 	// Get data from ITC struct for transmission to backend
-		// 	pthread_mutex_lock(arg_struct->ext_to_bcknd_lock);
-		// 	memcpy(&external_ext_to_bcknd, arg_struct->ext_to_bcknd, sizeof(ext_to_bcknd_msg_t));
-		// 	pthread_mutex_unlock(arg_struct->ext_to_bcknd_lock);
-		//
-		// 	// Transmit data to backend
-		// 	com_send(external_ext_to_bcknd);
-		//
-		// } else {
-		//
-		// 	printf("BACKEND_WORKER: Invalid Request from Backend\n");
-		// }
+		
 	}
 
 	com_deinit();
