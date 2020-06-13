@@ -23,9 +23,9 @@ void *backend_worker(void *ptr) {
 	while (1) {
 
 		// printf("BACKEND_WORKER: Waiting to recv \n");
-
+		// printf("BACKEND_WORKER: link_qual %f \n", link_qualitiy(0));
 		if (com_recv(&external_bcknd_to_ext) < 0) {
-			// printf("BACKEND_WORKER: Error on recv\n");  //Already gets printed by com_recv
+			// printf("BACKEND_WORKER: Error on recv\n");  // Already gets printed by com_recv
 			continue;
 		}
 

@@ -44,6 +44,7 @@ void *webot_worker(void *ptr) {
 		pthread_mutex_unlock(arg_struct->ext_to_bcknd_lock);
 
 		print_ext_to_bcknd(ext_to_bcknd, 0);
+		printf("WEBOT_WORKER: backend link_qual %f \n", link_qualitiy(0));
 
 		/***** 3) Get message from backend worker *****/
 		bcknd_to_ext_msg_t bcknd_to_ext;
