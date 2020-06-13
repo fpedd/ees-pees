@@ -113,7 +113,7 @@ class WebotAction(object):
 
     def print(self):
         print("heading: ", self.heading)
-        print("speed:\t ", self.speed)
+        print("speed:   ", self.speed)
 
     def _init_randomly(self):
         self.heading = np.random.random() * 2 - 1
