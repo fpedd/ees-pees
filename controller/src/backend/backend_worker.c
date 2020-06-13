@@ -22,7 +22,7 @@ void *backend_worker(void *ptr) {
 
 	while (1) {
 
-		printf("BACKEND_WORKER: Waiting to recv \n");
+		// printf("BACKEND_WORKER: Waiting to recv \n");
 
 		if (com_recv(&external_bcknd_to_ext) < 0) {
 			// printf("BACKEND_WORKER: Error on recv\n");  //Already gets printed by com_recv
@@ -32,7 +32,7 @@ void *backend_worker(void *ptr) {
 		switch (external_bcknd_to_ext.request) {
 
 			case COMMAND_ONLY:
-				printf("BACKEND_WORKER: COMMAND_ONLY msg received\n");
+				// printf("BACKEND_WORKER: COMMAND_ONLY msg received\n");
 
 				// Move data to ITC struct for webot_worker to read
 				pthread_mutex_lock(arg_struct->bcknd_to_ext_lock);
@@ -41,7 +41,7 @@ void *backend_worker(void *ptr) {
 				break;
 
 			case REQUEST_ONLY:
-				printf("BACKEND_WORKER: REQUEST_ONLY msg received\n");
+				// printf("BACKEND_WORKER: REQUEST_ONLY msg received\n");
 
 				// Get data from ITC struct for transmission to backend
 				pthread_mutex_lock(arg_struct->ext_to_bcknd_lock);
@@ -53,7 +53,7 @@ void *backend_worker(void *ptr) {
 				break;
 
 			case COMMAND_REQUEST:
-				printf("BACKEND_WORKER: COMMAND_REQUEST msg received\n");
+				// printf("BACKEND_WORKER: COMMAND_REQUEST msg received\n");
 
 				// Move data to ITC struct for webot_worker to read
 				pthread_mutex_lock(arg_struct->bcknd_to_ext_lock);
@@ -73,7 +73,7 @@ void *backend_worker(void *ptr) {
 				printf("BACKEND_WORKER: Invalid Request from Backend\n");
 				break;
 		}
-		
+
 	}
 
 	com_deinit();
