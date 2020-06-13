@@ -9,7 +9,7 @@ int pid_init(pid_ctrl_t *pid, float k_p, float k_i, float k_d, float out_min, fl
 	pid->k_d = k_d;
 
 	if (out_min >= out_max) {
-		fprintf(stderr, "\nERROR: pid init out_min has to smaller than out_max\n");
+		fprintf(stderr, "ERROR: pid init out_min has to smaller than out_max\n");
 		return -1;
 	}
 
@@ -26,7 +26,7 @@ int pid_init(pid_ctrl_t *pid, float k_p, float k_i, float k_d, float out_min, fl
 int pid_run(pid_ctrl_t *pid, float dt, float set, float in, float *out) {
 
 	if (dt <= 0.0) {
-		fprintf(stderr, "\nERROR: pid run timestep has to be greater than zero\n");
+		fprintf(stderr, "ERROR: pid run timestep has to be greater than zero\n");
 		return -1;
 	}
 

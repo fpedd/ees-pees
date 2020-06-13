@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
+#include <float.h>
 
 #include "util.h"
 #include "webots/pid.h"
@@ -52,9 +53,10 @@ int drive_automatic(ext_to_wb_msg_t *ext_to_wb, init_to_ext_msg_t init_data,
                     float act_speed, float act_heading,
                     float curr_time) {
 
-	// ensure that time difference is not to big when starting
-	if (fabs(last_time) <= 0.1) {
+	// ensure that time difference is not to big and not zero when starting
+	if (last_time == 0.0) {
 		last_time = curr_time;
+		return 0;
 	}
 
 	float com_speed = 0;
