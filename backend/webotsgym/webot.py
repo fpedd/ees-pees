@@ -44,6 +44,12 @@ class WebotState(object):
         self.distance = np.array(struct.unpack("{}f".format(N),
                                                buffer[start: to]))
 
+    def get_pre_action(self, direction_type="heading"):
+        if direction_type == "heading":
+            return (self.heading, self.speed)
+        else:
+            return (self.steering, self.speed)
+
     @property
     def touching(self):
         if any(self.distance < 0.1):
@@ -77,9 +83,6 @@ class WebotState(object):
             return True
         return False
 
-    @property
-    def pre_action(self):
-        return (self.heading, self.speed)
 
     @property
     def crash(self) -> bool:
