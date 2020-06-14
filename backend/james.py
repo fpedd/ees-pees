@@ -31,10 +31,11 @@ class RndWebotAgent(Agent):
 
 
 class WebotCtrAgent(Agent):
-    def __init__(self):
+    def __init__(self, direction_type="heading"):
         self.dheading = 0.05
         self.dspeed = 0.05
-        self.env = environment.WebotsEnv(action_class=ContinuousAction)
+        action_class = ContinuousAction(direction_type=direction_type)
+        self.env = environment.WebotsEnv(action_class=action_class)
         self._init_action()
 
     def _init_action(self):
@@ -66,5 +67,5 @@ class WebotCtrAgent(Agent):
 
 
 if __name__ == "__main__":
-    james = WebotCtrAgent()
+    james = WebotCtrAgent(direction_type="heading")
     james.action()
