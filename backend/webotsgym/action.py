@@ -38,8 +38,11 @@ class DiscreteAction(Action):
     """
 
     def __init__(self, directions=3, speeds=3, dspeed=0.2, dhead=0.2,
-                 mode="flatten"):
+                 mode="flatten", direction_type="heading", relative=False):
         self.mode = mode
+        self.direction_type = direction_type
+        self.relative = relative
+
         self.directions = directions
         self.speeds = speeds
         self.dhead = dhead
@@ -81,11 +84,10 @@ class DiscreteAction(Action):
             dir_idx = action[0]
             speed_idx = action[1]
 
-        # get action difference and add to base action = latest state info
-        action_dx = (self.dirspace[dir_idx], self.speedspace[speed_idx])
-        action = utils.add_tuples(pre_action, action_dx)
+        action = (self.dirspace[dir_idx], self.speedspace[speed_idx])
+        if self.relative is True:
+            action = utils.add_tuples(pre_action, action)
         action = WebotAction(action)
-        # action.print()
         return action
 
 
@@ -93,12 +95,14 @@ class DiscreteAction(Action):
 # =========================       CONTINOUS        ========================
 # =========================================================================
 class ContinuousAction(Action):
-    def __init__(self):
+    def __init__(self, direction_type="heading", relative=False):
         self.action_space = Box(-1, 1, shape=(2,), dtype=np.float32)
+        self.direction_type = direction_type
+        self.relative = relative
 
-    def map(self, action_dx, pre_action):
-        # TODO: relative, absolute
-        action_dx = tuple(action_dx)
-        action = utils.add_tuples(pre_action, action_dx)
+    def map(self, action, pre_action):
+        action = tuple(action)
+        if self.relative is True:
+            action = utils.add_tuples(pre_action, action)
         action = WebotAction(action)
         return action
