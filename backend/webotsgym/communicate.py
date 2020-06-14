@@ -53,8 +53,8 @@ class PacketType(Enum):
 
 
 class DirectionType(Enum):
-    STEERING = 0
-    HEADING = 1
+    STEERING = 0  # PID-Controller is off
+    HEADING = 1  # PID-Controller is on
 
 
 class OutgoingPacket():
@@ -119,6 +119,7 @@ class Com(object):
 
     # -------------------------------  RECV -----------------------------------
     def recv(self):
+        """Receive packet from external controller, increment message count."""
         self.packet.buffer, addr = self.sock.recvfrom(self.config.PACKET_SIZE)
         self.state.fill_from_buffer(self.packet.buffer)
 
@@ -127,12 +128,11 @@ class Com(object):
                   self.msg_cnt)
             self.msg_cnt = self.packet.count
 
-        # We received a message, so increment count
         self.msg_cnt += 1
-
 
     # -------------------------------  SEND -----------------------------------
     def send(self, pack_out):
+        """Send packet to external controller, increment message count."""
         data = pack_out.pack()
         ret = self.sock.sendto(data, (self.config.IP,
                                       self.config.CONTROL_PORT))
@@ -140,7 +140,6 @@ class Com(object):
             print("ERROR: send message, is ", ret, " should ", len(data))
             return
 
-        # We sent a message, so increment count
         self.msg_cnt += 1
 
     def send_data_request(self):
