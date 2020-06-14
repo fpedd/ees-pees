@@ -120,6 +120,7 @@ class WebotsEnv(gym.Env):
             self.evaluate_class = (self.evaluate_class)(env, self.config)
 
         self.action_space = self.action_class.action_space
+        self.config.direction_type = self.action_class.direction_type
         self.observation_space = self.observation_class.observation_space
         self.reward_range = self.evaluate_class.reward_range
 
@@ -136,9 +137,11 @@ class WebotsEnv(gym.Env):
         Handled inside com class.
         """
         time.sleep(self.config.step_wait_time)
-        pre_action = self.state.pre_action
+
+        pre_action = self.state.get_pre_action()
         action = self.action_class.map(action, pre_action)
         self.send_command_and_data_request(action)
+
         reward = self.calc_reward()
         self.rewards.append(reward)
         self.distances.append(self.get_target_distance())
