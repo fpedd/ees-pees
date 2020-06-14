@@ -2,7 +2,7 @@ import numpy as np
 from gym.spaces import Tuple, Box, Discrete
 
 import webotsgym.utils as utils
-from webotsgym.webot import WebotState, WebotAction
+from webotsgym.webot import WebotAction
 
 
 class Action(object):

@@ -83,7 +83,6 @@ class WebotState(object):
             return True
         return False
 
-
     @property
     def crash(self) -> bool:
         if int(self.touching) == 1:
