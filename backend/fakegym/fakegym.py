@@ -162,6 +162,10 @@ class FakeGym(gym.Env):
         return False
 
     @property
+    def max_distance(self):
+        return np.sqrt(2) * self.com.N
+
+    @property
     def state(self):
         return self.obs.get(self)
 
