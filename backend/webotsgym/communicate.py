@@ -176,8 +176,7 @@ class Com(object):
 
     def send_discrete_move(self, move):
         # TODO: incorporate wait for execution -> PacketType.COM_REQ
-        pack_out = OutgoingPacket(self.msg_cnt, PacketType.COM, move,
-                                  0,)
+        pack_out = OutgoingPacket(self.msg_cnt, PacketType.COM, move, 0)
         self.send(pack_out)
 
     @property
