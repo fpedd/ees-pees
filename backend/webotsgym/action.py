@@ -6,7 +6,33 @@ from webotsgym.webot import WebotAction
 
 
 class Action(object):
+    def __init__(self):
+        self.type = "normal"
     pass
+
+
+# =========================================================================
+# ==========================     WEBOT GRID      ==========================
+# =========================================================================
+class WebotGrid(Action):
+    def __init__(self):
+        self.action_space = Discrete(4)
+        self.type = "grid"
+
+    def map(self, action):
+        # East
+        if action == 0:
+            return 4
+        # South
+        if action == 1:
+            return 3
+        # West
+        if action == 2:
+            return 2
+        # North
+        if action == 3:
+            return 1
+        return None
 
 
 # =========================================================================
