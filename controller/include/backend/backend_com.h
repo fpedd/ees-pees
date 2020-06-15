@@ -36,6 +36,8 @@ typedef struct {
 	float heading;                 // direction the front of the robot points in [-1, 1]
 	float steering;                // current angle the of the steering apparatus [-1, 1]
 	unsigned int touching;         // is the robot touching something?
+	unsigned int action_denied;    // did we have to take over control for saftey reasons
+	unsigned int discr_act_done;   // did the robot complete its discrete action
 	float distance[DIST_VECS];     // distance to the next object from robot prespective
 } __attribute__((packed)) ext_to_bcknd_msg_t;
 
@@ -44,7 +46,7 @@ typedef struct {
 	unsigned long long msg_cnt;    // total number of messages (odd) (internal)
 	double time_stmp;              // time the message got send (internal)
 	enum response_request request; // type of response the backend awaits to the packet
-	enum discrete_move move;       //
+	enum discrete_move move;       // ignore everything else and do a discrete_action
 	enum direction_type dir_type;  // heading or steering command from backend
 	float heading;                 // the direction the robot should move in next [-1, 1]
 	float speed;                   // the speed the robot should drive at [-1, 1]
