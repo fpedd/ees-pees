@@ -31,16 +31,25 @@ class Agent(Agent):
     def on_press(self, key):
         if key == keyboard.Key.up:
             move = 1
+            print("Move Up")
         elif key == keyboard.Key.down:
             move = 3
+            print("Move Down")
         elif key == keyboard.Key.left:
             move = 2
+            print("Move Left")
         elif key == keyboard.Key.right:
             move = 4
+            print("Move Right")
         else:
             return
-        print(move)
         self.com.send_discrete_move(move)
+
+        # wait for action to finish
+        while self.com.state._discrete_action_done != 1:
+            self.com.send_data_request()
+            time.sleep(0.1)
+        print("Action done")
 
     def on_release(self, key):
         if key == keyboard.Key.esc:
@@ -48,5 +57,5 @@ class Agent(Agent):
 
 
 if __name__ == "__main__":
-    james = Agent(direction_type="heading")
-    james.action()
+    timmy = Agent(direction_type="heading")
+    timmy.action()
