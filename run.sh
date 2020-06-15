@@ -14,7 +14,8 @@ WORLD_FILE=/webots/worlds/single_playground.wbt
 INT_CTRL=/webots/controllers/internal
 
 ### Path to Backend Script
-BCKND_SCRIPT=/backend/james.py
+# BCKND_SCRIPT=/backend/james.py
+BCKND_SCRIPT=/backend/timmy.py
 
 ### Terminal Emulator you want to use
 TERM_EM=gnome-terminal\ -x
