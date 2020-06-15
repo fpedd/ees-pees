@@ -15,8 +15,8 @@ static pid_ctrl_t heading_pid;
 
 int drive_init() {
 	last_time = 0.0;
-	pid_init(&speed_pid, 3.0, 0.0, 0.0, -1.0, 1.0, false);
-	pid_init(&heading_pid, 5.0, 0.0, 0.0, -1.0, 1.0, true);
+	pid_init(&speed_pid, 3.0, 0.0, 0.0, -1.0, 1.0, 0.0, NORM);
+	pid_init(&heading_pid, 5.0, 0.0, 0.0, -1.0, 1.0, 0.0, WRAP);
 	return 0;
 }
 
@@ -59,8 +59,10 @@ int drive_automatic(ext_to_wb_msg_t *ext_to_wb, init_to_ext_msg_t init_data,
 		return 0;
 	}
 
-	float com_speed = 0;
-	pid_run(&speed_pid, curr_time - last_time, set_speed, act_speed, &com_speed);
+	(void) act_speed;
+	float com_speed = set_speed;
+	// float com_speed = 0;
+	// pid_run(&speed_pid, curr_time - last_time, set_speed, act_speed, &com_speed);
 	// printf("DRIVE AUTO: speed set: %f  act: %f com: %f \n", set_speed, act_speed, com_speed);
 
 	float com_heading = 0;
@@ -75,7 +77,7 @@ int drive_automatic(ext_to_wb_msg_t *ext_to_wb, init_to_ext_msg_t init_data,
 		pid_update(&heading_pid, 5.0, 0.0, 0.0);
 	}
 
-	// printf("DRIVE AUTO: heading set: %f  act: %f com: %f \n", set_heading, act_heading, com_heading);
+	printf("DRIVE AUTO: heading set: %f  act: %f com: %f \n", set_heading, act_heading, com_heading);
 
 	last_time = curr_time;
 
