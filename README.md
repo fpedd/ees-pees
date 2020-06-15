@@ -4,6 +4,26 @@
 ![controller](https://github.com/fabianpedd/ees-pees/workflows/controller/badge.svg)  
 ![webots](https://github.com/fabianpedd/ees-pees/workflows/webots/badge.svg)  
 
+## Setup
+In order for our software (compiler, python, etc.) to know where your webots
+installation is located at, you will need to set an environment variable. The
+name of the environment variable you need to set is: `WEBOTS_HOME`. It should
+point to your webots installation. If you installed webots the "normal" way,
+setting the variable will look like this:
+`export WEBOTS_HOME=/usr/local/webots`
+In order to not always have to type and execute that in your terminal,
+you can add this command to the bottom of your `.bashrc` file. You can find this
+file in your home directory. The contents of the `.bashrc` get executed every time
+you open a new terminal.
+
+The bottom of your `.bashrc` should look something like this.
+```
+...
+
+# Webots Installation
+export WEBOTS_HOME=/usr/local/webots
+```
+
 ## Usage
 To start the communication stack you can run `./run.sh` in the root directory of
 the repository. This should compile the Internal and the External Controller.
