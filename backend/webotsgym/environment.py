@@ -5,9 +5,9 @@ import time
 import webotsgym.utils as utils
 import webotsgym.automate as automate
 from webotsgym.config import WebotConfig
-from webotsgym.action import DiscreteAction
+from webotsgym.action import DiscreteAction, GridAction
 from webotsgym.evaluate import Evaluate
-from webotsgym.observation import Observation
+from webotsgym.observation import Observation, GridObservation
 from webotsgym.communicate import Com
 
 
@@ -16,6 +16,7 @@ class WebotsEnv(gym.Env):
                  seed=None,
                  gps_target=(1, 1),
                  train=False,
+                 grid_world=False,
                  start_controller=False,
                  action_class=DiscreteAction,
                  evaluate_class=Evaluate,
@@ -23,6 +24,7 @@ class WebotsEnv(gym.Env):
                  config: WebotConfig = WebotConfig()):
         super(WebotsEnv, self).__init__()
         self.seed(seed)
+        self.grid_world = grid_world
 
         self._gps_target = gps_target
 
@@ -138,9 +140,14 @@ class WebotsEnv(gym.Env):
         """
         time.sleep(self.config.step_wait_time)
 
-        pre_action = self.state.get_pre_action()
-        action = self.action_class.map(action, pre_action)
-        self.send_command_and_data_request(action)
+        if self.action_class.type != "grid":
+            pre_action = self.state.get_pre_action()
+            action = self.action_class.map(action, pre_action)
+            self.send_command_and_data_request(action)
+        else:
+            action = self.action_class.map(action)
+            self.com.send_discrete_move(action)
+            time.sleep(2)
 
         reward = self.calc_reward()
         self.rewards.append(reward)
@@ -225,3 +232,18 @@ class WebotsEnv(gym.Env):
     @property
     def max_distance(self):
         return np.sqrt(2) * self.config.world_size
+
+
+class WebotsGrid(WebotsEnv):
+    def __init__(self, seed=None, gps_target=(1, 1), start_controller=False,
+                 train=False, evaluate_class=Evaluate,
+                 config: WebotConfig = WebotConfig()):
+        super(WebotsGrid, self).__init__(seed=seed,
+                                         gps_target=gps_target,
+                                         train=train,
+                                         grid_world=True,
+                                         start_controller=start_controller,
+                                         action_class=GridAction,
+                                         evaluate_class=Evaluate,
+                                         observation_class=GridObservation,
+                                         config=config)

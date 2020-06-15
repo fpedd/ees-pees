@@ -24,6 +24,8 @@ class WebotState(object):
         self._action_denied = None
         self._discrete_action_done = None
 
+        self.action_denied = 0
+
     def fill_from_buffer(self, buffer):
         """Set state from buffer information in packet from external controller.
 
@@ -53,6 +55,10 @@ class WebotState(object):
             return (self.heading, self.speed)
         else:
             return (self.steering, self.speed)
+
+    def get_grid_distances(self, num):
+        every = int(360 / num)
+        return self.lidar_absolute[0:-1:every]
 
     @property
     def touching(self):
