@@ -52,17 +52,30 @@ class PacketType(Enum):
     COM_REQ = 3
 
 
+class DiscreteMove(Enum):
+    NONE = 0
+    UP = 1
+    LEFT = 2
+    DOWN = 3
+    RIGHT = 4
+
+
 class DirectionType(Enum):
     STEERING = 0  # PID-Controller is off
     HEADING = 1  # PID-Controller is on
 
 
 class OutgoingPacket():
-    def __init__(self, msg_cnt, packet_type, direction_type,
+    def __init__(self, msg_cnt, discrete_move, packet_type, direction_type,
                  action: WebotAction = WebotAction(action=(0, 0))):
 
         self.msg_cnt = msg_cnt
         self.time = time.time()
+
+        if isinstance(discrete_move, int):
+            self.discrete_move = discrete_move
+        else:
+            self.discrete_move = discrete_move.value
 
         if isinstance(packet_type, int):
             self.packet_type = packet_type
@@ -77,10 +90,11 @@ class OutgoingPacket():
         self.action = action
 
     def pack(self):
-        data = struct.pack('Qdiiff',
+        data = struct.pack('Qdiiiff',
                            self.msg_cnt,
                            time.time(),
                            self.packet_type,
+                           self.discrete_move,
                            self.direction_type,
                            self.action.heading,
                            self.action.speed)
@@ -144,21 +158,27 @@ class Com(object):
 
     def send_data_request(self):
         pack_out = OutgoingPacket(self.msg_cnt, PacketType.REQ,
-                                  self.dir_type)
+                                  DiscreteMove.NONE, self.dir_type)
         self.send(pack_out)
         time.sleep(self.wait_time)
         self.recv()
 
     def send_command(self, action):
         pack_out = OutgoingPacket(self.msg_cnt, PacketType.COM,
-                                  self.dir_type, action)
+                                  DiscreteMove.NONE, self.dir_type, action)
         self.send(pack_out)
 
     def send_command_and_data_request(self, action):
         pack_out = OutgoingPacket(self.msg_cnt, PacketType.COM_REQ,
-                                  self.dir_type, action)
+                                  DiscreteMove.NONE, self.dir_type, action)
         self.send(pack_out)
         self.recv()
+
+    def send_discrete_move(self, move):
+        # TODO: incorporate wait for execution -> PacketType.COM_REQ
+        pack_out = OutgoingPacket(self.msg_cnt, PacketType.COM, move,
+                                  0, (0, 0))
+        self.send(pack_out)
 
     @property
     def wait_time(self):
