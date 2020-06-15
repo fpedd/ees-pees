@@ -7,6 +7,7 @@
 #include "print.h"
 #include "webots/safe.h"
 #include "webots/drive.h"
+#include "webots/wb_com.h"
 #include "backend/backend_com.h"
 
 void *webot_worker(void *ptr) {
@@ -87,8 +88,11 @@ int webot_format_wb_to_bcknd(ext_to_bcknd_msg_t* ext_to_bcknd, wb_to_ext_msg_t w
 	double heading = heading_in_norm(wb_to_ext.compass[0], wb_to_ext.compass[1], wb_to_ext.compass[2]);
 	ext_to_bcknd->heading = (float) heading;
 
-	// TODO: set touching according to logic
-	ext_to_bcknd->touching = touching(wb_to_ext.distance);
+	if (check_for_tipover(wb_to_ext) != 0) {
+		ext_to_bcknd->touching = -1;
+	} else {
+		ext_to_bcknd->touching = touching(wb_to_ext.distance);
+	}
 
 	// copy lidar data
 	memcpy(&ext_to_bcknd->distance, wb_to_ext.distance, sizeof(float) * DIST_VECS);

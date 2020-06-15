@@ -1,4 +1,7 @@
 #include "webots/safe.h"
+
+#include <math.h>
+
 #include "backend/backend_com.h"
 #include "silhouette.h"
 
@@ -30,4 +33,14 @@ int touching(float dist[]) {
 	}
 
 	return touching;
+}
+
+
+int check_for_tipover(wb_to_ext_msg_t wb_to_ext) {
+
+	if (fabs(wb_to_ext.actual_gps[1] - 0.026) > 0.02) {
+		return -1;
+	} else {
+		return 0;
+	}
 }
