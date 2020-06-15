@@ -14,9 +14,10 @@ class Action(object):
 # =========================================================================
 # ==========================     WEBOT GRID      ==========================
 # =========================================================================
-class WebotGrid(Action):
+class GridAction(Action):
     def __init__(self):
         self.action_space = Discrete(4)
+        self.direction_type = "steering"  # just a dummy
         self.type = "grid"
 
     def map(self, action):
