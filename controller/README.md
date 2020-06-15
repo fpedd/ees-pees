@@ -152,8 +152,8 @@ Explanation of `to_bcknd_msg_t`:
 * `unsigned int touching` is set to the number of objects the robot is currently
 touching / colliding with.
 * `unsigned int action_denied` is set if the external controller needed to take
-  over control because backend action was not safe
-* `unsigned int discr_act_done` is set when the requested discrete action is done
+  over control because backend action was not safe.
+* `unsigned int discr_act_done` is set when the requested discrete action is done.
 * `float distance[DIST_VECS]` the distance (in meters) to the next solid object
   with the direction corresponding to the index of the array. So if distance[66]
   = 1.23, the distance to the next solid object in direction 66 degree is 1.23 meters.
