@@ -72,15 +72,15 @@ class OutgoingPacket():
         self.msg_cnt = msg_cnt
         self.time = time.time()
 
-        if isinstance(discrete_move, int):
-            self.discrete_move = discrete_move
-        else:
-            self.discrete_move = discrete_move.value
-
         if isinstance(packet_type, int):
             self.packet_type = packet_type
         else:
             self.packet_type = packet_type.value
+
+        if isinstance(discrete_move, int):
+            self.discrete_move = discrete_move
+        else:
+            self.discrete_move = discrete_move.value
 
         if isinstance(direction_type, int):
             self.direction_type = direction_type
@@ -177,7 +177,7 @@ class Com(object):
     def send_discrete_move(self, move):
         # TODO: incorporate wait for execution -> PacketType.COM_REQ
         pack_out = OutgoingPacket(self.msg_cnt, PacketType.COM, move,
-                                  0, (0, 0))
+                                  0,)
         self.send(pack_out)
 
     @property
