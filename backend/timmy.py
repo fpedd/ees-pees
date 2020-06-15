@@ -45,7 +45,9 @@ class Agent(Agent):
             return
         self.com.send_discrete_move(move)
 
-        # wait for action to finish
+        ### wait for action to finish ###
+        time.sleep(0.1) # give controller some time to update internal data
+        self.com.send_data_request()
         while self.com.state._discrete_action_done != 1:
             self.com.send_data_request()
             time.sleep(0.1)
