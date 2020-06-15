@@ -29,7 +29,6 @@ class Agent(Agent):
             listener.join()
 
     def on_press(self, key):
-        print("pressing key")
         if key == keyboard.Key.up:
             move = 1
         elif key == keyboard.Key.down:
