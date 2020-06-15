@@ -35,7 +35,6 @@ int pid_run(pid_ctrl_t *pid, float dt, float set, float in, float *out) {
 
 	float err = set - in;
 
-	// printf("err pre: %f\n", err);
 	if (pid->special == EXPO) {
 		if (err > 0.0) {
 			err = exp(err) - 1;
@@ -43,7 +42,6 @@ int pid_run(pid_ctrl_t *pid, float dt, float set, float in, float *out) {
 			err = -exp(-err) + 1;
 		}
 	}
-	// printf("err post: %f\n", err);
 
 	if (fabs(err) < pid->deadband && pid->deadband != 0.0) {
 		*out = 0.0;
