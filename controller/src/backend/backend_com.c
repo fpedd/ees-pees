@@ -14,6 +14,7 @@ static unsigned int msg_cnt;
 static float link_qual;
 
 const char* response_request_str[] = {"UNDEF", "COMMAND_ONLY", "REQUEST_ONLY", "COMMAND_REQUEST"};
+const char* discrete_move_str[] = {"NONE", "UP", "LEFT", "DOWN", "RIGHT"};
 const char* direction_type_str[] = {"STEERING", "HEADING"};
 
 
