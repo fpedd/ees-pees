@@ -44,7 +44,7 @@ void *webot_worker(void *ptr) {
 		memcpy(arg_struct->ext_to_bcknd, &ext_to_bcknd, sizeof(ext_to_bcknd_msg_t));
 		pthread_mutex_unlock(arg_struct->ext_to_bcknd_lock);
 
-		print_ext_to_bcknd(ext_to_bcknd, 0);
+		// print_ext_to_bcknd(ext_to_bcknd, 0);
 		printf("WEBOT_WORKER: backend link_qual %f \n", link_qualitiy(0));
 
 		/***** 3) Get message from backend worker *****/
@@ -54,7 +54,7 @@ void *webot_worker(void *ptr) {
 		memcpy(&bcknd_to_ext, arg_struct->bcknd_to_ext, sizeof(bcknd_to_ext_msg_t));
 		pthread_mutex_unlock(arg_struct->bcknd_to_ext_lock);
 
-		// print_bcknd_to_ext(bcknd_to_ext);
+		print_bcknd_to_ext(bcknd_to_ext);
 
 		/***** 4) Prepare and send to Webots *****/
 		// TODO: run safety checks
