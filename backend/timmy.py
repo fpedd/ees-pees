@@ -22,20 +22,14 @@ class Agent(Agent):
     def __init__(self, direction_type="heading"):
         self.dheading = 0.05
         self.dspeed = 0.05
-        action_class = ContinuousAction(direction_type=direction_type)
-        self.env = environment.WebotsEnv(action_class=action_class)
-        self._init_action()
-
-    def _init_action(self):
-        self.act = WebotAction()
-        self.act.speed = 0
-        self.act.heading = 0
+        self.com = communicate.Com()
 
     def action(self):
         with keyboard.Listener(on_press=self.on_press, on_release=self.on_release) as listener:
             listener.join()
 
     def on_press(self, key):
+        print("pressing key")
         if key == keyboard.Key.up:
             move = 1
         elif key == keyboard.Key.down:
@@ -47,7 +41,7 @@ class Agent(Agent):
         else:
             return
         print(move)
-        self.env.send_discrete_move(move)
+        self.com.send_discrete_move(move)
 
     def on_release(self, key):
         if key == keyboard.Key.esc:
