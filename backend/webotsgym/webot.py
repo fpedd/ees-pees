@@ -54,7 +54,7 @@ class WebotState(object):
 
     def get_grid_distances(self, num):
         every = int(360 / num)
-        self.lidar_absolute[0:-1:every]
+        return self.lidar_absolute[0:-1:every]
 
     @property
     def touching(self):
