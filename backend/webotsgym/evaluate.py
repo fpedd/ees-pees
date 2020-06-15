@@ -63,7 +63,9 @@ class EvaluatePJ0(Evaluate):
         if self.env.get_target_distance() < 0.1:
             return target_reward(self.env, val=self.reward_range[1])
         else:
-            return step_penalty_tanh(self.env)
+            reward = 0
+            reward += step_penalty_tanh(self.env)
+            return reward
 
     def check_done(self):
         return done(self.env)
