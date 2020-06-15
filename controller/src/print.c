@@ -35,15 +35,17 @@ void print_wb_to_ext(wb_to_ext_msg_t wb_to_ext, int print_distance) {
 
 void print_ext_to_bcknd(ext_to_bcknd_msg_t ext_to_bcknd, int print_distance) {
 	printf("WEBOT_WORKER: =================== ext_to_bcknd ===================\n");
-	printf("WEBOT_WORKER: msg_cnt:       %llu\n", ext_to_bcknd.msg_cnt);
-	printf("WEBOT_WORKER: time_stmp:     %f\n", ext_to_bcknd.time_stmp);
-	printf("WEBOT_WORKER: sim_time:      %f\n", ext_to_bcknd.sim_time);
-	printf("WEBOT_WORKER: speed:         %f\n", ext_to_bcknd.speed);
-	printf("WEBOT_WORKER: actual_gps[0]: %f\n", ext_to_bcknd.actual_gps[0]);
-	printf("WEBOT_WORKER: actual_gps[1]: %f\n", ext_to_bcknd.actual_gps[1]);
-	printf("WEBOT_WORKER: heading:       %f\n", ext_to_bcknd.heading);
-	printf("WEBOT_WORKER: steering:      %f\n", ext_to_bcknd.steering);
-	printf("WEBOT_WORKER: touching:      %d\n", ext_to_bcknd.touching);
+	printf("WEBOT_WORKER: msg_cnt:        %llu\n", ext_to_bcknd.msg_cnt);
+	printf("WEBOT_WORKER: time_stmp:      %f\n", ext_to_bcknd.time_stmp);
+	printf("WEBOT_WORKER: sim_time:       %f\n", ext_to_bcknd.sim_time);
+	printf("WEBOT_WORKER: speed:          %f\n", ext_to_bcknd.speed);
+	printf("WEBOT_WORKER: actual_gps[0]:  %f\n", ext_to_bcknd.actual_gps[0]);
+	printf("WEBOT_WORKER: actual_gps[1]:  %f\n", ext_to_bcknd.actual_gps[1]);
+	printf("WEBOT_WORKER: heading:        %f\n", ext_to_bcknd.heading);
+	printf("WEBOT_WORKER: steering:       %f\n", ext_to_bcknd.steering);
+	printf("WEBOT_WORKER: touching:       %d\n", ext_to_bcknd.touching);
+	printf("WEBOT_WORKER: action_denied:  %d\n", ext_to_bcknd.action_denied);
+	printf("WEBOT_WORKER: discr_act_done: %d\n", ext_to_bcknd.discr_act_done);
 
 	for (int i = 0; i < print_distance; i++){
 		printf("WEBOT_WORKER: ext_to_bcknd.distance[%d] = %f\n", i, ext_to_bcknd.distance[i]);
