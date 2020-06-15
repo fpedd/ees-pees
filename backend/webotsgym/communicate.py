@@ -66,7 +66,7 @@ class DirectionType(Enum):
 
 
 class OutgoingPacket():
-    def __init__(self, msg_cnt, discrete_move, packet_type, direction_type,
+    def __init__(self, msg_cnt, packet_type, discrete_move, direction_type,
                  action: WebotAction = WebotAction(action=(0, 0))):
 
         self.msg_cnt = msg_cnt
