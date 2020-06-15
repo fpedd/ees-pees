@@ -16,6 +16,8 @@ int safety_check(bcknd_to_ext_msg_t *bcknd_to_ext) {
 	// bcknd_to_ext->speed = 0;
 	// bcknd_to_ext->heading = 0;
 
+	// return 0 if action was okay
+	// return 1 if we had to take over control for safety reasons
 	return 0;
 }
 
