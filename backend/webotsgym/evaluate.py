@@ -4,6 +4,9 @@ import abc
 from webotsgym.config import WebotConfig
 
 
+# =========================================================================
+# ========================        PENALTIES        ========================
+# =========================================================================
 def step_penalty_04(env, step_base=-1, eps=10**-5):
     distance = env.get_target_distance() + eps
     dist_fac = (distance**0.4) / (distance)
@@ -16,6 +19,28 @@ def step_penalty_tanh(env, step_base=-1):
     return step_base * dist_fac
 
 
+# =========================================================================
+# ========================         REWARDS         ========================
+# =========================================================================
+def target_reward(env, val=100):
+    # IDEA: Exponential decay given speed of robot
+    pass
+
+
+# =========================================================================
+# ========================          DONE           ========================
+# =========================================================================
+def done(env):
+    if env.iterations % env.config.reset_env_after == 0:
+        return True
+    if env.get_target_distance() < 0.1:
+        return True
+    return False
+
+
+# =========================================================================
+# ========================      EVAL CLASSES       ========================
+# =========================================================================
 class Evaluate(object):
     def __init__(self, env, config: WebotConfig = WebotConfig()):
         self.env = env
@@ -27,6 +52,21 @@ class Evaluate(object):
     @abc.abstractmethod
     def check_done(self):
         pass
+
+
+class EvaluatePJ0(Evaluate):
+    def __init__(self, env, config: WebotConfig = WebotConfig()):
+        super(EvaluatePJ0, self).__init__(env, config)
+        self.reward_range = (-100, 100)
+
+    def calc_reward(self):
+        if self.env.get_target_distance() < 0.1:
+            return target_reward(self.env, val=self.reward_range[1])
+        else:
+            return step_penalty_tanh(self.env)
+
+    def check_done(self):
+        return done(self.env)
 
 
 class EvaluateMats(Evaluate):
@@ -57,27 +97,6 @@ class EvaluateMats(Evaluate):
             if self.env.state:
                 reward = reward - 10
         return reward
-
-    def check_done(self):
-        if self.env.iterations % self.config.reset_env_after == 0:
-            return True
-        if self.env.get_target_distance() < 0.1:
-            return True
-        return False
-
-
-class EvaluatePJ0(Evaluate):
-    def __init__(self, env, config: WebotConfig = WebotConfig()):
-        super(EvaluatePJ0, self).__init__(env, config)
-        self.reward_range = (-100, 100)
-
-    def calc_reward(self):
-        if self.env.get_target_distance() < 0.1:
-            return self.reward_range[1]
-        else:
-            dist = self.env.get_target_distance()
-            denom = self.env.max_distance / 2
-            return -1 * np.tanh(dist / denom)
 
     def check_done(self):
         if self.env.iterations % self.config.reset_env_after == 0:
