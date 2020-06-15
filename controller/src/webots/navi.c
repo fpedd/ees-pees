@@ -15,7 +15,7 @@ static pid_ctrl_t pos_pid;
 
 int navi_init() {
 	last_time = 0.0;
-	pid_init(&pos_pid, 1.0,   // k_p
+	pid_init(&pos_pid, 1.5,   // k_p
 	                   0.0,   // k_i
 	                   0.0,   // k_d
 	                  -1.0,   // min
