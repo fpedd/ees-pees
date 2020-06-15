@@ -11,6 +11,15 @@ enum response_request {
 };
 extern const char* response_request_str[];
 
+enum discrete_move {
+	NONE = 0,                   // Dont do a discrete move at all, do continous
+	UP = 1,                     // Move Up
+	LEFT = 2,                   // Move Left
+	DOWN = 3,                   // Move Down
+	RIGHT = 4                   // Move Right
+};
+extern const char* discrete_move_str[];
+
 enum direction_type {
 	STEERING = 0,               // The backend commands the steering of the robot
 	HEADING = 1,                // The backend commands the heading the robot should drive in
@@ -35,6 +44,7 @@ typedef struct {
 	unsigned long long msg_cnt;    // total number of messages (odd) (internal)
 	double time_stmp;              // time the message got send (internal)
 	enum response_request request; // type of response the backend awaits to the packet
+	enum discrete_move move;       //
 	enum direction_type dir_type;  // heading or steering command from backend
 	float heading;                 // the direction the robot should move in next [-1, 1]
 	float speed;                   // the speed the robot should drive at [-1, 1]

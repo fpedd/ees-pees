@@ -54,12 +54,13 @@ void print_ext_to_bcknd(ext_to_bcknd_msg_t ext_to_bcknd, int print_distance) {
 
 void print_bcknd_to_ext(bcknd_to_ext_msg_t bcknd_to_ext) {
 	printf("WEBOT_WORKER: =================== bcknd_to_ext ===================\n");
-	printf("WEBOT_WORKER: msg_cnt:   %llu\n", bcknd_to_ext.msg_cnt);
-	printf("WEBOT_WORKER: time_stmp: %f \n", bcknd_to_ext.time_stmp);
-	printf("WEBOT_WORKER: request:   %s \n", response_request_str[bcknd_to_ext.request]);
-	printf("WEBOT_WORKER: dir_type:  %s \n", direction_type_str[bcknd_to_ext.dir_type]);
-	printf("WEBOT_WORKER: heading:   %f \n", bcknd_to_ext.heading);
-	printf("WEBOT_WORKER: speed:     %f \n", bcknd_to_ext.speed);
+	printf("WEBOT_WORKER: msg_cnt:       %llu\n", bcknd_to_ext.msg_cnt);
+	printf("WEBOT_WORKER: time_stmp:     %f \n", bcknd_to_ext.time_stmp);
+	printf("WEBOT_WORKER: request:       %s \n", response_request_str[bcknd_to_ext.request]);
+	printf("WEBOT_WORKER: discrete_move: %s \n", discrete_move_str[bcknd_to_ext.move]);
+	printf("WEBOT_WORKER: dir_type:      %s \n", direction_type_str[bcknd_to_ext.dir_type]);
+	printf("WEBOT_WORKER: heading:       %f \n", bcknd_to_ext.heading);
+	printf("WEBOT_WORKER: speed:         %f \n", bcknd_to_ext.speed);
 	printf("WEBOT_WORKER: =================================================\n");
 }
 
