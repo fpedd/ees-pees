@@ -42,10 +42,6 @@ int navigate(ext_to_wb_msg_t *ext_to_wb, ext_to_bcknd_msg_t ext_to_bcknd,
 	// get the actual distance to the target field
 	float act_distance = navi_get_distance(ext_to_bcknd.actual_gps, dest);
 
-	// printf("actual_gps  %f     %f    \n", ext_to_bcknd.actual_gps[0], ext_to_bcknd.actual_gps[1]);
-	// printf("dest        %f     %f    \n", dest[0], dest[1]);
-	// printf("com_heading %f    act_distance %f    \n", com_heading, act_distance);
-
 	// run the pid controller for speed control
 	float com_speed = 0;
 	int active = pid_run(&pos_pid, ext_to_bcknd.sim_time - last_time, 0, act_distance, &com_speed);
@@ -57,8 +53,6 @@ int navigate(ext_to_wb_msg_t *ext_to_wb, ext_to_bcknd_msg_t ext_to_bcknd,
 	} else {
 		com_speed *= -1.0;
 	}
-
-	// printf("NAVI: pos set: %f  act: %f com: %f \n", 0.0, act_distance, com_speed);
 
 	// command robot to drive to the target
 	drive_automatic(ext_to_wb, init_data,
@@ -91,10 +85,6 @@ float navi_get_heading(float start[], float dest[]) {
 	float dy = dest[1] - start[1];
 	float he = atan2(dx, dy) / M_PI;
 
-	// printf("dx %f \n", dx);
-	// printf("dy %f \n", dy);
-	// printf("he %f \n\n", he);
-
 	return he;
 }
 
@@ -108,6 +98,7 @@ float navi_get_distance(float start[], float dest[]) {
 }
 
 float navi_inv_heading(float heading) {
+	
 	if (heading > 0) {
 		return heading - 1.0;
 	} else {
