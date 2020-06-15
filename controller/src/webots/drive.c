@@ -59,6 +59,7 @@ int drive_automatic(ext_to_wb_msg_t *ext_to_wb, init_to_ext_msg_t init_data,
 		return 0;
 	}
 
+	// no real need for pid controller here yet
 	(void) act_speed;
 	float com_speed = set_speed;
 	// float com_speed = 0;
@@ -77,7 +78,7 @@ int drive_automatic(ext_to_wb_msg_t *ext_to_wb, init_to_ext_msg_t init_data,
 		pid_update(&heading_pid, 5.0, 0.0, 0.0);
 	}
 
-	printf("DRIVE AUTO: heading set: %f  act: %f com: %f \n", set_heading, act_heading, com_heading);
+	// printf("DRIVE AUTO: heading set: %f  act: %f com: %f \n", set_heading, act_heading, com_heading);
 
 	last_time = curr_time;
 
