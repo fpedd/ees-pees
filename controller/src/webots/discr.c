@@ -26,8 +26,9 @@ int discr_init() {
 int discr_step(ext_to_wb_msg_t *ext_to_wb, bcknd_to_ext_msg_t bcknd_to_ext,
                ext_to_bcknd_msg_t ext_to_bcknd, init_to_ext_msg_t init_data) {
 
-	static unsigned long long last_msg_cnt = 0;
-	if (bcknd_to_ext.msg_cnt > last_msg_cnt) {
+	// make sure we only do actions once per message
+	static unsigned long long last_msg_cnt = -1;
+	if (bcknd_to_ext.msg_cnt != last_msg_cnt) {
 
 		switch (bcknd_to_ext.move) {
 			case UP:
@@ -49,13 +50,14 @@ int discr_step(ext_to_wb_msg_t *ext_to_wb, bcknd_to_ext_msg_t bcknd_to_ext,
 		}
 
 		last_msg_cnt = bcknd_to_ext.msg_cnt;
+
+		// do not send false positives "action done" right after we receive
+		// new action
+		navigate(ext_to_wb, ext_to_bcknd, init_data, target);
+		return 0;
+
+	} else {
+		return navigate(ext_to_wb, ext_to_bcknd, init_data, target);
 	}
 
-
-	// printf("target: (%f, %f) \n", target[0], target[1]);
-
-	navigate(ext_to_wb, ext_to_bcknd, init_data, target);
-
-
-	return 0;
 }
