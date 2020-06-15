@@ -7,6 +7,8 @@
 #include "print.h"
 #include "webots/safe.h"
 #include "webots/drive.h"
+#include "webots/navi.h"
+#include "webots/discr.h"
 #include "webots/wb_com.h"
 #include "backend/backend_com.h"
 
@@ -19,6 +21,7 @@ void *webot_worker(void *ptr) {
 
 	wb_init_com();
 	drive_init();
+	navi_init();
 
 	init_to_ext_msg_t init_data;
 	wb_recv_init(&init_data);
@@ -45,7 +48,10 @@ void *webot_worker(void *ptr) {
 		pthread_mutex_unlock(arg_struct->ext_to_bcknd_lock);
 
 		// print_ext_to_bcknd(ext_to_bcknd, 0);
-		printf("WEBOT_WORKER: backend link_qual %f \n", link_qualitiy(0));
+		// float spawn[] = {0.0, 0.0};
+		// float set_heading = navi_get_heading(ext_to_bcknd.actual_gps, spawn);
+		// printf("back %d \n", navi_check_back(ext_to_bcknd.heading, set_heading));
+		// printf("WEBOT_WORKER: backend link_qual %f \n", link_qualitiy(0));
 
 		/***** 3) Get message from backend worker *****/
 		bcknd_to_ext_msg_t bcknd_to_ext;
@@ -54,7 +60,7 @@ void *webot_worker(void *ptr) {
 		memcpy(&bcknd_to_ext, arg_struct->bcknd_to_ext, sizeof(bcknd_to_ext_msg_t));
 		pthread_mutex_unlock(arg_struct->bcknd_to_ext_lock);
 
-		print_bcknd_to_ext(bcknd_to_ext);
+		// print_bcknd_to_ext(bcknd_to_ext);
 
 		/***** 4) Prepare and send to Webots *****/
 		// TODO: run safety checks
@@ -63,7 +69,12 @@ void *webot_worker(void *ptr) {
 		ext_to_wb_msg_t ext_to_wb;
 		memset(&ext_to_wb, 0, sizeof(ext_to_wb_msg_t));
 
-		drive(&ext_to_wb, bcknd_to_ext, ext_to_bcknd, init_data);
+		// check if we should do a continous or discrete action
+		if (bcknd_to_ext.move == NONE) {
+			drive(&ext_to_wb, bcknd_to_ext, ext_to_bcknd, init_data);
+		} else {
+			discr_step(&ext_to_wb, bcknd_to_ext, ext_to_bcknd, init_data);
+		}
 
 		// print_ext_to_wb(ext_to_wb);
 		wb_send(ext_to_wb);
