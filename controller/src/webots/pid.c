@@ -47,7 +47,7 @@ int pid_run(pid_ctrl_t *pid, float dt, float set, float in, float *out) {
 
 	if (fabs(err) < pid->deadband && pid->deadband != 0.0) {
 		*out = 0.0;
-		return 0;
+		return 1;
 	}
 
 	if (pid->special == WRAP) {
