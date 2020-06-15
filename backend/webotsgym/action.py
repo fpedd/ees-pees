@@ -66,6 +66,7 @@ class DiscreteAction(Action):
 
     def __init__(self, directions=3, speeds=3, dspeed=0.2, dhead=0.2,
                  mode="flatten", direction_type="heading", relative=False):
+        self.type = "normal"
         self.mode = mode
         self.direction_type = direction_type
         self.relative = relative
@@ -126,6 +127,7 @@ class ContinuousAction(Action):
         self.action_space = Box(-1, 1, shape=(2,), dtype=np.float32)
         self.direction_type = direction_type
         self.relative = relative
+        self.type = "normal"
 
     def map(self, action, pre_action):
         action = tuple(action)
