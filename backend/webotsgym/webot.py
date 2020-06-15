@@ -50,6 +50,10 @@ class WebotState(object):
         else:
             return (self.steering, self.speed)
 
+    def get_grid_distances(self, num):
+        every = int(360 / num)
+        self.lidar_absolute[0, -1, every]
+
     @property
     def touching(self):
         if any(self.distance < 0.1):
