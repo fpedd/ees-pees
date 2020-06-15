@@ -5,9 +5,9 @@ import time
 import webotsgym.utils as utils
 import webotsgym.automate as automate
 from webotsgym.config import WebotConfig
-from webotsgym.action import DiscreteAction
+from webotsgym.action import DiscreteAction, GridAction
 from webotsgym.evaluate import Evaluate
-from webotsgym.observation import Observation
+from webotsgym.observation import Observation, GridObservation
 from webotsgym.communicate import Com
 
 
@@ -232,3 +232,18 @@ class WebotsEnv(gym.Env):
     @property
     def max_distance(self):
         return np.sqrt(2) * self.config.world_size
+
+
+class WebotsGrid(WebotsEnv):
+    def __init__(self, seed=None, gps_target=(1, 1), start_controller=False,
+                 train=False, evaluate_class=Evaluate,
+                 config: WebotConfig = WebotConfig()):
+        super(WebotsGrid, self).__init__(seed=seed,
+                                         gps_target=gps_target,
+                                         train=train,
+                                         grid_world=True,
+                                         start_controller=start_controller,
+                                         action_class=GridAction,
+                                         evaluate_class=Evaluate,
+                                         observation_class=GridObservation,
+                                         config=config)
