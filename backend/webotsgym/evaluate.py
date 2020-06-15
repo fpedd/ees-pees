@@ -44,6 +44,7 @@ def done(env):
 class Evaluate(object):
     def __init__(self, env, config: WebotConfig = WebotConfig()):
         self.env = env
+        self.config = config
 
     @abc.abstractmethod
     def calc_reward(self):
