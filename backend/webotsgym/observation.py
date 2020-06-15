@@ -30,3 +30,20 @@ class Observation():
         arr = np.hstack((arr, np.array(self.env.state.touching)))
         arr = np.hstack((arr, np.array(self.env.state.lidar_absolute)))
         return arr
+
+
+class GridObservation(Observation):
+    def __init__(self, env):
+        super(GridObservation, self).__init__(env)
+
+    @property
+    def observation_space(self):
+        return spaces.Box(-np.inf, np.inf, shape=(9,), dtype=np.float32)
+
+    def get(self):
+        arr = np.empty(0)
+        arr = np.hstack((arr, np.array(self.env.state.gps_actual)))
+        arr = np.hstack((arr, np.array(self.env.gps_target)))
+        arr = np.hstack((arr, np.array(self.env.state.get_grid_distances(4))))
+        arr = np.hstack((arr, np.array(self.env.state.action_denied)))
+        return arr
