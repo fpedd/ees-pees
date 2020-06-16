@@ -24,6 +24,10 @@ jobs:
         run: pip install numpy
       - name: install pynput
         run: pip install pynput
+      - name: install gym
+        run: pip install gym
+      - name: install psutil
+        run: pip install psutil
 
       - name: pylint automation_test
         working-directory: backend
@@ -36,7 +40,8 @@ jobs:
         run: pylint james.py --disable=missing-docstring --extension-pkg-whitelist=numpy|| pylint-exit -efail $?
       - name: pylint webotsgym
         working-directory: backend
-        run: pylint webotsgym --disable=missing-docstring --extension-pkg-whitelist=numpy --extension-pkg-whitelist=pynput || pylint-exit -efail $?
+        run: pylint webotsgym --disable=missing-docstring --extension-pkg-whitelist=psutil --extension-pkg-whitelist=gym --extension-pkg-whitelist=numpy --extension-pkg-whitelist=WebotsEnv --extension-pkg-whitelist=pynput || pylint-exit -efail $?
+  
   Pytest:
     runs-on: ubuntu-18.04
     steps:
