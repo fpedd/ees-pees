@@ -24,6 +24,8 @@ The bottom of your `.bashrc` should look something like this.
 export WEBOTS_HOME=/usr/local/webots
 ```
 
+A tutorial on how to install webots can be found [here](https://cyberbotics.com/doc/guide/installation-procedure).
+
 ## Usage
 To start the communication stack you can run `./run.sh` in the root directory of
 the repository. This should compile the Internal and the External Controller.
