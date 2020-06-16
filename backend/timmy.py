@@ -44,5 +44,6 @@ class Timmy():
 
 
 if __name__ == "__main__":
+    print("==================   this is timmy  ==================")
     timmy = Timmy(direction_type="heading")
     timmy.action()
