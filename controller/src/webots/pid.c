@@ -1,8 +1,10 @@
 #include "webots/pid.h"
 
 #include <stdio.h>
+#include <math.h>
 
-int pid_init(pid_ctrl_t *pid, float k_p, float k_i, float k_d, float out_min, float out_max, int wrap_around) {
+int pid_init(pid_ctrl_t *pid, float k_p, float k_i, float k_d,
+             float out_min, float out_max, float deadband, enum pid_special special) {
 
 	pid->k_p = k_p;
 	pid->k_i = k_i;
@@ -15,10 +17,11 @@ int pid_init(pid_ctrl_t *pid, float k_p, float k_i, float k_d, float out_min, fl
 
 	pid->out_min = out_min;
 	pid->out_max = out_max;
+	pid->deadband = deadband;
 	pid->err_acc = 0.0;
 	pid->prev_in = 0.0;
 
-	pid->wa = wrap_around;
+	pid->special = special;
 
 	return 0;
 }
@@ -32,7 +35,20 @@ int pid_run(pid_ctrl_t *pid, float dt, float set, float in, float *out) {
 
 	float err = set - in;
 
-	if (pid->wa) {
+	if (pid->special == EXPO) {
+		if (err > 0.0) {
+			err = exp(err) - 1;
+		} else {
+			err = -exp(-err) + 1;
+		}
+	}
+
+	if (fabs(err) < pid->deadband && pid->deadband != 0.0) {
+		*out = 0.0;
+		return 1;
+	}
+
+	if (pid->special == WRAP) {
 		if (err < pid->out_min) {
 			err += 2.0 * pid->out_max;
 		} else if (err > pid->out_max) {

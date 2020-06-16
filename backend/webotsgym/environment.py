@@ -85,11 +85,11 @@ class WebotsEnv(gym.Env):
         np.random.seed(seed)
         self.seeds.extend(utils.seed_list(seed, n=1000))
 
-    def get_next_seed(self):
-        """Get next random seed, increment next_seed_idx."""
-        seed = self.seeds[self.next_seed_idx]
-        self.next_seed_idx += 1
-        return seed
+    # def get_next_seed(self):
+    #     """Get next random seed, increment next_seed_idx."""
+    #     seed = self.seeds[self.next_seed_idx]
+    #     self.next_seed_idx += 1
+    #     return seed
 
     @property
     def main_seed(self):

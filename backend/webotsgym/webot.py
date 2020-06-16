@@ -21,6 +21,8 @@ class WebotState(object):
         self.steering = None
         self.distance = None
         self._touching = None
+        self._action_denied = None
+        self._discrete_action_done = None
 
         self.action_denied = 0
 
@@ -38,7 +40,9 @@ class WebotState(object):
             self.heading = struct.unpack('f', buffer[32:36])[0]
             self.steering = struct.unpack('f', buffer[36:40])[0]
             self._touching = struct.unpack("I", buffer[40:44])[0]
-            self._unpack_distance(buffer, start=44)
+            self._action_denied = struct.unpack("I", buffer[44:48])[0]
+            self._discrete_action_done = struct.unpack("I", buffer[48:52])[0]
+            self._unpack_distance(buffer, start=52)
 
     def _unpack_distance(self, buffer, start=40):
         """Get distance data from buffer, roll to have at heading first."""
