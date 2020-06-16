@@ -88,7 +88,7 @@ class Observation():
 class FakeGym(gym.Env):
     def __init__(self, seed=None, N=10, num_of_sensors=4, obstacles_each=4,
                  step_range=(1, 1), action_type="discrete",
-                 discrete_action_shaping="flatten", obs=Observation):
+                 discrete_action_shaping="flatten", obs=Observation, obs_len=3):
         super(FakeGym, self).__init__()
 
         self.history = {}
@@ -103,9 +103,9 @@ class FakeGym(gym.Env):
         self.action_mapping = self.action_mapper.action_map
         self.action_space = self.action_mapper.action_space
 
-        self.com_inits = (N, num_of_sensors, obstacles_each)
+        self.com_inits = (N, num_of_sensors, obstacles_each, obs_len)
         self.com = FakeCom(self.seeds, self.com_inits[0], self.com_inits[1],
-                           self.com_inits[2])
+                           self.com_inits[2], self.com_inits[3])
         self.plotpadding = 0
 
         self.obs = (obs)(self)
@@ -150,9 +150,12 @@ class FakeGym(gym.Env):
     def close(self):
         pass
 
-    def get_target_distance(self):
+    def get_target_distance(self, normalized=True):
         """Calculate euklidian distance to target."""
-        return utils.euklidian_distance(self.gps_actual, self.gps_target)
+        dist = utils.euklidian_distance(self.gps_actual, self.gps_target)
+        if normalized is True:
+            dist = dist / self.max_distance
+        return dist
 
     def check_done(self):
         if self.com.time_steps == 1000:
@@ -262,23 +265,25 @@ class FakeState():
 
 
 class FakeCom():
-    def __init__(self, seeds, N=100, num_of_sensors=4, obstacles_each=2):
+    def __init__(self, seeds, N=10, num_of_sensors=4, obstacles_each=2,
+                 obs_len=3):
         self.seeds = seeds
         self.next_seed_idx = 1
-        self.inits = (N, num_of_sensors, obstacles_each)
+        self.inits = (N, num_of_sensors, obstacles_each, obs_len)
         self.N = N
         self.offset = int(2 * N)
         self.num_of_sensors = num_of_sensors
-        self._init(N, obstacles_each)
+        self.obs_len = obs_len
+        self._init(N, obstacles_each, obs_len)
         self.time_steps = 0
 
-    def _init(self, N, obstacles_each):
+    def _init(self, N, obstacles_each, obs_len):
         self.state = FakeState()
         self._setup_fields()
 
         # place obstacles randomly (horizontal and vertical walls)
-        self.place_random_obstacle(dx=1, dy=int(N / 3), N=obstacles_each)
-        self.place_random_obstacle(int(N / 3), 1, N=obstacles_each)
+        self.place_random_obstacle(dx=1, dy=obs_len, N=obstacles_each)
+        self.place_random_obstacle(obs_len, 1, N=obstacles_each)
 
         # random start and finish positions
         self.state.gps_actual = self.random_position()
