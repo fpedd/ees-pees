@@ -34,7 +34,7 @@ jobs:
         run: pylint timmy.py --disable=missing-docstring --extension-pkg-whitelist=numpy --extension-pkg-whitelist=pynput || pylint-exit -efail $?
       - name: pylint james
         working-directory: backend
-        run: pylint james.py --disable=missing-docstring || pylint-exit -efail $?
+        run: pylint james.py --disable=missing-docstring --extension-pkg-whitelist=numpy|| pylint-exit -efail $?
    
   Pytest:
     runs-on: ubuntu-18.04
