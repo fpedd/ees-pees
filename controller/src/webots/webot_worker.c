@@ -70,11 +70,14 @@ void *webot_worker(void *ptr) {
 		ext_to_wb_msg_t ext_to_wb;
 		memset(&ext_to_wb, 0, sizeof(ext_to_wb_msg_t));
 
+		static int start = 1;
 		// check if we should do a continous or discrete action
 		if (bcknd_to_ext.move == NONE) {
 			drive(&ext_to_wb, bcknd_to_ext, ext_to_bcknd, init_data);
+			start = 1;
 		} else {
-			discrete_action_done = discr_step(&ext_to_wb, bcknd_to_ext, ext_to_bcknd, init_data);
+			discrete_action_done = discr_step(&ext_to_wb, bcknd_to_ext, ext_to_bcknd, init_data, start);
+			start = 0;
 		}
 
 		// print_ext_to_wb(ext_to_wb);
