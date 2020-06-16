@@ -53,6 +53,7 @@ int discr_step(ext_to_wb_msg_t *ext_to_wb, bcknd_to_ext_msg_t bcknd_to_ext,
 
 		// do not send false positives "action done" right after we receive
 		// new action
+		// TODO: probably not needed anymore
 		navigate(ext_to_wb, ext_to_bcknd, init_data, target);
 		return 0;
 
