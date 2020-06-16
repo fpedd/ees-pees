@@ -25,9 +25,10 @@ class Schnitty():
 
     def on_press(self, key):
         # TOGGLE with space
-        if key == keyboard.Key.spaces:
+        if key == keyboard.Key.space:
             self.grid = not self.grid
             print("---------------------TOGGLED TO GRID = ", self.grid)
+            return
         # Action by key
         elif key == keyboard.Key.up:
             if self.grid is True:
@@ -55,7 +56,9 @@ class Schnitty():
         # Outpacket by grid value
         if self.grid is True:
             self.env.com.send_discrete_move(move)
+            print(move)
         else:
+            self.act.print()
             self.env.send_command(self.act)
 
     def on_release(self, key):
@@ -64,5 +67,6 @@ class Schnitty():
 
 
 if __name__ == "__main__":
+    print("==================   this is Schnitty  ==================")
     schnitty = Schnitty(direction_type="heading")
     schnitty.action()
