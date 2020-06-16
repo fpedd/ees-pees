@@ -178,8 +178,14 @@ class WebotsEnv(gym.Env):
             self.supervisor.reset_environment(self.main_seed)
             # print("========= TARGET", self.config.gps_target)
 
+            self.rewards = []
+            self.distances = []
+
             self._init_com()
             self.send_data_request()
+
+            if self.get_target_distance(False) < 0.05:
+                self.reset()
             # print("========= DISTANCE", self.get_target_distance())
 
             return self.observation
@@ -217,13 +223,20 @@ class WebotsEnv(gym.Env):
         self.history[self.i] = self.state
         self.i += 1
 
-    def get_target_distance(self):
+    def get_target_distance(self, normalized=True):
         """Calculate euklidian distance to target."""
-        return utils.euklidian_distance(self.gps_actual, self.gps_target)
+        distance = utils.euklidian_distance(self.gps_actual, self.gps_target)
+        if normalized is True:
+            distance = distance / self.max_distance
+        return distance
 
     @property
     def iterations(self):
         return len(self.history)
+
+    @property
+    def total_reward(self):
+        return sum(self.rewards)
 
     @property
     def gps_actual(self):
