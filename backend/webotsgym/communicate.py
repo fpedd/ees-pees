@@ -181,7 +181,7 @@ class Com(object):
 
     @property
     def wait_time(self):
-        divider = 1
+        divider = 5
         if self.config.fast_simulation is True:
             divider = 3
         return self.config.send_recv_wait_time / 1000 / divider
