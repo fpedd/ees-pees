@@ -1,36 +1,11 @@
-import abc
 from pynput import keyboard
-import numpy as np
-import time
 
-import webotsgym.communicate as communicate
 import webotsgym.environment as environment
 from webotsgym.action import ContinuousAction
 from webotsgym.webot import WebotAction
 
 
-class Agent(abc.ABC):
-    def __init__(self):
-        self.history = []
-
-    @abc.abstractmethod
-    def action(self):
-        pass
-
-
-class RndWebotAgent(Agent):
-    def __init__(self):
-        self.com = communicate.Com((1, 2))
-
-    def action(self):
-        action = WebotAction()
-        action.heading = np.random.random() * 2 - 1
-        action.speed = np.random.random() * 2 - 1
-        time.sleep(0.2)
-        self.com.send_command(action)
-
-
-class WebotCtrAgent(Agent):
+class James():
     def __init__(self, direction_type="heading"):
         self.dheading = 0.05
         self.dspeed = 0.05
@@ -67,5 +42,5 @@ class WebotCtrAgent(Agent):
 
 
 if __name__ == "__main__":
-    james = WebotCtrAgent(direction_type="heading")
+    james = James(direction_type="heading")
     james.action()

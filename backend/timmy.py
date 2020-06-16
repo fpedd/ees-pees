@@ -1,24 +1,9 @@
-import abc
 from pynput import keyboard
-import numpy as np
-import time
 
 import webotsgym.communicate as communicate
-import webotsgym.environment as environment
-from webotsgym.action import ContinuousAction
-from webotsgym.webot import WebotAction
 
 
-class Agent(abc.ABC):
-    def __init__(self):
-        self.history = []
-
-    @abc.abstractmethod
-    def action(self):
-        pass
-
-
-class Agent(Agent):
+class Timmy():
     def __init__(self, direction_type="heading"):
         self.dheading = 0.05
         self.dspeed = 0.05
@@ -48,5 +33,5 @@ class Agent(Agent):
 
 
 if __name__ == "__main__":
-    james = Agent(direction_type="heading")
-    james.action()
+    timmy = Timmy(direction_type="heading")
+    timmy.action()
