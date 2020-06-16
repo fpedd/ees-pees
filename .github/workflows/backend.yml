@@ -22,6 +22,8 @@ jobs:
         run: pip install pylint-exit
       - name: install numpy
         run: pip install numpy
+      - name: install pynput
+        run: pip install pynput
 
 
       - name: pylint automation_test
@@ -29,7 +31,7 @@ jobs:
         run: pylint automation_test.py --disable=missing-docstring || pylint-exit -efail $?
       - name: pylint timmy
         working-directory: backend
-        run: pylint timmy.py --disable=missing-docstring --extension-pkg-whitelist=numpy || pylint-exit -efail $?
+        run: pylint timmy.py --disable=missing-docstring --extension-pkg-whitelist=numpy --extension-pkg-whitelist=pynput || pylint-exit -efail $?
       - name: pylint james
         working-directory: backend
         run: pylint james.py --disable=missing-docstring || pylint-exit -efail $?
