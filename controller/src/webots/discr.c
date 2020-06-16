@@ -23,9 +23,15 @@ int discr_init() {
 	return 0;
 }
 
+void print_cood(float actual[2], float target[2]) {
+	printf("actual: %f %f \n", actual[0], actual[1]);
+	printf("target: %f %f \n", target[0], target[1]);
+}
+
 int discr_step(ext_to_wb_msg_t *ext_to_wb, bcknd_to_ext_msg_t bcknd_to_ext,
                ext_to_bcknd_msg_t ext_to_bcknd, init_to_ext_msg_t init_data) {
-
+	// test mats
+	print_cood(ext_to_bcknd.actual_gps, target);
 	// make sure we only do actions once per message
 	static unsigned long long last_msg_cnt = -1;
 	if (bcknd_to_ext.msg_cnt != last_msg_cnt) {
