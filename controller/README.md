@@ -186,6 +186,23 @@ Explanation of `enum response_request`:
 * `COMMAND_ONLY`: Only forward heading and speed to `webot_worker`, then wait for next message from backend
 * `REQUEST_ONLY`: Only send newest sensordata from `webot_worker` to backend, then wait for next message from backend
 * `COMMAND_REQUEST`: Do both of the above, then wait for next message from backend
+*
+```
+enum discrete_move {
+	NONE = 0,                   // Dont do a discrete move at all, do continous
+	UP = 1,                     // Move Up
+	LEFT = 2,                   // Move Left
+	DOWN = 3,                   // Move Down
+	RIGHT = 4                   // Move Right
+};
+```
+
+Explanation of `enum discrete_move`:
+* `NONE`: Do not do any discrete move. Just do actions according to the heading and speed values in the packet.
+* `UP`: Do a discrete move and move one step up in the webots world (north)
+* `LEFT`: Do a discrete move and move one step left in the webots world (west)
+* `DOWN`: Do a discrete move and move one step down in the webots world (south)
+* `RIGHT`: Do a discrete move and move one step right in the webots world (east)
 
 ```
 enum direction_type {
