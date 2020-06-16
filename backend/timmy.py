@@ -18,7 +18,7 @@ class Agent(abc.ABC):
         pass
 
 
-class Agent(Agent):
+class Timmy(Agent):
     def __init__(self, direction_type="heading"):
         self.dheading = 0.05
         self.dspeed = 0.05
@@ -59,5 +59,5 @@ class Agent(Agent):
 
 
 if __name__ == "__main__":
-    timmy = Agent(direction_type="heading")
+    timmy = Timmy(direction_type="heading")
     timmy.action()
