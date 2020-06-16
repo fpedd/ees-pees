@@ -5,8 +5,8 @@ class WebotConfig(object):
         self.direction_type = "heading"  # vs. "steering"
         self.reset_env_after = 1 * 10**4  # in sec
         self.DIST_VECS = 360
-        self.wait_env_creation = 5  # in sec
-        self.wait_env_reset = 2  # in sec
+        self.wait_env_creation = 2  # in sec
+        self.wait_env_reset = 1  # in sec
         self.send_recv_wait_time = 32  # in ms
         self.step_wait_time = 0  # in sec
 
