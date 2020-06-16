@@ -10,6 +10,7 @@ webots/controllers/supervisor/supervisor
 ### Python Models
 backend/models/fake
 backend/models/webots
+backend/models
 
 ### C ###
 # Prerequisites
