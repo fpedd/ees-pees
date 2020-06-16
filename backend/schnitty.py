@@ -33,21 +33,25 @@ class Schnitty():
         elif key == keyboard.Key.up:
             if self.grid is True:
                 move = 1
+                print("Move Up")
             else:
                 self.act.speed += self.dspeed
         elif key == keyboard.Key.down:
             if self.grid is True:
                 move = 3
+                print("Move Down")
             else:
                 self.act.speed -= self.dspeed
         elif key == keyboard.Key.left:
             if self.grid is True:
                 move = 2
+                print("Move Left")
             else:
                 self.act.heading -= self.dheading
         elif key == keyboard.Key.right:
             if self.grid is True:
                 move = 4
+                print("Move Right")
             else:
                 self.act.heading += self.dheading
         else:
@@ -56,7 +60,6 @@ class Schnitty():
         # Outpacket by grid value
         if self.grid is True:
             self.env.com.send_discrete_move(move)
-            print(move)
         else:
             self.act.print()
             self.env.send_command(self.act)
