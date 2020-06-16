@@ -8,7 +8,7 @@
 In order for our software (compiler, python, etc.) to know where your webots
 installation is located at, you will need to set an environment variable. The
 name of the environment variable you need to set is: `WEBOTS_HOME`. It should
-point to your webots installation. If you installed webots the "normal" way,
+point to your webots installation. If you installed webots the "normal" way (see below),
 setting the variable will look like this:
 `export WEBOTS_HOME=/usr/local/webots`
 In order to not always have to type and execute that in your terminal,
