@@ -5,9 +5,9 @@ import time
 import webotsgym.utils as utils
 import webotsgym.automate as automate
 from webotsgym.config import WebotConfig
-from webotsgym.action import DiscreteAction
+from webotsgym.action import DiscreteAction, GridAction
 from webotsgym.evaluate import Evaluate
-from webotsgym.observation import Observation
+from webotsgym.observation import Observation, GridObservation
 from webotsgym.communicate import Com
 
 
@@ -16,6 +16,7 @@ class WebotsEnv(gym.Env):
                  seed=None,
                  gps_target=(1, 1),
                  train=False,
+                 grid_world=False,
                  start_controller=False,
                  action_class=DiscreteAction,
                  evaluate_class=Evaluate,
@@ -23,6 +24,7 @@ class WebotsEnv(gym.Env):
                  config: WebotConfig = WebotConfig()):
         super(WebotsEnv, self).__init__()
         self.seed(seed)
+        self.grid_world = grid_world
 
         self._gps_target = gps_target
 
@@ -83,11 +85,11 @@ class WebotsEnv(gym.Env):
         np.random.seed(seed)
         self.seeds.extend(utils.seed_list(seed, n=1000))
 
-    def get_next_seed(self):
-        """Get next random seed, increment next_seed_idx."""
-        seed = self.seeds[self.next_seed_idx]
-        self.next_seed_idx += 1
-        return seed
+    # def get_next_seed(self):
+    #     """Get next random seed, increment next_seed_idx."""
+    #     seed = self.seeds[self.next_seed_idx]
+    #     self.next_seed_idx += 1
+    #     return seed
 
     @property
     def main_seed(self):
@@ -138,9 +140,14 @@ class WebotsEnv(gym.Env):
         """
         time.sleep(self.config.step_wait_time)
 
-        pre_action = self.state.get_pre_action()
-        action = self.action_class.map(action, pre_action)
-        self.send_command_and_data_request(action)
+        if self.action_class.type != "grid":
+            pre_action = self.state.get_pre_action()
+            action = self.action_class.map(action, pre_action)
+            self.send_command_and_data_request(action)
+        else:
+            action = self.action_class.map(action)
+            self.com.send_discrete_move(action)
+            time.sleep(2)
 
         reward = self.calc_reward()
         self.rewards.append(reward)
@@ -171,8 +178,14 @@ class WebotsEnv(gym.Env):
             self.supervisor.reset_environment(self.main_seed)
             # print("========= TARGET", self.config.gps_target)
 
+            self.rewards = []
+            self.distances = []
+
             self._init_com()
             self.send_data_request()
+
+            if self.get_target_distance(False) < 0.05:
+                self.reset()
             # print("========= DISTANCE", self.get_target_distance())
 
             return self.observation
@@ -210,13 +223,20 @@ class WebotsEnv(gym.Env):
         self.history[self.i] = self.state
         self.i += 1
 
-    def get_target_distance(self):
+    def get_target_distance(self, normalized=True):
         """Calculate euklidian distance to target."""
-        return utils.euklidian_distance(self.gps_actual, self.gps_target)
+        distance = utils.euklidian_distance(self.gps_actual, self.gps_target)
+        if normalized is True:
+            distance = distance / self.max_distance
+        return distance
 
     @property
     def iterations(self):
         return len(self.history)
+
+    @property
+    def total_reward(self):
+        return sum(self.rewards)
 
     @property
     def gps_actual(self):
@@ -225,3 +245,18 @@ class WebotsEnv(gym.Env):
     @property
     def max_distance(self):
         return np.sqrt(2) * self.config.world_size
+
+
+class WebotsGrid(WebotsEnv):
+    def __init__(self, seed=None, gps_target=(1, 1), start_controller=False,
+                 train=False, evaluate_class=Evaluate,
+                 config: WebotConfig = WebotConfig()):
+        super(WebotsGrid, self).__init__(seed=seed,
+                                         gps_target=gps_target,
+                                         train=train,
+                                         grid_world=True,
+                                         start_controller=start_controller,
+                                         action_class=GridAction,
+                                         evaluate_class=Evaluate,
+                                         observation_class=GridObservation,
+                                         config=config)

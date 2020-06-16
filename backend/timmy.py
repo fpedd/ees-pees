@@ -1,24 +1,9 @@
-import abc
 from pynput import keyboard
-import numpy as np
 import time
-
 import webotsgym.communicate as communicate
-import webotsgym.environment as environment
-from webotsgym.action import ContinuousAction
-from webotsgym.webot import WebotAction
 
 
-class Agent(abc.ABC):
-    def __init__(self):
-        self.history = []
-
-    @abc.abstractmethod
-    def action(self):
-        pass
-
-
-class Agent(Agent):
+class Timmy():
     def __init__(self, direction_type="heading"):
         self.dheading = 0.05
         self.dspeed = 0.05
@@ -45,8 +30,8 @@ class Agent(Agent):
             return
         self.com.send_discrete_move(move)
 
-        ### wait for action to finish ###
-        time.sleep(0.1) # give controller some time to update internal data
+        # ------------------ wait for action to finish -------------------------
+        time.sleep(0.1)  # give controller some time to update internal data
         self.com.send_data_request()
         while self.com.state._discrete_action_done != 1:
             self.com.send_data_request()
@@ -59,5 +44,6 @@ class Agent(Agent):
 
 
 if __name__ == "__main__":
-    timmy = Agent(direction_type="heading")
+    print("==================   this is timmy  ==================")
+    timmy = Timmy(direction_type="heading")
     timmy.action()
