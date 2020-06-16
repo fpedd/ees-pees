@@ -41,10 +41,12 @@ class WebotState(object):
             self._unpack_distance(buffer, start=44)
 
     def _unpack_distance(self, buffer, start=40):
+        """Get distance data from buffer, roll to have at heading first."""
         to = start + self.num_lidar * 4
         N = self.num_lidar
         self.distance = np.array(struct.unpack("{}f".format(N),
                                                buffer[start: to]))
+        self.distance = np.roll(self.distance, 180)
 
     def get_pre_action(self, direction_type="heading"):
         if direction_type == "heading":
