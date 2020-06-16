@@ -24,7 +24,9 @@ The bottom of your `.bashrc` should look something like this.
 export WEBOTS_HOME=/usr/local/webots
 ```
 
-A tutorial on how to install webots can be found [here](https://cyberbotics.com/doc/guide/installation-procedure).
+A tutorial on how to install webots can be found [here](https://cyberbotics.com/doc/guide/installation-procedure). Please open webots once and do the setup before continuing. 
+
+You will probably need to install a bunch of python packages. Maybe some ubuntu / linux packages as well.  
 
 ## Usage
 To start the communication stack you can run `./run.sh` in the root directory of
