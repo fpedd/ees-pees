@@ -23,37 +23,17 @@ jobs:
       - name: install numpy
         run: pip install numpy
 
-      # - name: pylint Action
-      #   working-directory: backend
-      #   run: pylint Action.py --disable=missing-docstring --extension-pkg-whitelist=numpy || pylint-exit -efail $?
-      # - name: pylint Config
-      #   working-directory: backend
-      #   run: pylint Config.py --disable=missing-docstring || pylint-exit -efail $?
-      - name: pylint Observation
-        working-directory: backend
-        run: pylint Observation.py --disable=missing-docstring || pylint-exit -efail $?
-      # - name: pylint Reward
-      #   working-directory: backend
-      #   run: pylint Reward.py --disable=missing-docstring --extension-pkg-whitelist=numpy || pylint-exit -efail $?
-      # - name: pylint automate
-      #   working-directory: backend
-      #   run: pylint automate.py --disable=missing-docstring --extension-pkg-whitelist=numpy|| pylint-exit -efail $?
-      # - name: pylint communicate
-      #   working-directory: backend
-      #   run: pylint communicate.py --disable=missing-docstring --extension-pkg-whitelist=numpy || pylint-exit -efail $?
-      # - name: pylint environment
-      #   working-directory: backend
-      #   run: pylint environment.py --disable=missing-docstring --extension-pkg-whitelist=numpy || pylint-exit -efail $?
-      # - name: pylint james
-      #   working-directory: backend
-      #   run: pylint james.py --disable=missing-docstring || pylint-exit -efail $?
-      # - name: pylint utils
-      #   working-directory: backend
-      #   run: pylint utils.py --disable=missing-docstring --extension-pkg-whitelist=numpy || pylint-exit -efail $?
-      # - name: pylint webot
-      #   working-directory: backend
-      #   run: pylint webot.py --disable=missing-docstring --extension-pkg-whitelist=numpy || pylint-exit -efail $?
 
+      - name: pylint automation_test
+        working-directory: backend
+        run: pylint automation_test.py --disable=missing-docstring || pylint-exit -efail $?
+      - name: pylint timmy
+        working-directory: backend
+        run: pylint timmy.py --disable=missing-docstring --extension-pkg-whitelist=numpy || pylint-exit -efail $?
+      - name: pylint james
+        working-directory: backend
+        run: pylint james.py --disable=missing-docstring || pylint-exit -efail $?
+   
   Pytest:
     runs-on: ubuntu-18.04
     steps:
@@ -61,9 +41,9 @@ jobs:
       - uses: actions/setup-python@v2
       - name: install-pytest
         run: pip install pytest
-      - name: pytest
-        working-directory: backend
-        run: pytest -q test.py
+      - name: pytest_test
+        working-directory: backend/test
+        run: pytest -q test_test.py
   
 
 
