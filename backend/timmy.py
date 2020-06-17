@@ -2,9 +2,6 @@ from pynput import keyboard
 import time
 import webotsgym.communicate as communicate
 
-# length time_out
-TIME_OUT = 3
-
 
 class Timmy():
     def __init__(self, direction_type="heading"):
@@ -37,12 +34,12 @@ class Timmy():
         # ------------------ wait for action to finish ------------------------
         time.sleep(0.1)  # give controller some time to update internal data
         self.com.send_data_request()
-        timestamp_start = self.com.state.sim_time
         time_out = False
+        timestamp_start = self.com.state.sim_time
         while self.com.state._discrete_action_done != 1:
-            timestamp_end = self.com.state.sim_time
 
-            if (timestamp_end-timestamp_start) >= TIME_OUT:
+            print((self.com.state.sim_time-timestamp_start))
+            if (self.com.state.sim_time-timestamp_start) >= 5:
                 time_out = True
                 break
             self.com.send_data_request()
@@ -52,8 +49,12 @@ class Timmy():
             move = self.reverse_move(move)
             self.com.send_discrete_move(move)
             print("Move reversed")
+        elif time_out:
+            print("Time out")
+        else:
+            print("Action Done")
+
         print("GPS actual: " + str(self.com.state.gps_actual))
-        print("Action done")
 
     def on_release(self, key):
         if key == keyboard.Key.esc:
@@ -76,6 +77,6 @@ class Timmy():
 
 
 if __name__ == "__main__":
-    print("==================   this is timmy  ==================")
+    print("================== Hi, my name is Timmy ==================")
     timmy = Timmy(direction_type="heading")
     timmy.action()
