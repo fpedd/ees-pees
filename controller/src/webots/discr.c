@@ -58,7 +58,7 @@ int discr_step(ext_to_wb_msg_t *ext_to_wb, bcknd_to_ext_msg_t bcknd_to_ext,
 
 	}
 
-	print_cood(ext_to_bcknd.actual_gps, target);
+	//print_cood(ext_to_bcknd.actual_gps, target);
 
 	return navigate(ext_to_wb, ext_to_bcknd, init_data, target);
 }
