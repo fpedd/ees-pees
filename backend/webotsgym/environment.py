@@ -138,8 +138,6 @@ class WebotsEnv(gym.Env):
 
         Handled inside com class.
         """
-        time.sleep(self.config.step_wait_time)
-
         if self.action_class.type != "grid":
             pre_action = self.state.get_pre_action()
             action = self.action_class.map(action, pre_action)
@@ -150,11 +148,13 @@ class WebotsEnv(gym.Env):
             time.sleep(2)
 
         reward = self.calc_reward()
+        done = self.check_done()
+
+        # logging, printing
         self.rewards.append(reward)
         self.distances.append(self.get_target_distance())
-        if len(self.history) % 250 == 0:
+        if len(self.history) % 500 == 0:
             print("Reward (", len(self.history), ")\t", reward)
-        done = self.check_done()
 
         return self.observation, reward, done, {}
 
@@ -170,11 +170,9 @@ class WebotsEnv(gym.Env):
         """Reset environment to random."""
         if self.supervisor_connected is True:
             self.reset_history.append(time.time())
-            # print("TIME FOR RESET:", self.reset_history[-1] - self.reset_history[-2])
 
             seed = utils.set_random_seed(apply=False)
             self.seed(seed)
-            # print("resetting with seed: ", seed)
             self.supervisor.reset_environment(self.main_seed)
             # print("========= TARGET", self.config.gps_target)
 
@@ -186,7 +184,6 @@ class WebotsEnv(gym.Env):
 
             if self.get_target_distance(False) < 0.05:
                 self.reset()
-            # print("========= DISTANCE", self.get_target_distance())
 
             return self.observation
 
@@ -217,6 +214,12 @@ class WebotsEnv(gym.Env):
         """Receive state via Com class."""
         self.com.recv()
         self._update_history()
+
+    def _time_for_requests(self, requests=1000):
+        t0 = time.time()
+        for _ in range(requests):
+            self.send_data_request()
+        return time.time() - t0
 
     def _update_history(self):
         """Add current state of Com to history."""
