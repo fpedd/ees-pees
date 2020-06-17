@@ -7,7 +7,7 @@ from enum import IntEnum
 import psutil
 import os
 
-from webotsgym.config import WebotConfig
+from webotsgym.config import WebotConfig, SimSpeedMode
 import webotsgym.utils as utils
 
 

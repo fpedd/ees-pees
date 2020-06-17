@@ -3,7 +3,7 @@ import struct
 import time
 from enum import Enum
 
-from webotsgym.config import WebotConfig
+from webotsgym.config import WebotConfig, SimSpeedMode
 from webotsgym.webot import WebotState, WebotAction
 
 
@@ -119,7 +119,7 @@ class Com(object):
         else:
             self.dir_type = DirectionType.HEADING
 
-        if config.fast_simulation is True:
+        if not (self.config.sim_mode is SimSpeedMode.NORMAL):
             print("USE FAST MODE")
 
     # ------------------------------  SETUPS  ---------------------------------
@@ -191,7 +191,7 @@ class Com(object):
     @property
     def wait_time(self):
         divider = 1
-        if self.config.fast_simulation is True:
+        if not (self.config.sim_mode is SimSpeedMode.NORMAL):
             divider = 3
         return self.config.send_recv_wait_time / 1000 / divider
 

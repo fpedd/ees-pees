@@ -1,4 +1,6 @@
-class SimSpeedMode.(IntEnum):
+from enum import IntEnum
+
+class SimSpeedMode(IntEnum):
     NORMAL = 0
     RUN    = 1
     FAST   = 2
