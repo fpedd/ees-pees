@@ -30,7 +30,7 @@ extern const char* direction_type_str[];
 typedef struct {
 	unsigned long long msg_cnt;    // total number of messages (even) (internal)
 	double time_stmp;              // time the message got send (internal)
-	float sim_time;                // actual simulation time in webots
+	float sim_time;                // actual simulation time in webots in seconds
 	float speed;                   // current speed of robot in webots [-1, 1]
 	float actual_gps[2];           // coordiantes where the robot is
 	float heading;                 // direction the front of the robot points in [-1, 1]
