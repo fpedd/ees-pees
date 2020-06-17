@@ -27,4 +27,6 @@ double get_time();
 
 double heading_in_norm(double x, double y, double z);
 
+float round_with_factor(float number, float factor);
+
 #endif // UTIL_H

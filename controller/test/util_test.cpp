@@ -13,3 +13,22 @@ TEST(util, heading_in_norm) {
 	expected_heading = -0.5;
 	ASSERT_NEAR(expected_heading, actual_heading, 1.0e-10);
 }
+
+TEST(util, round_with_factor) {
+
+	ASSERT_NEAR(round_with_factor(-0.23481, 0.3), -0.3, 1.0e-5);
+	ASSERT_NEAR(round_with_factor(-0.89712, 0.3), -0.9, 1.0e-5);
+	ASSERT_NEAR(round_with_factor(-1.42131, 0.3), -1.5, 1.0e-5);
+	ASSERT_NEAR(round_with_factor(-0.74523, 0.3), -0.6, 1.0e-5);
+
+	ASSERT_NEAR(round_with_factor(0.23481, 0.25), 0.25, 1.0e-5);
+	ASSERT_NEAR(round_with_factor(0.89712, 0.25), 1.0, 1.0e-5);
+	ASSERT_NEAR(round_with_factor(1.42131, 0.25), 1.5, 1.0e-5);
+	ASSERT_NEAR(round_with_factor(0.74523, 0.25), 0.75, 1.0e-5);
+
+	ASSERT_NEAR(round_with_factor(0.23481, 0.5), 0.0, 1.0e-5);
+	ASSERT_NEAR(round_with_factor(0.89712, 0.5), 1.0, 1.0e-5);
+	ASSERT_NEAR(round_with_factor(1.42131, 0.5), 1.5, 1.0e-5);
+	ASSERT_NEAR(round_with_factor(0.74523, 0.5), 0.5, 1.0e-5);
+
+}
