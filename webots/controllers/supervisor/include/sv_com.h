@@ -1,6 +1,8 @@
 #ifndef SV_COM_H
 #define SV_COM_H
 
+#include "../include/sv_functions.h"
+
 enum function_code {
 	FUNC_UNDEF = -1,
     NO_FUNCTION = 0,
@@ -26,7 +28,7 @@ typedef struct {
 typedef struct {
 	enum function_code function_code; // function code [enum function_code]
 	int seed;                         // seed [int]
-	int fast_simulation;              // fast_simulation [int]
+	enum sv_sim_mode mode;            // fast_simulation [enum sv_sim_mode]
 	int num_obstacles;                // num_obstacles [int]
 	int world_size;                   // world_size in blocks [int]
 	float scale;                      // scale of the world, actual_size = world_size*scale [float]
