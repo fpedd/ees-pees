@@ -234,7 +234,7 @@ class WebotsEnv(gym.Env):
         self.history[self.i] = self.state
         self.i += 1
 
-    def get_target_distance(self, normalized=True):
+    def get_target_distance(self, normalized=False):
         """Calculate euklidian distance to target."""
         distance = utils.euklidian_distance(self.gps_actual, self.gps_target)
         if normalized is True:
