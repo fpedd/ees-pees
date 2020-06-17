@@ -41,5 +41,5 @@ double heading_in_norm(double x, double y, double z) {
 }
 
 float round_with_factor(float number, float factor) {
-	return ((float) round(number / factor))  * factor;
+	return (((float) round((number - factor / 2.0) / factor))  * factor) + (factor / 2.0);
 }
