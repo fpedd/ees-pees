@@ -112,7 +112,7 @@ class WebotCtrl():
         data = struct.pack('iiiiif',
                            FunctionCode.START,
                            seed,
-                           int(self.config.fast_simulation),
+                           int(self.config.sim_mode),
                            self.config.num_obstacles,
                            self.config.world_size,
                            self.config.world_scaling)
