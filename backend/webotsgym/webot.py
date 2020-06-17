@@ -20,7 +20,7 @@ class WebotState(object):
         self.heading = None
         self.steering = None
         self.distance = None
-        self._touching = None
+        self.touching = None
         self._action_denied = None
         self._discrete_action_done = None
 
@@ -39,7 +39,7 @@ class WebotState(object):
             self.gps_actual = struct.unpack('2f', buffer[24:32])
             self.heading = struct.unpack('f', buffer[32:36])[0]
             self.steering = struct.unpack('f', buffer[36:40])[0]
-            self._touching = struct.unpack("I", buffer[40:44])[0]
+            self.touching = struct.unpack("I", buffer[40:44])[0]
             self._action_denied = struct.unpack("I", buffer[44:48])[0]
             self._discrete_action_done = struct.unpack("I", buffer[48:52])[0]
             self._unpack_distance(buffer, start=52)
@@ -61,12 +61,6 @@ class WebotState(object):
     def get_grid_distances(self, num):
         every = int(360 / num)
         return self.lidar_absolute[0:-1:every]
-
-    @property
-    def touching(self):
-        if any(self.distance < 0.1):
-            return True
-        return False
 
     @property
     def lidar_absolute(self):
