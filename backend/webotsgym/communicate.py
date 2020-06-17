@@ -183,9 +183,9 @@ class Com(object):
     def _wait_for_discrete_done(self, wait_time=0.1):
         # give controller some time to update internal data
         time.sleep(wait_time)
-        self.com.send_data_request()
-        while self.com.state._discrete_action_done != 1:
-            self.com.send_data_request()
+        self.send_data_request()
+        while self.state._discrete_action_done != 1:
+            self.send_data_request()
             time.sleep(wait_time)
 
     @property
