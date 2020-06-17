@@ -23,16 +23,20 @@ class GridAction(Action):
     def map(self, action):
         # East
         if action == 0:
-            return 4
+            print("GO: RIGHT")
+            return 1
         # South
         if action == 1:
-            return 3
+            print("GO: DOWN")
+            return 2
         # West
         if action == 2:
-            return 2
+            print("GO: LEFT")
+            return 3
         # North
         if action == 3:
-            return 1
+            print("GO: UP")
+            return 4
         return None
 
 
