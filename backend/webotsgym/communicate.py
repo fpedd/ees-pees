@@ -172,6 +172,7 @@ class Com(object):
         pack_out = OutgoingPacket(self.msg_cnt, PacketType.COM_REQ,
                                   DiscreteMove.NONE, self.dir_type, action)
         self.send(pack_out)
+        time.sleep(self.wait_time)
         self.recv()
 
     def send_discrete_move(self, move):
