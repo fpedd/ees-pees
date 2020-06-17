@@ -15,7 +15,7 @@ static pid_ctrl_t pos_pid;
 
 int navi_init() {
 	last_time = 0.0;
-	pid_init(&pos_pid, 1.5,   // k_p
+	pid_init(&pos_pid, 1.8,   // k_p
 	                   0.0,   // k_i
 	                   0.0,   // k_d
 	                  -1.0,   // min
@@ -98,7 +98,7 @@ float navi_get_distance(float start[], float dest[]) {
 }
 
 float navi_inv_heading(float heading) {
-	
+
 	if (heading > 0) {
 		return heading - 1.0;
 	} else {
