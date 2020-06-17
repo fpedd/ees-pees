@@ -4,7 +4,7 @@ import copy
 import gym
 from gym import spaces
 
-import utils as utils
+import fakegym.utils as utils
 
 
 def no_mapping(self, action):
