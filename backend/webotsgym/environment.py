@@ -223,6 +223,14 @@ class WebotsEnv(gym.Env):
             self.send_data_request()
         return time.time() - t0
 
+    def _time_for_actions(self, actions=1000):
+        t0 = time.time()
+        for _ in range(actions):
+            h = np.random.random() * 2 - 1
+            s = np.random.random() * 2 - 1
+            self.step((h, s))
+        return time.time() - t0
+
     def _update_history(self):
         """Add current state of Com to history."""
         self.history[self.i] = self.state
