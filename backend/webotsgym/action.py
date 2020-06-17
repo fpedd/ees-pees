@@ -1,14 +1,17 @@
 import numpy as np
 from gym.spaces import Tuple, Box, Discrete
 
-import utils
-from webot import WebotState, WebotAction
+import webotsgym.utils as utils
+from webotsgym.webot import WebotAction
 
 
 class Action(object):
     pass
 
 
+# =========================================================================
+# =========================        DISCRETE       =========================
+# =========================================================================
 class DiscreteAction(Action):
     """
     Steps, Directions must be of the form 2k + 1, k >= 1
@@ -35,8 +38,11 @@ class DiscreteAction(Action):
     """
 
     def __init__(self, directions=3, speeds=3, dspeed=0.2, dhead=0.2,
-                 mode="flatten"):
+                 mode="flatten", direction_type="heading", relative=False):
         self.mode = mode
+        self.direction_type = direction_type
+        self.relative = relative
+
         self.directions = directions
         self.speeds = speeds
         self.dhead = dhead
@@ -70,32 +76,33 @@ class DiscreteAction(Action):
                                       self.dspeed * each_speed,
                                       self.speeds)
 
-    def map(self, action, state: WebotState):
+    def map(self, action, pre_action):
         if self.mode == "flatten":
-            if not isinstance(action, int):
-                raise TypeError("Action must be int.")
             dir_idx = action % len(self.dirspace)
             speed_idx = int((action - dir_idx) / len(self.dirspace))
         elif self.mode == "tuple":
             dir_idx = action[0]
             speed_idx = action[1]
 
-        # get action difference and add to base action = latest state info
-        action_dx = (self.dirspace[dir_idx], self.speedspace[speed_idx])
-        action = utils.add_tuples(state.pre_action, action_dx)
+        action = (self.dirspace[dir_idx], self.speedspace[speed_idx])
+        if self.relative is True:
+            action = utils.add_tuples(pre_action, action)
         action = WebotAction(action)
-        action.print()
         return action
 
 
+# =========================================================================
+# =========================       CONTINOUS        ========================
+# =========================================================================
 class ContinuousAction(Action):
-    def __init__(self):
+    def __init__(self, direction_type="heading", relative=False):
         self.action_space = Box(-1, 1, shape=(2,), dtype=np.float32)
+        self.direction_type = direction_type
+        self.relative = relative
 
-    def map(self, action_dx, state: WebotState):
-        # TODO: relative, absolute
-        action_dx = tuple(action_dx)
-        action = utils.add_tuples(state.pre_action, action_dx)
+    def map(self, action, pre_action):
+        action = tuple(action)
+        if self.relative is True:
+            action = utils.add_tuples(pre_action, action)
         action = WebotAction(action)
-        action.print()
         return action

@@ -1,9 +1,12 @@
 import struct
 import numpy as np
 
-from Config import WebotConfig
+from webotsgym.config import WebotConfig
 
 
+# =========================================================================
+# ==============================    STATE    ==============================
+# =========================================================================
 class WebotState(object):
     def __init__(self, config: WebotConfig = WebotConfig()):
         # meta
@@ -15,8 +18,11 @@ class WebotState(object):
         self.speed = None
         self.gps_actual = None
         self.heading = None
+        self.steering = None
         self.distance = None
-        self.touching = None
+        self._touching = None
+        self._action_denied = None
+        self._discrete_action_done = None
 
     def fill_from_buffer(self, buffer):
         """Set state from buffer information in packet from external controller.
@@ -24,37 +30,52 @@ class WebotState(object):
         Fills state information of transmission was success.
         """
 
-        print("pending transmission")
         self.buffer = buffer
-        print(len(buffer))
         if self.transmission_success:
-            print("transmission success")
             self.sim_time = struct.unpack('f', buffer[16:20])[0]
             self.speed = struct.unpack('f', buffer[20:24])[0]
             self.gps_actual = struct.unpack('2f', buffer[24:32])
             self.heading = struct.unpack('f', buffer[32:36])[0]
-            self.touching = struct.unpack("I", buffer[36:40])[0]
-            self.distance = struct.unpack("{}f".format(self.num_lidar), buffer[40: (40 + self.num_lidar*4)])
+            self.steering = struct.unpack('f', buffer[36:40])[0]
+            self._touching = struct.unpack("I", buffer[40:44])[0]
+            self._action_denied = struct.unpack("I", buffer[44:48])[0]
+            self._discrete_action_done = struct.unpack("I", buffer[48:52])[0]
+            self._unpack_distance(buffer, start=52)
 
-            # self.sim_time = struct.unpack('f', buffer[16:20])[0]
-            # self.speed = struct.unpack('f', buffer[20:24])[0]
-            # self.gps_actual = struct.unpack('2f', buffer[24:32])
-            # self.gps_target = struct.unpack('2f', buffer[32:40])
-            # self.heading = struct.unpack('f', buffer[40:44])[0]
-            # self.touching = struct.unpack("I", buffer[44:48])[0]
-            # self.distance = struct.unpack("{}f".format(self.num_lidar), buffer[48: (48 + self.num_lidar*4)])
+    def _unpack_distance(self, buffer, start=40):
+        to = start + self.num_lidar * 4
+        N = self.num_lidar
+        self.distance = np.array(struct.unpack("{}f".format(N),
+                                               buffer[start: to]))
 
-    def get_distance(self, absolute=False):
-        # TODO: mapping absolute and relative lidar stuff with heading
+    def get_pre_action(self, direction_type="heading"):
+        if direction_type == "heading":
+            return (self.heading, self.speed)
+        else:
+            return (self.steering, self.speed)
+
+    @property
+    def touching(self):
+        if any(self.distance < 0.1):
+            return True
+        return False
+
+    @property
+    def lidar_absolute(self):
+        return np.roll(self.distance, self.heading_idx)
+
+    @property
+    def lidar_relative(self):
         return self.distance
 
-    def get(self):
-        """Get webot state as numpy array."""
-        # TODO: update here nur sim time, speed etc zu nehmen ...
-        arr = np.empty(0)
-        for v in self.__dict__.values():
-            arr = np.hstack((arr, np.array(v)))
-        return arr
+    @property
+    def heading_idx(self):
+        """Get index of heading in distance values."""
+        if self.heading > 0:
+            idx = self.heading * 180
+        else:
+            idx = 360 + self.heading * 180
+        return int(idx - 1)
 
     @property
     def num_lidar(self):
@@ -62,14 +83,9 @@ class WebotState(object):
 
     @property
     def transmission_success(self):
-        # TODO: abfangen in paket
         if len(self.buffer) == self.config.PACKET_SIZE:
             return True
         return False
-
-    @property
-    def pre_action(self):
-        return (self.heading, self.speed)
 
     @property
     def crash(self) -> bool:
@@ -89,14 +105,10 @@ class WebotState(object):
             return None
         return len(self.heading)
 
-    # @property
-    # def observation_shape(self):
-    #     if self.state_filled:
-    #         arr = self.get()
-    #         return arr.shape
-    #     return None
 
-
+# =========================================================================
+# ==============================    ACTION   ==============================
+# =========================================================================
 class WebotAction(object):
     def __init__(self, action=None):
         self._heading = None
@@ -107,7 +119,7 @@ class WebotAction(object):
 
     def print(self):
         print("heading: ", self.heading)
-        print("speed:\t ", self.speed)
+        print("speed:   ", self.speed)
 
     def _init_randomly(self):
         self.heading = np.random.random() * 2 - 1

@@ -15,11 +15,11 @@ int main(int argc, char **argv) {
 	(void) argc;
 	(void) argv;
 
-	ext_to_bcknd_msg_t ext_to_bcknd_msg;
-	memset(&ext_to_bcknd_msg, 0, sizeof(ext_to_bcknd_msg_t));
+	ext_to_bcknd_msg_t itc_ext_to_bcknd;
+	memset(&itc_ext_to_bcknd, 0, sizeof(ext_to_bcknd_msg_t));
 
-	bcknd_to_ext_msg_t bcknd_to_ext_msg;
-	memset(&bcknd_to_ext_msg, 0, sizeof(bcknd_to_ext_msg_t));
+	bcknd_to_ext_msg_t itc_bcknd_to_ext;
+	memset(&itc_bcknd_to_ext, 0, sizeof(bcknd_to_ext_msg_t));
 
 	pthread_mutex_t ext_to_bcknd_lock;
 	pthread_mutex_t bcknd_to_ext_lock;
@@ -31,14 +31,13 @@ int main(int argc, char **argv) {
 	}
 
 	arg_struct_t arg_struct;
-	arg_struct.ext_to_bcknd      = &ext_to_bcknd_msg;
+	arg_struct.ext_to_bcknd      = &itc_ext_to_bcknd;
 	arg_struct.ext_to_bcknd_lock = &ext_to_bcknd_lock;
-	arg_struct.bcknd_to_ext      = &bcknd_to_ext_msg;
+	arg_struct.bcknd_to_ext      = &itc_bcknd_to_ext;
 	arg_struct.bcknd_to_ext_lock = &bcknd_to_ext_lock;
 
 	pthread_t webot_worker_thread, backend_worker_thread;
 
-	printf("MAIN: Starting threads from main \n");
 	printf("MAIN: Starting threads from main \n");
 
 	int ret1 = pthread_create(&webot_worker_thread, NULL, &webot_worker, &arg_struct);

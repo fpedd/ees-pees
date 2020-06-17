@@ -29,12 +29,12 @@ make clean
 
 ## General functioning
 The external controller consists of two parallely running threads, the webot_worker and the backend_worker. Both of them communicate by using externally defined message structs that are blocked from simultaneous access by mutexes. The general idea is, that the webot_worker receives sensor data from the webot, reformats it to the format the backend needs and puts it into the corresponding struct for the backend_worker to read it. Then it continues to read the values the backend_worker left for it and uses it to do safety logic (TODO), and calculate the new motor controll settings for the webot using a PID controller. Then it sends the new commands to the webot.
-At the same time the backend_worker reads the data it gets from the webot_worker, sends it by UDP to the backend, waits for a response which it then stores for the webot_worker to read again.
+At the same time the backend_worker waits for the backend to either request the newest sensor data, or sending updated speed and heading or both.
 The frequency at which both threads perform their work-loops is no yet controlled or synchronized.
 
 
 ## Testing
-We are using [Google Test](https://github.com/google/googletest) to run unit tests on our code. Before you will be able to run any tests you will need to install Google Test on your machine. Please follow the installation instructions [here](https://www.eriksmistad.no/getting-started-with-google-test-on-ubuntu/) to install Google Test. After that you will be able to call `make test`. That will compile and run all unit tests. You can add your own unit tests in the `/test` directory. You may need to create a new corresponding test file in that directory if there is none already. The tests will also be automatically executed when pushing to Github using [Github Actions](https://help.github.com/en/actions). 
+We are using [Google Test](https://github.com/google/googletest) to run unit tests on our code. Before you will be able to run any tests you will need to install Google Test on your machine. Please follow the installation instructions [here](https://www.eriksmistad.no/getting-started-with-google-test-on-ubuntu/) to install Google Test. After that you will be able to call `make test`. That will compile and run all unit tests. You can add your own unit tests in the `/test` directory. You may need to create a new corresponding test file in that directory if there is none already. The tests will also be automatically executed when pushing to Github using [Github Actions](https://help.github.com/en/actions).
 
 ## Protocol
 
@@ -106,23 +106,28 @@ to the external controller. They currently look like this:
 ```
 // external controller --> backend
 typedef struct {
-	unsigned long long msg_cnt;  // total number of messages (even) (internal)
-	double time_stmp;            // time the message got send (internal)
-	float sim_time;              // actual simulation time in webots
-	float speed;                 // current speed of robot in webots [-1, 1]
-	float target_gps[2];         // coordiantes where the robot should go
-	float actual_gps[2];         // coordiantes where the robot is
-	float heading;               // direction the front of the robot points in [-1, 1]
-	unsigned int touching;       // is the robot touching something?
-	float distance[DIST_VECS];   // distance to the next object from robot prespective
+	unsigned long long msg_cnt;    // total number of messages (even) (internal)
+	double time_stmp;              // time the message got send (internal)
+	float sim_time;                // actual simulation time in webots
+	float speed;                   // current speed of robot in webots [-1, 1]
+	float actual_gps[2];           // coordiantes where the robot is
+	float heading;                 // direction the front of the robot points in [-1, 1]
+	float steering;                // current angle the of the steering apparatus [-1, 1]
+	unsigned int touching;         // is the robot touching something?
+	unsigned int action_denied;    // did we have to take over control for saftey reasons
+	unsigned int discr_act_done;   // did the robot complete its discrete action
+	float distance[DIST_VECS];     // distance to the next object from robot prespective
 } __attribute__((packed)) ext_to_bcknd_msg_t;
 
 // external controller <-- backend
 typedef struct {
-	unsigned long long msg_cnt;  // total number of messages (odd) (internal)
-	double time_stmp;            // time the message got send (internal)
-	float heading;               // the direction the robot should move in next [-1, 1]
-	float speed;                 // the speed the robot should drive at [-1, 1]
+	unsigned long long msg_cnt;    // total number of messages (odd) (internal)
+	double time_stmp;              // time the message got send (internal)
+	enum response_request request; // type of response the backend awaits to the packet
+	enum discrete_move move;       // ignore everything else and do a discrete_action
+	enum direction_type dir_type;  // heading or steering command from backend
+	float heading;                 // the direction the robot should move in next [-1, 1]
+	float speed;                   // the speed the robot should drive at [-1, 1]
 } __attribute__((packed)) bcknd_to_ext_msg_t;
 ```
 
@@ -140,22 +145,74 @@ Explanation of `to_bcknd_msg_t`:
   since 1970. It gets set as the last variable, just before the message gets send out.
 * `float sim_time` Actual simulation time in webots in ms.
 * `float speed` Current speed of robot in webots [-1, 1].
-* `float target_gps[2]` are the latitude and longitude coordinates
-  the robot has to reach in order to complete the mission.
 * `float actual_gps[2]` are the coordinates the robot is currently at.
   It is in the same format as the `target_gps`.
 * `float heading` the direction the front of the robot is currently pointing at [-1, 1].  
+* `float steering` current angle the of the steering apparatus that the robot uses to steer [-1, 1].
+* `unsigned int touching` is set to the number of objects the robot is currently
+touching / colliding with.
+* `unsigned int action_denied` is set if the external controller needed to take
+  over control because backend action was not safe.
+* `unsigned int discr_act_done` is set when the requested discrete action is done.
 * `float distance[DIST_VECS]` the distance (in meters) to the next solid object
   with the direction corresponding to the index of the array. So if distance[66]
   = 1.23, the distance to the next solid object in direction 66 degree is 1.23 meters.
   The the maximum range of the lidar is about 3.5 meters. All values bigger than
   that have to be assumed to be invalid. We will try to set invalid entries to 69 meters.
-* `unsigned int touching` is set to the number of objects the robot is currently
-  touching / colliding with.
 
 Explanation of `from_bcknd_msg_t`:
-* `unsigned long long msg_cnt` see above.
-* `double time_stmp` see above.
+* `unsigned long long msg_cnt` More info see above.
+* `double time_stmp` More info see above.
+* `enum response_request request` type of response the backend expects. More info see below.
+* `enum discrete_move move; ` if this is set to a non zero value the heading and speed
+  are ignored and a discrete action according to the move number is taken. if the action is
+  done, the `discr_act_done` variable is set.
+* `enum direction_type dir_type` heading or steering command from backend. More info see below.
 * `float heading` the direction the robot should go move in next [-1, 1] (relative
   to the global north in the horizontal plane).
 * `float speed` the speed the robot should move at, 0 if it should stop [-1, 1].
+
+```
+enum response_request {
+	UNDEF = 0,                  // Invalid Packet
+	COMMAND_ONLY = 1,           // Only new instructions for Robot, dont send next packet
+	REQUEST_ONLY = 2,           // Only request for new packet
+	COMMAND_REQUEST = 3         // New instructions for robot AND request for new packet
+};
+```
+
+Explanation of `enum response_request`:
+* `UNDEF`: Invalid Packet. Wait for next message from backend
+* `COMMAND_ONLY`: Only forward heading and speed to `webot_worker`, then wait for next message from backend
+* `REQUEST_ONLY`: Only send newest sensordata from `webot_worker` to backend, then wait for next message from backend
+* `COMMAND_REQUEST`: Do both of the above, then wait for next message from backend
+*
+```
+enum discrete_move {
+	NONE = 0,                   // Dont do a discrete move at all, do continous
+	UP = 1,                     // Move Up
+	LEFT = 2,                   // Move Left
+	DOWN = 3,                   // Move Down
+	RIGHT = 4                   // Move Right
+};
+```
+
+Explanation of `enum discrete_move`:
+* `NONE`: Do not do any discrete move. Just do actions according to the heading and speed values in the packet.
+* `UP`: Do a discrete move and move one step up in the webots world (north)
+* `LEFT`: Do a discrete move and move one step left in the webots world (west)
+* `DOWN`: Do a discrete move and move one step down in the webots world (south)
+* `RIGHT`: Do a discrete move and move one step right in the webots world (east)
+
+```
+enum direction_type {
+	STEERING = 0,               // The backend commands the steering of the robot
+	HEADING = 1,                // The backend commands the heading the robot should drive in
+};
+```
+
+Explanation of `enum direction_type`:
+* `STEERING`: The backend commands the robot to move its sterring aparatus in a certain way.
+  The backend steers the robot itself. No help from any PID controller or so.
+* `HEADING`: The backend commands the robot to move in a ceratin direction.
+  The robot then uses controllers to ensure that it is going in that direction.

@@ -24,7 +24,6 @@ typedef struct {
 	double maxspeed;          // maximum speed of the Robot in m/s
 	double lidar_min_range;   // minimum detection range of lidar. Obstacles closer will be shown at max range
 	double lidar_max_range;   // maximum detection range of lidar
-	double target_gps[3];     // coodinates of the target
 }__attribute__((packed)) init_to_ext_msg_t;
 
 void wb_init_com();

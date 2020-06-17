@@ -4,10 +4,11 @@
 # set -e
 
 echo "Killing webots"
-pkill webots
+pkill -15 webots        # kill it nicely with SIGTERM
+pkill -9 webots         # if webots is a bitch, kill it hard with SIGKILL
 
-echo "Killing james"
-pkill python3
+echo "Killing backend"
+pkill -15 python3       # kill it nicely with SIGTERM
 
 echo "Killing controller"
-pkill controller
+pkill -15 controller    # kill it nicely with SIGTERM

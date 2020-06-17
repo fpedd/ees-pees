@@ -18,30 +18,11 @@ class Agent(abc.ABC):
         pass
 
 
-class RndWebotAgent(Agent):
-    def __init__(self):
-        self.com = communicate.Com((1, 2))
-
-    def action(self):
-        action = WebotAction()
-        action.heading = np.random.random() * 2 - 1
-        action.speed = np.random.random() * 2 - 1
-        time.sleep(0.2)
-        self.com.send_command(action)
-
-
-class WebotCtrAgent(Agent):
+class Agent(Agent):
     def __init__(self, direction_type="heading"):
         self.dheading = 0.05
         self.dspeed = 0.05
-        action_class = ContinuousAction(direction_type=direction_type)
-        self.env = environment.WebotsEnv(action_class=action_class)
-        self._init_action()
-
-    def _init_action(self):
-        self.act = WebotAction()
-        self.act.speed = 0
-        self.act.heading = 0
+        self.com = communicate.Com()
 
     def action(self):
         with keyboard.Listener(on_press=self.on_press, on_release=self.on_release) as listener:
@@ -49,17 +30,28 @@ class WebotCtrAgent(Agent):
 
     def on_press(self, key):
         if key == keyboard.Key.up:
-            self.act.speed += self.dspeed
+            move = 1
+            print("Move Up")
         elif key == keyboard.Key.down:
-            self.act.speed -= self.dspeed
+            move = 3
+            print("Move Down")
         elif key == keyboard.Key.left:
-            self.act.heading -= self.dheading
+            move = 2
+            print("Move Left")
         elif key == keyboard.Key.right:
-            self.act.heading += self.dheading
+            move = 4
+            print("Move Right")
         else:
             return
-        self.act.print()
-        self.env.send_command_and_data_request(self.act)
+        self.com.send_discrete_move(move)
+
+        ### wait for action to finish ###
+        time.sleep(0.1) # give controller some time to update internal data
+        self.com.send_data_request()
+        while self.com.state._discrete_action_done != 1:
+            self.com.send_data_request()
+            time.sleep(0.1)
+        print("Action done")
 
     def on_release(self, key):
         if key == keyboard.Key.esc:
@@ -67,5 +59,5 @@ class WebotCtrAgent(Agent):
 
 
 if __name__ == "__main__":
-    james = WebotCtrAgent(direction_type="heading")
-    james.action()
+    timmy = Agent(direction_type="heading")
+    timmy.action()

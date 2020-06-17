@@ -6,15 +6,13 @@ set -e
 ### Path to External Controller
 EXT_CTRL=/controller
 
-### Path to your local Webots installation
-export WEBOTS_HOME=/usr/local/webots
-
 ### Path to Webots World and Internal Controller
 WORLD_FILE=/webots/worlds/single_playground.wbt
 INT_CTRL=/webots/controllers/internal
 
 ### Path to Backend Script
-BCKND_SCRIPT=/backend/james.py
+# BCKND_SCRIPT=/backend/james.py    # <- continous action example
+BCKND_SCRIPT=/backend/timmy.py    # <- discrete action example
 
 ### Terminal Emulator you want to use
 TERM_EM=gnome-terminal\ -x
