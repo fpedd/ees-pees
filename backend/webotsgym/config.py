@@ -1,3 +1,10 @@
+from enum import IntEnum
+
+class SimSpeedMode(IntEnum):
+    NORMAL = 0
+    RUN    = 1
+    FAST   = 2
+
 class WebotConfig(object):
 
     def __init__(self):
@@ -25,7 +32,7 @@ class WebotConfig(object):
 
         # setting for world generation via supervisor
         self.seed = None
-        self.fast_simulation = False
+        self.sim_mode = SimSpeedMode.NORMAL
         self.num_obstacles = 10
         self.world_size = 20
         self._world_scaling = 0.25  # meters: 20*0.25 -> 5m x 5m
