@@ -180,6 +180,14 @@ class Com(object):
         pack_out = OutgoingPacket(self.msg_cnt, PacketType.COM, move, 0)
         self.send(pack_out)
 
+    def _wait_for_discrete_done(self, wait_time=0.1):
+        # give controller some time to update internal data
+        time.sleep(wait_time)
+        self.com.send_data_request()
+        while self.com.state._discrete_action_done != 1:
+            self.com.send_data_request()
+            time.sleep(wait_time)
+
     @property
     def wait_time(self):
         divider = 1
