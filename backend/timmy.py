@@ -3,7 +3,7 @@ import time
 import webotsgym.communicate as communicate
 
 # length time_out
-TIME_OUT = 2
+TIME_OUT = 3
 
 
 class Timmy():
@@ -13,7 +13,8 @@ class Timmy():
         self.com = communicate.Com()
 
     def action(self):
-        with keyboard.Listener(on_press=self.on_press, on_release=self.on_release) as listener:
+        with keyboard.Listener(on_press=self.on_press,
+                               on_release=self.on_release) as listener:
             listener.join()
 
     def on_press(self, key):
@@ -33,7 +34,7 @@ class Timmy():
             return
         self.com.send_discrete_move(move)
 
-        # ------------------ wait for action to finish -------------------------
+        # ------------------ wait for action to finish ------------------------
         time.sleep(0.1)  # give controller some time to update internal data
         self.com.send_data_request()
         timestamp_start = self.com.state.sim_time
@@ -41,7 +42,6 @@ class Timmy():
         while self.com.state._discrete_action_done != 1:
             timestamp_end = self.com.state.sim_time
 
-            # time_out of 1 second
             if (timestamp_end-timestamp_start) >= TIME_OUT:
                 time_out = True
                 break
@@ -52,7 +52,7 @@ class Timmy():
             move = self.reverse_move(move)
             self.com.send_discrete_move(move)
             print("Move reversed")
-
+        print("GPS actual: " + str(self.com.state.gps_actual))
         print("Action done")
 
     def on_release(self, key):
