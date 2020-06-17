@@ -121,7 +121,7 @@ void sv_obstacle_spawn(sv_world_def *world) {
  * Inits the world struct and sets the Webots arena accordingly
  * (use sv_world_clear before if reinit)
  */
-void sv_world_init(sv_world_def *world, int world_size, double scale, int num_obstacles, int fast) {
+void sv_world_init(sv_world_def *world, int world_size, double scale, int num_obstacles, enum sv_sim_mode mode) {
 	 // assert inputs
 	assert(world_size > 0 && scale >= SUPERVISOR_MIN_SCALE);
 	assert(num_obstacles >= 0 && num_obstacles <= world_size * world_size);
@@ -131,7 +131,7 @@ void sv_world_init(sv_world_def *world, int world_size, double scale, int num_ob
 	world->size          = world_size;
 	world->num_obstacles = num_obstacles;
 	world->scale         = scale;
-	world->fast          = fast;
+	world->mode          = mode;
 
 	 //change arena size, scaling and position in webots
 	WbNodeRef arena_node = wb_supervisor_node_get_from_def("Arena");
@@ -250,8 +250,14 @@ sv_world_def *sv_simulation_init() {
 
 
 void sv_simulation_start(sv_world_def *world) {
-	// starts simulation (fast if given) and (re)starts the controller
-	WbSimulationMode mode = world->fast ? WB_SUPERVISOR_SIMULATION_MODE_FAST : WB_SUPERVISOR_SIMULATION_MODE_REAL_TIME;
+	// starts simulation (with given mode) and (re)starts the controller
+	if(world->mode == NORMAL) {
+		WbSimulationMode mode = WB_SUPERVISOR_SIMULATION_MODE_REAL_TIME;
+	} else if(world->mode == RUN) {
+		WbSimulationMode mode = WB_SUPERVISOR_SIMULATION_MODE_RUN;
+	} else if(world->mode == FAST) {
+		WbSimulationMode mode = WB_SUPERVISOR_SIMULATION_MODE_FAST;
+	}
 	wb_robot_step(0);
 	wb_supervisor_simulation_set_mode(mode);
 	wb_supervisor_node_restart_controller(world->robot_node);

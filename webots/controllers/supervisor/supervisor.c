@@ -67,7 +67,7 @@ int main() {
 			print_recvd_packet(&recv_buffer);
 		}
 
-		sv_world_init(world, recv_buffer.world_size, recv_buffer.scale, recv_buffer.num_obstacles, recv_buffer.fast_simulation);
+		sv_world_init(world, recv_buffer.world_size, recv_buffer.scale, recv_buffer.num_obstacles, recv_buffer.mode);
 		sv_world_generate(world, recv_buffer.seed);
 
 		send_buffer.return_code = SUCCESS;
@@ -88,7 +88,7 @@ int main() {
 			if(recv_buffer.function_code == START) {
 				sv_simulation_stop();
 				sv_world_clear(world);
-				sv_world_init(world, recv_buffer.world_size, recv_buffer.scale, recv_buffer.num_obstacles, recv_buffer.fast_simulation);
+				sv_world_init(world, recv_buffer.world_size, recv_buffer.scale, recv_buffer.num_obstacles, recv_buffer.mode);
 				sv_world_generate(world, recv_buffer.seed);
 
 				send_buffer.return_code = SUCCESS;
