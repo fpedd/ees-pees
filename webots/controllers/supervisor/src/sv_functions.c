@@ -251,12 +251,13 @@ sv_world_def *sv_simulation_init() {
 
 void sv_simulation_start(sv_world_def *world) {
 	// starts simulation (with given mode) and (re)starts the controller
+	WbSimulationMode mode = WB_SUPERVISOR_SIMULATION_MODE_PAUSE;
 	if(world->mode == NORMAL) {
-		WbSimulationMode mode = WB_SUPERVISOR_SIMULATION_MODE_REAL_TIME;
+		mode = WB_SUPERVISOR_SIMULATION_MODE_REAL_TIME;
 	} else if(world->mode == RUN) {
-		WbSimulationMode mode = WB_SUPERVISOR_SIMULATION_MODE_RUN;
+		mode = WB_SUPERVISOR_SIMULATION_MODE_RUN;
 	} else if(world->mode == FAST) {
-		WbSimulationMode mode = WB_SUPERVISOR_SIMULATION_MODE_FAST;
+		mode = WB_SUPERVISOR_SIMULATION_MODE_FAST;
 	}
 	wb_robot_step(0);
 	wb_supervisor_simulation_set_mode(mode);
