@@ -70,6 +70,6 @@ class Schnitty():
 
 
 if __name__ == "__main__":
-    print("==================   this is Schnitty  ==================")
+    print("================== Hi, my name is Schnitty ==================")
     schnitty = Schnitty(direction_type="heading")
     schnitty.action()

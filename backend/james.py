@@ -42,5 +42,6 @@ class James():
 
 
 if __name__ == "__main__":
+    print("================== Hi, my name is James ==================")
     james = James(direction_type="heading")
     james.action()
