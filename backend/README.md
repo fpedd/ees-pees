@@ -1,6 +1,11 @@
 # EES-PEES Robot Project Backend    
 
 
+## steps for training using jupyter notebook
+* `conda activate spinningup`
+* `jupyter notebook`
+*
+
 ## webotsgym
 * Goal: create a openai-gym-wrapper around the communication to Webots (http://gym.openai.com/docs/)
 * `sudo lsof -t -i tcp:10201 | xargs kill -9`
