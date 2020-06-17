@@ -138,14 +138,12 @@ class WebotsEnv(gym.Env):
 
         Handled inside com class.
         """
-        if self.action_class.type != "grid":
-            pre_action = self.state.get_pre_action()
-            action = self.action_class.map(action, pre_action)
-            self.send_command_and_data_request(action)
-        else:
-            action = self.action_class.map(action)
-            self.com.send_discrete_move(action)
-            time.sleep(2)
+        if self.action_class.type == "grid":
+            raise TypeError("Grid action class must be used in WebotsGrid.")
+
+        pre_action = self.state.get_pre_action()
+        action = self.action_class.map(action, pre_action)
+        self.send_command_and_data_request(action)
 
         reward = self.calc_reward()
         done = self.check_done()
@@ -236,7 +234,7 @@ class WebotsEnv(gym.Env):
         self.history[self.i] = self.state
         self.i += 1
 
-    def get_target_distance(self, normalized=True):
+    def get_target_distance(self, normalized=False):
         """Calculate euklidian distance to target."""
         distance = utils.euklidian_distance(self.gps_actual, self.gps_target)
         if normalized is True:
@@ -273,3 +271,26 @@ class WebotsGrid(WebotsEnv):
                                          evaluate_class=Evaluate,
                                          observation_class=GridObservation,
                                          config=config)
+
+    def step(self, action):
+        """Perform action on environment.
+
+        Handled inside com class.
+        """
+        if self.action_class.type != "grid":
+            raise TypeError("WebotsGrid need grid action class.")
+
+        action = self.action_class.map(action)
+        self.com.send_discrete_move(action)
+        self.com._wait_for_discrete_done()
+
+        reward = self.calc_reward()
+        done = self.check_done()
+
+        # logging, printing
+        self.rewards.append(reward)
+        self.distances.append(self.get_target_distance())
+        if len(self.history) % 1 == 0:
+            print("Reward (", len(self.history), ")\t", reward)
+
+        return self.observation, reward, done, {}

@@ -64,7 +64,7 @@ class WebotState(object):
 
     @property
     def touching(self):
-        if any(self.distance < 0.1):
+        if self._touching != 0:
             return True
         return False
 
