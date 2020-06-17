@@ -44,8 +44,9 @@ class GridObservation(Observation):
 
     def get(self):
         arr = np.empty(0)
-        arr = np.hstack((arr, np.array(self.env.state.gps_actual)))
-        arr = np.hstack((arr, np.array(self.env.gps_target)))
+        arr = np.hstack((arr, np.array(self.env.state.gps_actual) * 2))
+        arr = np.hstack((arr, np.array(self.env.gps_target) * 2))
+        arr = np.round(0.5 + arr)
         # arr = np.hstack((arr,np.array(self.env.state.get_grid_distances(4))))
         # arr = np.hstack((arr, np.array(self.env.state.action_denied)))
         return arr
