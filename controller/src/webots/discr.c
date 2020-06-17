@@ -28,7 +28,8 @@ int discr_step(ext_to_wb_msg_t *ext_to_wb, bcknd_to_ext_msg_t bcknd_to_ext,
 
 	// lets start where the robot currently is at
 	if (start == 1) {
-		memcpy(target, ext_to_bcknd.actual_gps, sizeof(target));
+		target[0] = round_with_factor(ext_to_bcknd.actual_gps[0], STEP_SIZE);
+		target[1] = round_with_factor(ext_to_bcknd.actual_gps[1], STEP_SIZE);
 	}
 
 	// make sure we only do actions once per message
