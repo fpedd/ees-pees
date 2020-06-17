@@ -1,0 +1,159 @@
+#VRML_SIM R2020a utf8
+WorldInfo {
+}
+Viewpoint {
+  orientation 0.0018573061566430713 -0.7585985591106043 -0.6515556588113985 3.1360029093136994
+  position 0.8836040597790557 3.9672812745365538 0.2575474758947778
+  follow "smitty"
+  followType "None"
+}
+TexturedBackground {
+}
+TexturedBackgroundLight {
+}
+DEF Arena RectangleArena {
+  translation 2.5 0 2.5
+  floorSize 5 5
+  floorTileSize 1 1
+}
+DEF Smitty TinkerbotsBase {
+  hidden position_10_0 -0.2861311094169224
+  hidden translation_12 0 -0.005644855070772247 0.0008131396203032576
+  hidden rotation_12 -1 0 0 0.28613110941692244
+  hidden position_13_0 49.011361142764834
+  hidden translation_15 -0.019005521980069096 0 0.013771827373529959
+  hidden rotation_15 0 1 0 1.254121314671858
+  hidden position_21_0 23.30994656286101
+  hidden rotation_22 -0.4806453956107771 -0.6200714390523424 -0.6200737167061 2.245506753215255
+  hidden position_26_0 -25.251415973983235
+  hidden rotation_27 -0.9964893816260816 -0.05919833849567527 -0.05919855594371369 1.574316787782905
+  translation 0.75 0 0.75
+  rotation 0 1 0 0
+  name "smitty"
+  controller "internal"
+  downSlot TinkerbotsPivot {
+    rotation 0 0 1 1.5707996938995747
+    slot TinkerbotsMotor {
+      frontSlot TinkerbotsAxle {
+        endSlot TinkerbotsWheel {
+        }
+      }
+      backSlot TinkerbotsAxle {
+        name "axle(1)"
+        endSlot TinkerbotsWheel {
+        }
+      }
+    }
+  }
+  leftSlot TinkerbotsCube {
+    name "(1)"
+    rightDSlot TinkerbotsCubieBoxWithRoundSlots {
+      axisSlot TinkerbotsAxle {
+        rotation 0 1 0 3.141592653589793
+        endSlot TinkerbotsWheel {
+        }
+      }
+    }
+  }
+  rightSlot TinkerbotsCube {
+    leftDSlot TinkerbotsCubieBoxWithRoundSlots {
+      axisSlot TinkerbotsAxle {
+        rotation 0 1 0 3.141592653589793
+        endSlot TinkerbotsWheel {
+        }
+      }
+    }
+  }
+  extensionSlot [
+    RobotisLds01_modified {
+      translation 0 0.04 0
+      rotation 0 1 0 -3.1415853071795863
+      name "lidar"
+      noise 0
+    }
+    Compass {
+    }
+    GPS {
+      translation 0 0 0.02
+    }
+  ]
+}
+DEF Obstacles Group {
+  children [
+    Solid {
+      translation 0.75 0.25 1.75
+      scale 0.5 0.5 0.5
+      children [
+        DEF block_shape Shape {
+          appearance RedBricks {
+          }
+          geometry Box {
+            size 1 1 1
+          }
+        }
+      ]
+      name "block1"
+      boundingObject USE block_shape
+    }
+    Solid {
+      translation 4.25 0.25 2.75
+      scale 0.5 0.5 0.5
+      children [
+        DEF block_shape Shape {
+          appearance RedBricks {
+          }
+          geometry Box {
+            size 1 1 1
+          }
+        }
+      ]
+      name "block1(1)"
+      boundingObject USE block_shape
+    }
+    Solid {
+      translation 0.75 0.25 3.25
+      scale 0.5 0.5 0.5
+      children [
+        DEF block_shape Shape {
+          appearance RedBricks {
+          }
+          geometry Box {
+            size 1 1 1
+          }
+        }
+      ]
+      name "block1(2)"
+      boundingObject USE block_shape
+    }
+    Solid {
+      translation 1.25 0.25 4.75
+      scale 0.5 0.5 0.5
+      children [
+        DEF block_shape Shape {
+          appearance RedBricks {
+          }
+          geometry Box {
+            size 1 1 1
+          }
+        }
+      ]
+      name "block1(3)"
+      boundingObject USE block_shape
+    }
+    Solid {
+      translation 2.25 0.25 0.75
+      scale 0.5 0.5 0.5
+      children [
+        DEF block_shape Shape {
+          appearance RedBricks {
+          }
+          geometry Box {
+            size 1 1 1
+          }
+        }
+      ]
+      name "block1(4)"
+      boundingObject USE block_shape
+    }
+  ]
+}
