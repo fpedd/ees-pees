@@ -2,8 +2,8 @@
 WorldInfo {
 }
 Viewpoint {
-  orientation -0.12142071292566624 -0.9088387913921996 -0.3990852812788125 2.585826164888937
-  position -0.6381543884873602 1.1979795098900947 -0.5915838445164634
+  orientation 0.04099575331799044 -0.9460763491752995 -0.32133921289040884 3.361494629916857
+  position 0.49806527468718004 1.7135897409317216 -1.9196820195063786
   follow "botty"
   followType "Mounted Shot"
 }
@@ -13,10 +13,19 @@ TexturedBackgroundLight {
 }
 RectangleArena {
   floorSize 5 5
+  floorTileSize 1 1
 }
 TinkerbotsBase {
-  translation 0 0.03 0
-  rotation 0 1 0 0
+  hidden position_10_0 -2.801048282208285e-11
+  hidden position_13_0 0.010239999959367216
+  hidden translation_15 0.00020479642006673856 0 1.0485668291149164e-06
+  hidden rotation_15 0 -1 0 0.010239999959372961
+  hidden position_21_0 0.00014062236841723834
+  hidden rotation_22 -0.9999999950563555 7.031092570996513e-05 7.031118397689059e-05 1.5708000049436444
+  hidden position_26_0 -0.00014061983856791926
+  hidden rotation_27 -0.9999999950565334 -7.03096607899644e-05 -7.030991905224356e-05 1.5708000049434663
+  translation -0.25 0 -0.25
+  rotation 0.999931939881898 0.0023416573454645147 0.011429446395199744 0.00014062962139669408
   name "botty"
   controller "internal"
   downSlot TinkerbotsPivot {
@@ -73,8 +82,8 @@ Robot {
 Group {
   children [
     Solid {
-      translation 0.125 0.125 0.375
-      scale 2.505 2.505 2.505
+      translation 0.25 0.25 0.25
+      scale 5 5 5
       children [
         DEF block_shape Shape {
           appearance RedBricks {
