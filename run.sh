@@ -7,7 +7,7 @@ set -e
 EXT_CTRL=/controller
 
 ### Path to Webots World and Internal Controller
-WORLD_FILE=/webots/worlds/single_playground.wbt
+WORLD_FILE=/webots/worlds/test_run.wbt
 INT_CTRL=/webots/controllers/internal
 
 ### Path to Backend Script
