@@ -290,7 +290,4 @@ class WebotsGrid(WebotsEnv):
         # logging, printing
         self.rewards.append(reward)
         self.distances.append(self.get_target_distance())
-        if len(self.history) % 1 == 0:
-            print("Reward (", len(self.history), ")\t", reward)
-
         return self.observation, reward, done, {}
