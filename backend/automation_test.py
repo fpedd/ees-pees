@@ -2,6 +2,7 @@ import time
 import subprocess
 
 from james import James
+from timmy import Timmy
 import webotsgym.automate as automate
 
 print("start webot")
@@ -16,7 +17,7 @@ print("start environment")
 w.start_env()
 
 print("random actions")
-timmy = James()
+timmy = Timmy()
 for _ in range(20):
     timmy.action()
 
@@ -26,7 +27,7 @@ time.sleep(3.0)
 w.reset_environment()
 
 print("random actions")
-timmy = James()
+timmy = Timmy()
 for _ in range(20):
     timmy.action()
 
