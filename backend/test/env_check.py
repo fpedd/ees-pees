@@ -6,7 +6,7 @@ if __name__ == "__main__":
     import webotsgym.automate as automate
     ctr = automate.ExtCtrl()
     ctr.init()
-    env = environment.WebotsEnv()
+    env = environment.WebotsEnv(request_start_data=False)
     check_env(env)
     ctr.close()
     print("========== END OF TEST ==========")
