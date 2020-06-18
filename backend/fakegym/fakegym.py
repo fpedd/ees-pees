@@ -20,7 +20,7 @@ class ActionMapper(object):
 
 
 class DiscreteAction(ActionMapper):
-    def __init__(self, num_of_directions, step_range, mode):
+    def __init__(self):
         super(DiscreteAction, self).__init__()
         self.num_of_directions = num_of_directions
         self.step_range = step_range
