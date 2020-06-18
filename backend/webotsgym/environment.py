@@ -16,15 +16,13 @@ class WebotsEnv(gym.Env):
                  seed=None,
                  gps_target=(1, 1),
                  train=False,
-                 grid_world=False,
-                 start_controller=False,
                  action_class=DiscreteAction,
+                 request_start_data=False,
                  evaluate_class=Evaluate,
                  observation_class=Observation,
                  config: WebotConfig = WebotConfig()):
         super(WebotsEnv, self).__init__()
         self.seed(seed)
-        self.grid_world = grid_world
 
         self._gps_target = gps_target
 
@@ -48,11 +46,8 @@ class WebotsEnv(gym.Env):
         self._setup_train()
         self._init_com()
 
-        if train is False and start_controller is True:
-            self.external_controller = automate.ExtCtrl()
-            self.external_controller.init()
-
-        self.send_data_request()
+        if request_start_data:
+            self.send_data_request()
     # =========================================================================
     # ====================       IMPORTANT PROPERTIES       ===================
     # =========================================================================
@@ -259,14 +254,12 @@ class WebotsEnv(gym.Env):
 
 
 class WebotsGrid(WebotsEnv):
-    def __init__(self, seed=None, gps_target=(1, 1), start_controller=False,
+    def __init__(self, seed=None, gps_target=(1, 1),
                  train=False, evaluate_class=Evaluate,
                  config: WebotConfig = WebotConfig()):
         super(WebotsGrid, self).__init__(seed=seed,
                                          gps_target=gps_target,
                                          train=train,
-                                         grid_world=True,
-                                         start_controller=start_controller,
                                          action_class=GridAction,
                                          evaluate_class=Evaluate,
                                          observation_class=GridObservation,
