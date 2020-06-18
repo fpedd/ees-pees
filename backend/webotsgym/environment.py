@@ -167,7 +167,8 @@ class WebotsEnv(gym.Env):
             seed = utils.set_random_seed(apply=False)
             self.seed(seed)
             # print("resetting with seed: ", seed)
-            # self.supervisor.reset_environment(self.main_seed) # this leads to breakdown of robbie
+            # self.supervisor.reset_environment(self.main_seed)
+            # this leads to breakdown of robbie
             self.supervisor.start_env(self.main_seed)
             # print("========= TARGET", self.config.gps_target)
 
