@@ -17,7 +17,7 @@ class WebotsEnv(gym.Env):
                  gps_target=(1, 1),
                  train=False,
                  action_class=DiscreteAction,
-                 request_start_data=False,
+                 request_start_data=True,
                  evaluate_class=Evaluate,
                  observation_class=Observation,
                  config: WebotConfig = WebotConfig()):
@@ -191,6 +191,16 @@ class WebotsEnv(gym.Env):
     def render(self):
         """Render dummy, does nothing."""
         pass
+
+    # =========================================================================
+    # ==============================   PLOTTING   =============================
+    # =========================================================================
+    def plot_lidar(self, relative=False):
+        if relative is True:
+            data = self.state.lidar_relative
+        else:
+            data = self.state.lidar_absolute
+        utils.plot_lidar(data)
 
     # =========================================================================
     # ========================   HELPER / PROPERTIES   ========================
