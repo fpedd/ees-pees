@@ -2,6 +2,7 @@ import time
 import subprocess
 
 from james import James
+from timmy import Timmy
 import webotsgym.automate as automate
 
 print("start webot")
