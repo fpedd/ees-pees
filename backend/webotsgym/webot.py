@@ -21,10 +21,8 @@ class WebotState(object):
         self.steering = None
         self.distance = None
         self._touching = None
-        self._action_denied = None
+        self._action_denied = 0
         self._discrete_action_done = None
-
-        self.action_denied = 0
 
     def fill_from_buffer(self, buffer):
         """Set state from buffer information in packet from external controller.
