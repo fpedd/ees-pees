@@ -41,6 +41,7 @@ def load_object(path):
 # =========================================================================
 def plot_lidar(x):
     """Plot lidar data."""
+    x = np.flip(x)
     theta = np.linspace(0, 2 * np.pi, len(x), endpoint=False)
     ax = plt.subplot(111, projection='polar')
     bars = ax.bar(theta + np.pi / 2, x,
