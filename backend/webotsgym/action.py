@@ -17,10 +17,10 @@ class Action(object):
 class GridAction(Action):
     """Map proposed fake environment moves to webots.
 
-    Left  -> Down
-    Right -> Up
-    Up    -> Right
-    Down  -> Left
+    0: Right -> Up    (1)
+    1: Down  -> Left  (2)
+    2: Left  -> Down  (3)
+    3: Up    -> Right (4)
     """
     def __init__(self):
         self.action_space = Discrete(4)
@@ -28,23 +28,7 @@ class GridAction(Action):
         self.type = "grid"
 
     def map(self, action):
-        # East
-        if action == 0:
-            print("GO: RIGHT")
-            return 1
-        # South
-        if action == 1:
-            print("GO: DOWN")
-            return 2
-        # West
-        if action == 2:
-            print("GO: LEFT")
-            return 3
-        # North
-        if action == 3:
-            print("GO: UP")
-            return 4
-        return None
+        return action + 1
 
 
 # =========================================================================
