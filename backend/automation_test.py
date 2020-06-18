@@ -23,7 +23,7 @@ time.sleep(3.0)
 w.reset_environment()
 
 print("random actions")
-timmy = James()
+timmy = Timmy()
 for _ in range(20):
     timmy.action()
 
