@@ -20,7 +20,7 @@ class ActionMapper(object):
 
 
 class DiscreteAction(ActionMapper):
-    def __init__(self):
+    def __init__(self, num_of_directions, step_range, mode):
         super(DiscreteAction, self).__init__()
         self.num_of_directions = num_of_directions
         self.step_range = step_range
@@ -78,6 +78,7 @@ class FakeGym(gym.Env):
 
         self.action_mapper = DiscreteAction(4, step_range,
                                             discrete_action_shaping)
+
         self.seed(seed)
         self.reward_range = (-100, 100)
         self.action_mapping = self.action_mapper.action_map
