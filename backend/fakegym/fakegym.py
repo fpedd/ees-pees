@@ -32,8 +32,6 @@ class DiscreteAction(ActionMapper):
         elif mode == "tuple":
             self.action_space = spaces.Tuple((spaces.Discrete(num_of_directions),
                                               spaces.Discrete(self.steps)))
-        # elif mode == "multi_discrete":
-        #     self.action_space = spaces.MultiDiscrete([num_of_directions, self.steps])
 
     def action_map(self, action):
         if self.mode == "flatten":
@@ -42,21 +40,6 @@ class DiscreteAction(ActionMapper):
         else:
             orientation, step_length = action
         return (orientation, step_length + self.step_range[0])
-
-
-class ContinuousAction(ActionMapper):
-    def __init__(self, num_of_directions, step_range):
-        super(ContinuousAction, self).__init__()
-        self.num_of_directions = num_of_directions
-        self.step_range = step_range
-        self.steps = step_range[1] - step_range[0] + 1
-        self.action_space = spaces.Box(-1, 1, shape=(2,), dtype=np.float32)
-
-    def action_map(self, action):
-        orientation, length = action
-        orientation = utils.id_in_range(-1, 1, self.num_of_directions, orientation)
-        length = utils.id_in_range(-1, 1, self.steps, length) + self.step_range[0]
-        return orientation, length
 
 
 class Observation():
@@ -93,11 +76,9 @@ class FakeGym(gym.Env):
 
         self.history = {}
 
-        if action_type == "continous":
-            self.action_mapper = ContinuousAction(num_of_sensors, step_range)
-        else:
-            self.action_mapper = DiscreteAction(num_of_sensors, step_range,
-                                                discrete_action_shaping)
+        self.action_mapper = DiscreteAction(4, step_range,
+                                            discrete_action_shaping)
+
         self.seed(seed)
         self.reward_range = (-100, 100)
         self.action_mapping = self.action_mapper.action_map

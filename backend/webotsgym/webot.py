@@ -7,7 +7,7 @@ from webotsgym.config import WebotConfig
 # =========================================================================
 # ==============================    STATE    ==============================
 # =========================================================================
-class WebotState(object):
+class WebotState():
     def __init__(self, config: WebotConfig = WebotConfig()):
         # meta
         self.config = config
@@ -115,8 +115,9 @@ class WebotState(object):
 # =========================================================================
 # ==============================    ACTION   ==============================
 # =========================================================================
-class WebotAction(object):
-    def __init__(self, action=None):
+class WebotAction():
+    def __init__(self, action=None, direction_type="heading"):
+        self.direction_type = direction_type
         self._heading = None
         self._speed = None
         if isinstance(action, (np.ndarray, list, tuple)):

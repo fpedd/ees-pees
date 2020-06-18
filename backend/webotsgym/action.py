@@ -110,7 +110,7 @@ class DiscreteAction(Action):
         action = (self.dirspace[dir_idx], self.speedspace[speed_idx])
         if self.relative is True:
             action = utils.add_tuples(pre_action, action)
-        action = WebotAction(action)
+        action = WebotAction(action, direction_type=self.direction_type)
         return action
 
 
@@ -128,5 +128,5 @@ class ContinuousAction(Action):
         action = tuple(action)
         if self.relative is True:
             action = utils.add_tuples(pre_action, action)
-        action = WebotAction(action)
+        action = WebotAction(action, direction_type=self.direction_type)
         return action
