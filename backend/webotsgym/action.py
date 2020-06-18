@@ -15,6 +15,13 @@ class Action(object):
 # ==========================     WEBOT GRID      ==========================
 # =========================================================================
 class GridAction(Action):
+    """Map proposed fake environment moves to webots.
+
+    Left  -> Down
+    Right -> Up
+    Up    -> Right
+    Down  -> Left
+    """
     def __init__(self):
         self.action_space = Discrete(4)
         self.direction_type = "steering"  # just a dummy
