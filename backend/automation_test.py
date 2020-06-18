@@ -11,6 +11,7 @@ w.init()
 print("start environment")
 w.start_env()
 
+
 print("random actions")
 timmy = Timmy()
 for _ in range(20):
