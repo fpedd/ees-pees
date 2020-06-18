@@ -268,6 +268,7 @@ class WebotsGrid(WebotsEnv):
     def __init__(self, seed=None, gps_target=(1, 1),
                  train=False, evaluate_class=Evaluate,
                  config: WebotConfig = WebotConfig()):
+        config.world_scaling = 0.5
         super(WebotsGrid, self).__init__(seed=seed,
                                          gps_target=gps_target,
                                          train=train,
@@ -284,9 +285,13 @@ class WebotsGrid(WebotsEnv):
         if self.action_class.type != "grid":
             raise TypeError("WebotsGrid need grid action class.")
 
-        action = self.action_class.map(action)
-        self.com.send_discrete_move(action)
-        self.com._wait_for_discrete_done()
+        self.state._action_denied = 0
+        if self.observation_class.lidar[action] < 1:
+            self.state._action_denied = 1
+        else:
+            action = self.action_class.map(action)
+            self.com.send_discrete_move(action)
+            self.com._wait_for_discrete_done()
 
         reward = self.calc_reward()
         done = self.check_done()
