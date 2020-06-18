@@ -94,8 +94,8 @@ class OutgoingPacket():
                            self.msg_cnt,
                            time.time(),
                            self.packet_type,
-                           self.discrete_move,
-                           self.direction_type,
+                           int(self.discrete_move),
+                           int(self.direction_type),
                            self.action.heading,
                            self.action.speed)
         return data

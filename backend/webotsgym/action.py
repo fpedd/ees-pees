@@ -28,7 +28,7 @@ class GridAction(Action):
         self.type = "grid"
 
     def map(self, action):
-        return action + 1
+        return int(action + 1)
 
 
 # =========================================================================
