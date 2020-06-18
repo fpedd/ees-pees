@@ -88,7 +88,7 @@ class Observation():
 class FakeGym(gym.Env):
     def __init__(self, seed=None, N=10, num_of_sensors=4, obstacles_each=4,
                  step_range=(1, 1), action_type="discrete",
-                 discrete_action_shaping="flatten", obs=Observation, obs_len=3):
+                 discrete_action_shaping="flatten", obs=Observation, obs_len=1):
         super(FakeGym, self).__init__()
 
         self.history = {}
@@ -266,7 +266,7 @@ class FakeState():
 
 class FakeCom():
     def __init__(self, seeds, N=10, num_of_sensors=4, obstacles_each=2,
-                 obs_len=3):
+                 obs_len=1):
         self.seeds = seeds
         self.next_seed_idx = 1
         self.inits = (N, num_of_sensors, obstacles_each, obs_len)
