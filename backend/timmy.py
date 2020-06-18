@@ -38,8 +38,8 @@ class Timmy():
         timestamp_start = self.com.state.sim_time
         while self.com.state._discrete_action_done != 1:
 
-            print((self.com.state.sim_time-timestamp_start))
-            if (self.com.state.sim_time-timestamp_start) >= 5:
+            print((self.com.state.sim_time - timestamp_start))
+            if (self.com.state.sim_time - timestamp_start) >= 5:
                 time_out = True
                 break
             self.com.send_data_request()
