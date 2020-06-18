@@ -1,7 +1,7 @@
 import time
 import subprocess
 
-from james import RndWebotAgent
+from james import James
 import webotsgym.automate as automate
 
 print("start webot")
