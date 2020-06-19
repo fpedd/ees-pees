@@ -12,20 +12,19 @@ print("start environment")
 w.start_env()
 
 
-print("random actions")
-timmy = Timmy()
-for _ in range(20):
-    timmy.action()
+james = James()
+for _ in range(200):
+    james.action()
 
 print("wating for reset")
 time.sleep(3.0)
 
 w.reset_environment()
 
-print("random actions")
-timmy = Timmy()
-for _ in range(20):
-    timmy.action()
+# print("random actions")
+# timmy = Timmy()
+# for _ in range(20):
+#     timmy.action()
 
 time.sleep(500.0)
 

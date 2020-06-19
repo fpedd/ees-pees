@@ -2,7 +2,6 @@ import subprocess
 import socket
 import struct
 import time
-import numpy as np
 from enum import IntEnum
 import psutil
 import os

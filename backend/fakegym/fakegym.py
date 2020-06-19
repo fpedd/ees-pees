@@ -181,8 +181,8 @@ class FakeGym(gym.Env):
         else:
             epsilon = 10**-5
             cost_step = 1
-            distance = self.get_target_distance()+epsilon
-            cost_distance = (distance**0.4)/(distance)
+            distance = self.get_target_distance() + epsilon
+            cost_distance = (distance**0.4) / (distance)
             reward_factor = -1
             reward = reward_factor * (cost_step * cost_distance)
             if self.state_object:
@@ -194,7 +194,7 @@ class FakeGym(gym.Env):
         seed = utils.np_random_seed(set=False)
         self.seed(seed)
         self.com = FakeCom(self.seeds, self.com_inits[0], self.com_inits[1],
-                           self.com_inits[2])
+                           self.com_inits[2], self.com_inits[3])
         return self.state
 
     def render(self):
@@ -386,7 +386,7 @@ class FakeCom():
         #     raise TypeError("Action must be of a tuple of 2 integers.")
         orientation_idx, action_length = action
 
-        pts_on_line = self.pts_to_anchor(self.anchors[orientation_idx],
+        pts_on_line = self.pts_to_anchor(self.anchors[::int(self.num_of_sensors/4)][orientation_idx],
                                          filterout=False)[0]
         self.pt = pts_on_line
         self.state.touching = False
