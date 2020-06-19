@@ -11,10 +11,10 @@
 #define max(X, Y) (((X) > (Y)) ? (X) : (Y))
 
 typedef struct {
-	data_to_bcknd_msg_t *ext_to_bcknd;
-	pthread_mutex_t    *ext_to_bcknd_lock;
-	cmd_to_ext_msg_t *bcknd_to_ext;
-	pthread_mutex_t    *bcknd_to_ext_lock;
+	data_to_bcknd_msg_t *data_to_bcknd;
+	pthread_mutex_t    *data_to_backend_worker_lock;
+	cmd_to_ext_msg_t *cmd_to_ext;
+	pthread_mutex_t    *cmd_to_webot_worker_lock;
 } arg_struct_t;
 
 int time_diff_start(double *time);

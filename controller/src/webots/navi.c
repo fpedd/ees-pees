@@ -27,27 +27,27 @@ int navi_init() {
 }
 
 // this function can be used to tell the robot to drive to dest[] coorinates
-int navigate(cmd_to_wb_msg_t *ext_to_wb, data_to_bcknd_msg_t ext_to_bcknd,
+int navigate(cmd_to_wb_msg_t *cmd_to_wb, data_to_bcknd_msg_t data_to_bcknd,
              init_to_ext_msg_t init_data, float dest[]) {
 
 	// ensure that time difference is not to big and not zero when starting
 	if (last_time == 0.0) {
-		last_time = ext_to_bcknd.sim_time;
+		last_time = data_to_bcknd.sim_time;
 		return 0;
 	}
 
 	// get the heading we need to drive in
-	float com_heading = navi_get_heading(ext_to_bcknd.actual_gps, dest);
+	float com_heading = navi_get_heading(data_to_bcknd.actual_gps, dest);
 
 	// get the actual distance to the target field
-	float act_distance = navi_get_distance(ext_to_bcknd.actual_gps, dest);
+	float act_distance = navi_get_distance(data_to_bcknd.actual_gps, dest);
 
 	// run the pid controller for speed control
 	float com_speed = 0;
-	int active = pid_run(&pos_pid, ext_to_bcknd.sim_time - last_time, 0, act_distance, &com_speed);
+	int active = pid_run(&pos_pid, data_to_bcknd.sim_time - last_time, 0, act_distance, &com_speed);
 
 	// should we drive backwards of forwards?
-	if (navi_check_back(ext_to_bcknd.heading, com_heading)) {
+	if (navi_check_back(data_to_bcknd.heading, com_heading)) {
 		com_speed *= 1.0;
 		com_heading = navi_inv_heading(com_heading);
 	} else {
@@ -55,10 +55,10 @@ int navigate(cmd_to_wb_msg_t *ext_to_wb, data_to_bcknd_msg_t ext_to_bcknd,
 	}
 
 	// command robot to drive to the target
-	drive_automatic(ext_to_wb, init_data,
+	drive_automatic(cmd_to_wb, init_data,
 	                com_speed, com_heading,
-	                ext_to_bcknd.speed, ext_to_bcknd.heading,
-	                ext_to_bcknd.sim_time);
+	                data_to_bcknd.speed, data_to_bcknd.heading,
+	                data_to_bcknd.sim_time);
 
 	return active;
 }

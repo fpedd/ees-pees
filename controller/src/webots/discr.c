@@ -23,20 +23,20 @@ int discr_init() {
 	return 0;
 }
 
-int discr_step(cmd_to_wb_msg_t *ext_to_wb, cmd_to_ext_msg_t bcknd_to_ext,
-               data_to_bcknd_msg_t ext_to_bcknd, init_to_ext_msg_t init_data, int start) {
+int discr_step(cmd_to_wb_msg_t *cmd_to_wb, cmd_to_ext_msg_t cmd_to_ext,
+               data_to_bcknd_msg_t data_to_bcknd, init_to_ext_msg_t init_data, int start) {
 
 	// lets start where the robot currently is at
 	if (start == 1) {
-		target[0] = round_with_factor(ext_to_bcknd.actual_gps[0], STEP_SIZE);
-		target[1] = round_with_factor(ext_to_bcknd.actual_gps[1], STEP_SIZE);
+		target[0] = round_with_factor(data_to_bcknd.actual_gps[0], STEP_SIZE);
+		target[1] = round_with_factor(data_to_bcknd.actual_gps[1], STEP_SIZE);
 	}
 
 	// make sure we only do actions once per message
 	static unsigned long long last_msg_cnt = -1;
-	if (bcknd_to_ext.msg_cnt != last_msg_cnt) {
+	if (cmd_to_ext.msg_cnt != last_msg_cnt) {
 
-		switch (bcknd_to_ext.move) {
+		switch (cmd_to_ext.move) {
 			case UP:
 			target[1] += STEP_SIZE;
 			break;
@@ -55,13 +55,13 @@ int discr_step(cmd_to_wb_msg_t *ext_to_wb, cmd_to_ext_msg_t bcknd_to_ext,
 			break;
 		}
 
-		last_msg_cnt = bcknd_to_ext.msg_cnt;
+		last_msg_cnt = cmd_to_ext.msg_cnt;
 
 	}
 
-	//print_cood(ext_to_bcknd.actual_gps, target);
+	//print_cood(data_to_bcknd.actual_gps, target);
 
-	return navigate(ext_to_wb, ext_to_bcknd, init_data, target);
+	return navigate(cmd_to_wb, data_to_bcknd, init_data, target);
 }
 
 void print_cood(float actual[2], float target[2]) {

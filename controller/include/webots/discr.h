@@ -6,8 +6,8 @@
 
 int discr_init();
 
-int discr_step(cmd_to_wb_msg_t *ext_to_wb, cmd_to_ext_msg_t bcknd_to_ext,
-               data_to_bcknd_msg_t ext_to_bcknd, init_to_ext_msg_t init_data, int start);
+int discr_step(cmd_to_wb_msg_t *cmd_to_wb, cmd_to_ext_msg_t cmd_to_ext,
+               data_to_bcknd_msg_t data_to_bcknd, init_to_ext_msg_t init_data, int start);
 
 void print_cood(float actual[2], float target[2]);
 

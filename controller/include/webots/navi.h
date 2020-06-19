@@ -6,7 +6,7 @@
 
 int navi_init();
 
-int navigate(cmd_to_wb_msg_t *ext_to_wb, data_to_bcknd_msg_t ext_to_bcknd,
+int navigate(cmd_to_wb_msg_t *cmd_to_wb, data_to_bcknd_msg_t data_to_bcknd,
              init_to_ext_msg_t init_data, float dest[]);
 
 int navi_check_back(float start_heading, float dest_heading);
