@@ -5,29 +5,29 @@
 #include "webots/wb_com.h"
 #include "backend/backend_com.h"
 
-void print_diff_distance(data_to_ext_msg_t data_to_ext, data_to_bcknd_msg_t data_to_bcknd) {
+void print_diff_distance(data_from_wb_msg_t data_from_wb, data_to_bcknd_msg_t data_to_bcknd) {
 
 	for (int i = 0; i < DIST_VECS; i++){
-		if (data_to_ext.distance[i] != data_to_bcknd.distance[i]){
-			printf("WEBOT_WORKER: data_to_ext.distance[%d] = %f  data_to_bcknd.distance[%d] = %f\n", i, data_to_ext.distance[i], i, data_to_bcknd.distance[i]);
+		if (data_from_wb.distance[i] != data_to_bcknd.distance[i]){
+			printf("WEBOT_WORKER: data_from_wb.distance[%d] = %f  data_to_bcknd.distance[%d] = %f\n", i, data_from_wb.distance[i], i, data_to_bcknd.distance[i]);
 		}
 	}
 
 }
 
-void print_data_to_ext(data_to_ext_msg_t data_to_ext, int print_distance) {
-	printf("WEBOT_WORKER: =================== data_to_ext ===================\n");
-	printf("WEBOT_WORKER: sim_time:      %f\n", data_to_ext.sim_time);
-	printf("WEBOT_WORKER: current_speed: %f\n", data_to_ext.current_speed);
-	printf("WEBOT_WORKER: actual_gps[0]: %f\n", data_to_ext.actual_gps[0]);
-	printf("WEBOT_WORKER: actual_gps[1]: %f\n", data_to_ext.actual_gps[1]);
-	printf("WEBOT_WORKER: actual_gps[2]: %f\n", data_to_ext.actual_gps[2]);
-	printf("WEBOT_WORKER: compass[0]:    %f\n", data_to_ext.compass[0]);
-	printf("WEBOT_WORKER: compass[1]:    %f\n", data_to_ext.compass[1]);
-	printf("WEBOT_WORKER: compass[2]:    %f\n", data_to_ext.compass[2]);
+void print_data_from_wb(data_from_wb_msg_t data_from_wb, int print_distance) {
+	printf("WEBOT_WORKER: =================== data_from_wb ===================\n");
+	printf("WEBOT_WORKER: sim_time:      %f\n", data_from_wb.sim_time);
+	printf("WEBOT_WORKER: current_speed: %f\n", data_from_wb.current_speed);
+	printf("WEBOT_WORKER: actual_gps[0]: %f\n", data_from_wb.actual_gps[0]);
+	printf("WEBOT_WORKER: actual_gps[1]: %f\n", data_from_wb.actual_gps[1]);
+	printf("WEBOT_WORKER: actual_gps[2]: %f\n", data_from_wb.actual_gps[2]);
+	printf("WEBOT_WORKER: compass[0]:    %f\n", data_from_wb.compass[0]);
+	printf("WEBOT_WORKER: compass[1]:    %f\n", data_from_wb.compass[1]);
+	printf("WEBOT_WORKER: compass[2]:    %f\n", data_from_wb.compass[2]);
 
 	for (int i = 0; i < print_distance; i++){
-		printf("WEBOT_WORKER: data_to_ext.distance[%d] = %f\n", i, data_to_ext.distance[i]);
+		printf("WEBOT_WORKER: data_from_wb.distance[%d] = %f\n", i, data_from_wb.distance[i]);
 	}
 
 	printf("WEBOT_WORKER: =================================================\n");
@@ -54,15 +54,15 @@ void print_data_to_bcknd(data_to_bcknd_msg_t data_to_bcknd, int print_distance) 
 	printf("WEBOT_WORKER: =================================================\n");
 }
 
-void print_cmd_to_ext(cmd_to_ext_msg_t cmd_to_ext) {
-	printf("WEBOT_WORKER: =================== cmd_to_ext ===================\n");
-	printf("WEBOT_WORKER: msg_cnt:       %llu\n", cmd_to_ext.msg_cnt);
-	printf("WEBOT_WORKER: time_stmp:     %f \n", cmd_to_ext.time_stmp);
-	printf("WEBOT_WORKER: request:       %s \n", response_request_str[cmd_to_ext.request]);
-	printf("WEBOT_WORKER: discrete_move: %s \n", discrete_move_str[cmd_to_ext.move]);
-	printf("WEBOT_WORKER: dir_type:      %s \n", direction_type_str[cmd_to_ext.dir_type]);
-	printf("WEBOT_WORKER: heading:       %f \n", cmd_to_ext.heading);
-	printf("WEBOT_WORKER: speed:         %f \n", cmd_to_ext.speed);
+void print_cmd_from_bcknd(cmd_from_bcknd_msg_t cmd_from_bcknd) {
+	printf("WEBOT_WORKER: =================== cmd_from_bcknd ===================\n");
+	printf("WEBOT_WORKER: msg_cnt:       %llu\n", cmd_from_bcknd.msg_cnt);
+	printf("WEBOT_WORKER: time_stmp:     %f \n", cmd_from_bcknd.time_stmp);
+	printf("WEBOT_WORKER: request:       %s \n", response_request_str[cmd_from_bcknd.request]);
+	printf("WEBOT_WORKER: discrete_move: %s \n", discrete_move_str[cmd_from_bcknd.move]);
+	printf("WEBOT_WORKER: dir_type:      %s \n", direction_type_str[cmd_from_bcknd.dir_type]);
+	printf("WEBOT_WORKER: heading:       %f \n", cmd_from_bcknd.heading);
+	printf("WEBOT_WORKER: speed:         %f \n", cmd_from_bcknd.speed);
 	printf("WEBOT_WORKER: =================================================\n");
 }
 

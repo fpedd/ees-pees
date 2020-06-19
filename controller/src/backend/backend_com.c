@@ -70,16 +70,16 @@ int com_send(data_to_bcknd_msg_t data) {
 	return 0;
 }
 
-int com_recv(cmd_to_ext_msg_t *data) {
+int com_recv(cmd_from_bcknd_msg_t *data) {
 
-	memset(data, 0, sizeof(cmd_to_ext_msg_t));
+	memset(data, 0, sizeof(cmd_from_bcknd_msg_t));
 
-	int len = udp_recv((char *)data, sizeof(cmd_to_ext_msg_t));
+	int len = udp_recv((char *)data, sizeof(cmd_from_bcknd_msg_t));
 
-	if (len < (int)sizeof(cmd_to_ext_msg_t)) {
+	if (len < (int)sizeof(cmd_from_bcknd_msg_t)) {
 		if (errno != 11) { // dont print error if we had a timeout
 			fprintf(stderr, "BACKEND_COM: ERROR: com recv too short, is %d, should %ld\n",
-			        len, sizeof(cmd_to_ext_msg_t));
+			        len, sizeof(cmd_from_bcknd_msg_t));
 			link_qualitiy(-0.1);
 		}
 		link_qualitiy(-0.01);

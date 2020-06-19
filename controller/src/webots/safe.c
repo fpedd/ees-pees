@@ -6,18 +6,18 @@
 #include "silhouette.h"
 
 int safety_check(init_to_ext_msg_t init_data, data_to_bcknd_msg_t data_to_bcknd,
-	             cmd_to_ext_msg_t* cmd_to_ext) {
+	             cmd_from_bcknd_msg_t* cmd_from_bcknd) {
 
 	(void) init_data;
 	(void) data_to_bcknd;
-	(void) cmd_to_ext;
+	(void) cmd_from_bcknd;
 
 	// TODO: here we need to check if we are hitting smth and if
 	// so we need to set the speed (and maybe heading) to 0  or smth similar
 
 	// maybe: if hitting then
-	// cmd_to_ext->speed = 0;
-	// cmd_to_ext->heading = 0;
+	// cmd_from_bcknd->speed = 0;
+	// cmd_from_bcknd->heading = 0;
 
 	// return 0 if action was okay
 	// return 1 if we had to take over control for safety reasons
@@ -41,9 +41,9 @@ int touching(float dist[]) {
 }
 
 
-int check_for_tipover(data_to_ext_msg_t data_to_ext) {
+int check_for_tipover(data_from_wb_msg_t data_from_wb) {
 
-	if (fabs(data_to_ext.actual_gps[1] - 0.026) > 0.02) {
+	if (fabs(data_from_wb.actual_gps[1] - 0.026) > 0.02) {
 		return -1;
 	} else {
 		return 0;

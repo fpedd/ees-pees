@@ -50,7 +50,7 @@ typedef struct {
 	enum direction_type dir_type;  // heading or steering command from backend
 	float heading;                 // the direction the robot should move in next [-1, 1]
 	float speed;                   // the speed the robot should drive at [-1, 1]
-} __attribute__((packed)) cmd_to_ext_msg_t;
+} __attribute__((packed)) cmd_from_bcknd_msg_t;
 
 int com_init();
 
@@ -60,6 +60,6 @@ float link_qualitiy(float factor);
 
 int com_send(data_to_bcknd_msg_t data);
 
-int com_recv(cmd_to_ext_msg_t *data);
+int com_recv(cmd_from_bcknd_msg_t *data);
 
 #endif // COM_H

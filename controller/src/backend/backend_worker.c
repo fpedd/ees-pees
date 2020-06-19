@@ -13,8 +13,8 @@ void *backend_worker(void *ptr) {
 
 	data_to_bcknd_msg_t external_data_to_bcknd;
 	memset(&external_data_to_bcknd, 0, sizeof(data_to_bcknd_msg_t));
-	cmd_to_ext_msg_t external_cmd_to_ext;
-	memset(&external_cmd_to_ext, 0, sizeof(cmd_to_ext_msg_t));
+	cmd_from_bcknd_msg_t external_cmd_from_bcknd;
+	memset(&external_cmd_from_bcknd, 0, sizeof(cmd_from_bcknd_msg_t));
 
 	com_init();
 
@@ -24,19 +24,19 @@ void *backend_worker(void *ptr) {
 
 		// printf("BACKEND_WORKER: Waiting to recv \n");
 		// printf("BACKEND_WORKER: link_qual %f \n", link_qualitiy(0));
-		if (com_recv(&external_cmd_to_ext) < 0) {
+		if (com_recv(&external_cmd_from_bcknd) < 0) {
 			// printf("BACKEND_WORKER: Error on recv\n");  // Already gets printed by com_recv
 			continue;
 		}
 
-		switch (external_cmd_to_ext.request) {
+		switch (external_cmd_from_bcknd.request) {
 
 			case COMMAND_ONLY:
 				// printf("BACKEND_WORKER: COMMAND_ONLY msg received\n");
 
 				// Move data to ITC struct for webot_worker to read
 				pthread_mutex_lock(arg_struct->cmd_to_webot_worker_lock);
-				memcpy(arg_struct->cmd_to_ext, &external_cmd_to_ext, sizeof(cmd_to_ext_msg_t));
+				memcpy(arg_struct->cmd_from_bcknd, &external_cmd_from_bcknd, sizeof(cmd_from_bcknd_msg_t));
 				pthread_mutex_unlock(arg_struct->cmd_to_webot_worker_lock);
 				break;
 
@@ -57,7 +57,7 @@ void *backend_worker(void *ptr) {
 
 				// Move data to ITC struct for webot_worker to read
 				pthread_mutex_lock(arg_struct->cmd_to_webot_worker_lock);
-				memcpy(arg_struct->cmd_to_ext, &external_cmd_to_ext, sizeof(cmd_to_ext_msg_t));
+				memcpy(arg_struct->cmd_from_bcknd, &external_cmd_from_bcknd, sizeof(cmd_from_bcknd_msg_t));
 				pthread_mutex_unlock(arg_struct->cmd_to_webot_worker_lock);
 
 				// Get data from ITC struct for transmission to backend

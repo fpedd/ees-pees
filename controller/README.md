@@ -72,7 +72,7 @@ typedef struct {
 	double actual_gps[3];         // coordiantes where the robot is
 	double compass[3];            // direction the front of the robot points in
 	float distance[DIST_VECS];    // distance to the next object from robot prespective
-} __attribute__((packed)) data_to_ext_msg_t;
+} __attribute__((packed)) data_from_wb_msg_t;
 ```
 * sim_time is the current time (in seconds) starting at 0 when the simulation starts.
 * current_speed is the robots current speed (in m/s) measured by the gps
@@ -128,7 +128,7 @@ typedef struct {
 	enum direction_type dir_type;  // heading or steering command from backend
 	float heading;                 // the direction the robot should move in next [-1, 1]
 	float speed;                   // the speed the robot should drive at [-1, 1]
-} __attribute__((packed)) cmd_to_ext_msg_t;
+} __attribute__((packed)) cmd_from_bcknd_msg_t;
 ```
 
 Variables inside the messages with `(internal)` next to them should never be written

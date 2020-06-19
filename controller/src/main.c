@@ -18,8 +18,8 @@ int main(int argc, char **argv) {
 	data_to_bcknd_msg_t itc_data_to_backend_worker;
 	memset(&itc_data_to_backend_worker, 0, sizeof(data_to_bcknd_msg_t));
 
-	cmd_to_ext_msg_t itc_cmd_to_webot_worker;
-	memset(&itc_cmd_to_webot_worker, 0, sizeof(cmd_to_ext_msg_t));
+	cmd_from_bcknd_msg_t itc_cmd_to_webot_worker;
+	memset(&itc_cmd_to_webot_worker, 0, sizeof(cmd_from_bcknd_msg_t));
 
 	pthread_mutex_t data_to_backend_worker_lock;
 	pthread_mutex_t cmd_to_webot_worker_lock;
@@ -33,7 +33,7 @@ int main(int argc, char **argv) {
 	arg_struct_t arg_struct;
 	arg_struct.data_to_bcknd      = &itc_data_to_backend_worker;
 	arg_struct.data_to_backend_worker_lock = &data_to_backend_worker_lock;
-	arg_struct.cmd_to_ext      = &itc_cmd_to_webot_worker;
+	arg_struct.cmd_from_bcknd      = &itc_cmd_to_webot_worker;
 	arg_struct.cmd_to_webot_worker_lock = &cmd_to_webot_worker_lock;
 
 	pthread_t webot_worker_thread, backend_worker_thread;

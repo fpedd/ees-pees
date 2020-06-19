@@ -13,7 +13,7 @@
 typedef struct {
 	data_to_bcknd_msg_t *data_to_bcknd;
 	pthread_mutex_t    *data_to_backend_worker_lock;
-	cmd_to_ext_msg_t *cmd_to_ext;
+	cmd_from_bcknd_msg_t *cmd_from_bcknd;
 	pthread_mutex_t    *cmd_to_webot_worker_lock;
 } arg_struct_t;
 
