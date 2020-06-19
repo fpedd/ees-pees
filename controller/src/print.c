@@ -5,7 +5,7 @@
 #include "webots/wb_com.h"
 #include "backend/backend_com.h"
 
-void print_diff_distance(wb_to_ext_msg_t wb_to_ext, ext_to_bcknd_msg_t ext_to_bcknd) {
+void print_diff_distance(data_to_ext_msg_t wb_to_ext, data_to_bcknd_msg_t ext_to_bcknd) {
 
 	for (int i = 0; i < DIST_VECS; i++){
 		if (wb_to_ext.distance[i] != ext_to_bcknd.distance[i]){
@@ -15,7 +15,7 @@ void print_diff_distance(wb_to_ext_msg_t wb_to_ext, ext_to_bcknd_msg_t ext_to_bc
 
 }
 
-void print_wb_to_ext(wb_to_ext_msg_t wb_to_ext, int print_distance) {
+void print_wb_to_ext(data_to_ext_msg_t wb_to_ext, int print_distance) {
 	printf("WEBOT_WORKER: =================== wb_to_ext ===================\n");
 	printf("WEBOT_WORKER: sim_time:      %f\n", wb_to_ext.sim_time);
 	printf("WEBOT_WORKER: current_speed: %f\n", wb_to_ext.current_speed);
@@ -33,7 +33,7 @@ void print_wb_to_ext(wb_to_ext_msg_t wb_to_ext, int print_distance) {
 	printf("WEBOT_WORKER: =================================================\n");
 }
 
-void print_ext_to_bcknd(ext_to_bcknd_msg_t ext_to_bcknd, int print_distance) {
+void print_ext_to_bcknd(data_to_bcknd_msg_t ext_to_bcknd, int print_distance) {
 	printf("WEBOT_WORKER: =================== ext_to_bcknd ===================\n");
 	printf("WEBOT_WORKER: msg_cnt:        %llu\n", ext_to_bcknd.msg_cnt);
 	printf("WEBOT_WORKER: time_stmp:      %f\n", ext_to_bcknd.time_stmp);
@@ -54,7 +54,7 @@ void print_ext_to_bcknd(ext_to_bcknd_msg_t ext_to_bcknd, int print_distance) {
 	printf("WEBOT_WORKER: =================================================\n");
 }
 
-void print_bcknd_to_ext(bcknd_to_ext_msg_t bcknd_to_ext) {
+void print_bcknd_to_ext(cmd_to_ext_msg_t bcknd_to_ext) {
 	printf("WEBOT_WORKER: =================== bcknd_to_ext ===================\n");
 	printf("WEBOT_WORKER: msg_cnt:       %llu\n", bcknd_to_ext.msg_cnt);
 	printf("WEBOT_WORKER: time_stmp:     %f \n", bcknd_to_ext.time_stmp);
@@ -66,7 +66,7 @@ void print_bcknd_to_ext(bcknd_to_ext_msg_t bcknd_to_ext) {
 	printf("WEBOT_WORKER: =================================================\n");
 }
 
-void print_ext_to_wb(ext_to_wb_msg_t ext_to_wb) {
+void print_ext_to_wb(cmd_to_wb_msg_t ext_to_wb) {
 	printf("WEBOT_WORKER: =================== ext_to_wb ===================\n");
 	printf("WEBOT_WORKER: heading: %f \n", ext_to_wb.heading);
 	printf("WEBOT_WORKER: speed:   %f \n", ext_to_wb.speed);

@@ -15,11 +15,11 @@ int main(int argc, char **argv) {
 	(void) argc;
 	(void) argv;
 
-	ext_to_bcknd_msg_t itc_ext_to_bcknd;
-	memset(&itc_ext_to_bcknd, 0, sizeof(ext_to_bcknd_msg_t));
+	data_to_bcknd_msg_t itc_ext_to_bcknd;
+	memset(&itc_ext_to_bcknd, 0, sizeof(data_to_bcknd_msg_t));
 
-	bcknd_to_ext_msg_t itc_bcknd_to_ext;
-	memset(&itc_bcknd_to_ext, 0, sizeof(bcknd_to_ext_msg_t));
+	cmd_to_ext_msg_t itc_bcknd_to_ext;
+	memset(&itc_bcknd_to_ext, 0, sizeof(cmd_to_ext_msg_t));
 
 	pthread_mutex_t ext_to_bcknd_lock;
 	pthread_mutex_t bcknd_to_ext_lock;

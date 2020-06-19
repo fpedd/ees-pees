@@ -11,9 +11,9 @@
 #define max(X, Y) (((X) > (Y)) ? (X) : (Y))
 
 typedef struct {
-	ext_to_bcknd_msg_t *ext_to_bcknd;
+	data_to_bcknd_msg_t *ext_to_bcknd;
 	pthread_mutex_t    *ext_to_bcknd_lock;
-	bcknd_to_ext_msg_t *bcknd_to_ext;
+	cmd_to_ext_msg_t *bcknd_to_ext;
 	pthread_mutex_t    *bcknd_to_ext_lock;
 } arg_struct_t;
 

@@ -5,8 +5,8 @@
 #include "backend/backend_com.h"
 #include "silhouette.h"
 
-int safety_check(init_to_ext_msg_t init_data, ext_to_bcknd_msg_t ext_to_bcknd,
-	             bcknd_to_ext_msg_t* bcknd_to_ext) {
+int safety_check(init_to_ext_msg_t init_data, data_to_bcknd_msg_t ext_to_bcknd,
+	             cmd_to_ext_msg_t* bcknd_to_ext) {
 
 	(void) init_data;
 	(void) ext_to_bcknd;
@@ -41,7 +41,7 @@ int touching(float dist[]) {
 }
 
 
-int check_for_tipover(wb_to_ext_msg_t wb_to_ext) {
+int check_for_tipover(data_to_ext_msg_t wb_to_ext) {
 
 	if (fabs(wb_to_ext.actual_gps[1] - 0.026) > 0.02) {
 		return -1;

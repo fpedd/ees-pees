@@ -27,7 +27,7 @@ int navi_init() {
 }
 
 // this function can be used to tell the robot to drive to dest[] coorinates
-int navigate(ext_to_wb_msg_t *ext_to_wb, ext_to_bcknd_msg_t ext_to_bcknd,
+int navigate(cmd_to_wb_msg_t *ext_to_wb, data_to_bcknd_msg_t ext_to_bcknd,
              init_to_ext_msg_t init_data, float dest[]) {
 
 	// ensure that time difference is not to big and not zero when starting

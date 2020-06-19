@@ -36,29 +36,29 @@ void *webot_worker(void *ptr) {
 	while (1) {
 
 		/***** 1) Receive from Webots *****/
-		wb_to_ext_msg_t wb_to_ext;
-		memset(&wb_to_ext, 0, sizeof(wb_to_ext_msg_t));
+		data_to_ext_msg_t wb_to_ext;
+		memset(&wb_to_ext, 0, sizeof(data_to_ext_msg_t));
 		wb_recv(&wb_to_ext);
 
 		// print_wb_to_ext(wb_to_ext, 0);
 
 		/***** 2) Push message to backend worker *****/
-		ext_to_bcknd_msg_t ext_to_bcknd;
-		memset(&ext_to_bcknd, 0, sizeof(ext_to_bcknd_msg_t));
+		data_to_bcknd_msg_t ext_to_bcknd;
+		memset(&ext_to_bcknd, 0, sizeof(data_to_bcknd_msg_t));
 		webot_format_wb_to_bcknd(&ext_to_bcknd, wb_to_ext, init_data,
 		                         action_denied, discrete_action_done);
 		pthread_mutex_lock(arg_struct->ext_to_bcknd_lock);
-		memcpy(arg_struct->ext_to_bcknd, &ext_to_bcknd, sizeof(ext_to_bcknd_msg_t));
+		memcpy(arg_struct->ext_to_bcknd, &ext_to_bcknd, sizeof(data_to_bcknd_msg_t));
 		pthread_mutex_unlock(arg_struct->ext_to_bcknd_lock);
 
 		// print_ext_to_bcknd(ext_to_bcknd, 0);
 		// printf("WEBOT_WORKER: backend link_qual %f \n", link_qualitiy(0));
 
 		/***** 3) Get message from backend worker *****/
-		bcknd_to_ext_msg_t bcknd_to_ext;
-		memset(&bcknd_to_ext, 0, sizeof(bcknd_to_ext_msg_t));
+		cmd_to_ext_msg_t bcknd_to_ext;
+		memset(&bcknd_to_ext, 0, sizeof(cmd_to_ext_msg_t));
 		pthread_mutex_lock(arg_struct->bcknd_to_ext_lock);
-		memcpy(&bcknd_to_ext, arg_struct->bcknd_to_ext, sizeof(bcknd_to_ext_msg_t));
+		memcpy(&bcknd_to_ext, arg_struct->bcknd_to_ext, sizeof(cmd_to_ext_msg_t));
 		pthread_mutex_unlock(arg_struct->bcknd_to_ext_lock);
 
 		// print_bcknd_to_ext(bcknd_to_ext);
@@ -67,8 +67,8 @@ void *webot_worker(void *ptr) {
 		// TODO: implement safety checks
 		action_denied = safety_check(init_data, ext_to_bcknd, &bcknd_to_ext);
 
-		ext_to_wb_msg_t ext_to_wb;
-		memset(&ext_to_wb, 0, sizeof(ext_to_wb_msg_t));
+		cmd_to_wb_msg_t ext_to_wb;
+		memset(&ext_to_wb, 0, sizeof(cmd_to_wb_msg_t));
 
 		static int start = 1;
 		// check if we should do a continous or discrete action
@@ -90,8 +90,8 @@ void *webot_worker(void *ptr) {
 }
 
 
-int webot_format_wb_to_bcknd(ext_to_bcknd_msg_t* ext_to_bcknd,
-                             wb_to_ext_msg_t wb_to_ext,
+int webot_format_wb_to_bcknd(data_to_bcknd_msg_t* ext_to_bcknd,
+                             data_to_ext_msg_t wb_to_ext,
                              init_to_ext_msg_t init_data,
                              unsigned int action_denied,
                              unsigned int discrete_action_done) {
