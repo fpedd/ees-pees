@@ -72,6 +72,7 @@ void *webot_worker(void *ptr) {
 
 		static int start = 1;
 		// check if we should do a continous or discrete action
+		// TODO: also reset PID controller when switching over
 		if (bcknd_to_ext.move == NONE) {
 			drive(&ext_to_wb, bcknd_to_ext, ext_to_bcknd, init_data);
 			start = 1;
