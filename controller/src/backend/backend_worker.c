@@ -36,7 +36,7 @@ void *backend_worker(void *ptr) {
 
 				// Move data to ITC struct for webot_worker to read
 				pthread_mutex_lock(arg_struct->itc_cmd_lock);
-				memcpy(arg_struct->cmd, &cmd_from_bcknd, sizeof(cmd_from_bcknd_msg_t));
+				memcpy(arg_struct->itc_cmd, &cmd_from_bcknd, sizeof(cmd_from_bcknd_msg_t));
 				pthread_mutex_unlock(arg_struct->itc_cmd_lock);
 				break;
 
@@ -45,7 +45,7 @@ void *backend_worker(void *ptr) {
 
 				// Get data from ITC struct for transmission to backend
 				pthread_mutex_lock(arg_struct->itc_data_lock);
-				memcpy(&data_to_bcknd, arg_struct->data, sizeof(data_to_bcknd_msg_t));
+				memcpy(&data_to_bcknd, arg_struct->itc_data, sizeof(data_to_bcknd_msg_t));
 				pthread_mutex_unlock(arg_struct->itc_data_lock);
 
 				// Transmit data to backend
@@ -57,12 +57,12 @@ void *backend_worker(void *ptr) {
 
 				// Move data to ITC struct for webot_worker to read
 				pthread_mutex_lock(arg_struct->itc_cmd_lock);
-				memcpy(arg_struct->cmd, &cmd_from_bcknd, sizeof(cmd_from_bcknd_msg_t));
+				memcpy(arg_struct->itc_cmd, &cmd_from_bcknd, sizeof(cmd_from_bcknd_msg_t));
 				pthread_mutex_unlock(arg_struct->itc_cmd_lock);
 
 				// Get data from ITC struct for transmission to backend
 				pthread_mutex_lock(arg_struct->itc_data_lock);
-				memcpy(&data_to_bcknd, arg_struct->data, sizeof(data_to_bcknd_msg_t));
+				memcpy(&data_to_bcknd, arg_struct->itc_data, sizeof(data_to_bcknd_msg_t));
 				pthread_mutex_unlock(arg_struct->itc_data_lock);
 
 				// Transmit data to backend

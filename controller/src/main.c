@@ -31,10 +31,10 @@ int main(int argc, char **argv) {
 	}
 
 	arg_struct_t arg_struct;
-	arg_struct.data          = &itc_data;
+	arg_struct.itc_data      = &itc_data;
 	arg_struct.itc_data_lock = &itc_data_lock;
-	arg_struct.cmd      = &itc_cmd;
-	arg_struct.itc_cmd_lock = &itc_cmd_lock;
+	arg_struct.itc_cmd       = &itc_cmd;
+	arg_struct.itc_cmd_lock  = &itc_cmd_lock;
 
 	pthread_t webot_worker_thread, backend_worker_thread;
 
