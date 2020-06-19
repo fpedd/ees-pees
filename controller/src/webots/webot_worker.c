@@ -65,7 +65,7 @@ void *webot_worker(void *ptr) {
 
 		/***** 4) Prepare and send to Webots *****/
 		// TODO: implement safety checks
-		action_denied = safety_check(&bcknd_to_ext);
+		action_denied = safety_check(init_data, ext_to_bcknd, &bcknd_to_ext);
 
 		ext_to_wb_msg_t ext_to_wb;
 		memset(&ext_to_wb, 0, sizeof(ext_to_wb_msg_t));

@@ -5,8 +5,11 @@
 #include "backend/backend_com.h"
 #include "silhouette.h"
 
-int safety_check(bcknd_to_ext_msg_t *bcknd_to_ext) {
+int safety_check(init_to_ext_msg_t init_data, ext_to_bcknd_msg_t ext_to_bcknd,
+	             bcknd_to_ext_msg_t* bcknd_to_ext) {
 
+	(void) init_data;
+	(void) ext_to_bcknd;
 	(void) bcknd_to_ext;
 
 	// TODO: here we need to check if we are hitting smth and if
