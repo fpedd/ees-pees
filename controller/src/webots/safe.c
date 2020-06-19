@@ -24,14 +24,14 @@ int safety_check(init_to_ext_msg_t init_data, data_to_bcknd_msg_t data_to_bcknd,
 	return 0;
 }
 
-int touching(float dist[]) {
+int touching(data_from_wb_msg_t data_from_wb) {
 
 	int touching = 0;
 	int currently_touching = 0;
 	for (int i=0; i<DIST_VECS; i++) {
-		if (dist[i] < silhouette[i] && currently_touching == 0) {
+		if (data_from_wb.distance[i] < silhouette[i] && currently_touching == 0) {
 			currently_touching = 1;
-		} else if (!(dist[i] < silhouette[i]) && currently_touching == 1) {
+		} else if (!(data_from_wb.distance[i] < silhouette[i]) && currently_touching == 1) {
 			currently_touching = 0;
 			touching ++;
 		}

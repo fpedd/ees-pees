@@ -37,10 +37,10 @@ int navigate(cmd_to_wb_msg_t *cmd_to_wb, data_to_bcknd_msg_t data_to_bcknd,
 	}
 
 	// get the heading we need to drive in
-	float com_heading = navi_get_heading(data_to_bcknd.actual_gps, dest);
+	float com_heading = navi_get_heading(data_to_bcknd, dest);
 
 	// get the actual distance to the target field
-	float act_distance = navi_get_distance(data_to_bcknd.actual_gps, dest);
+	float act_distance = navi_get_distance(data_to_bcknd, dest);
 
 	// run the pid controller for speed control
 	float com_speed = 0;
@@ -78,20 +78,20 @@ int navi_check_back(float start_heading, float dest_heading) {
 	}
 }
 
-float navi_get_heading(float start[], float dest[]) {
+float navi_get_heading(data_to_bcknd_msg_t data_to_bcknd, float dest[]) {
 
 	// weird coorinate system in webots...
-	float dx = start[0] - dest[0];
-	float dy = dest[1] - start[1];
+	float dx = data_to_bcknd.actual_gps[0] - dest[0];
+	float dy = dest[1] - data_to_bcknd.actual_gps[1];
 	float he = atan2(dx, dy) / M_PI;
 
 	return he;
 }
 
-float navi_get_distance(float start[], float dest[]) {
+float navi_get_distance(data_to_bcknd_msg_t data_to_bcknd, float dest[]) {
 
-	float dx = dest[0] - start[0];
-	float dy = dest[1] - start[1];
+	float dx = dest[0] - data_to_bcknd.actual_gps[0];
+	float dy = dest[1] - data_to_bcknd.actual_gps[1];
 	float di = sqrt(pow(dx, 2) + pow(dy, 2));
 
 	return di;

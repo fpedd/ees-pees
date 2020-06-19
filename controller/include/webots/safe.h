@@ -10,7 +10,7 @@
 int safety_check(init_to_ext_msg_t init_data, data_to_bcknd_msg_t data_to_bcknd,
 	             cmd_from_bcknd_msg_t* cmd_from_bcknd);
 
-int touching(float dist[]);
+int touching(data_from_wb_msg_t data_from_wb);
 
 int check_for_tipover(data_from_wb_msg_t data_from_wb);
 

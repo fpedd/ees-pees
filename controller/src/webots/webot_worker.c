@@ -111,7 +111,7 @@ int webot_format_wb_to_bcknd(data_to_bcknd_msg_t* data_to_bcknd,
 	if (check_for_tipover(data_from_wb) != 0) {
 		data_to_bcknd->touching = -1;
 	} else {
-		data_to_bcknd->touching = touching(data_from_wb.distance);
+		data_to_bcknd->touching = touching(data_from_wb);
 	}
 
 	data_to_bcknd->action_denied = action_denied;
