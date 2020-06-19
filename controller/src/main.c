@@ -15,26 +15,26 @@ int main(int argc, char **argv) {
 	(void) argc;
 	(void) argv;
 
-	data_to_bcknd_msg_t itc_data_to_backend_worker;
-	memset(&itc_data_to_backend_worker, 0, sizeof(data_to_bcknd_msg_t));
+	data_to_bcknd_msg_t itc_data;
+	memset(&itc_data, 0, sizeof(data_to_bcknd_msg_t));
 
-	cmd_from_bcknd_msg_t itc_cmd_to_webot_worker;
-	memset(&itc_cmd_to_webot_worker, 0, sizeof(cmd_from_bcknd_msg_t));
+	cmd_from_bcknd_msg_t itc_cmd;
+	memset(&itc_cmd, 0, sizeof(cmd_from_bcknd_msg_t));
 
-	pthread_mutex_t data_to_backend_worker_lock;
-	pthread_mutex_t cmd_to_webot_worker_lock;
+	pthread_mutex_t itc_data_lock;
+	pthread_mutex_t itc_cmd_lock;
 
-	if ((pthread_mutex_init(&data_to_backend_worker_lock, NULL) |
-	     pthread_mutex_init(&cmd_to_webot_worker_lock, NULL)) != 0) {
+	if ((pthread_mutex_init(&itc_data_lock, NULL) |
+	     pthread_mutex_init(&itc_cmd_lock, NULL)) != 0) {
 		fprintf(stderr, "MAIN: ERROR on creating mutexes\n");
 		return 1;
 	}
 
 	arg_struct_t arg_struct;
-	arg_struct.data_to_bcknd      = &itc_data_to_backend_worker;
-	arg_struct.data_to_backend_worker_lock = &data_to_backend_worker_lock;
-	arg_struct.cmd_from_bcknd      = &itc_cmd_to_webot_worker;
-	arg_struct.cmd_to_webot_worker_lock = &cmd_to_webot_worker_lock;
+	arg_struct.data          = &itc_data;
+	arg_struct.itc_data_lock = &itc_data_lock;
+	arg_struct.cmd      = &itc_cmd;
+	arg_struct.itc_cmd_lock = &itc_cmd_lock;
 
 	pthread_t webot_worker_thread, backend_worker_thread;
 
