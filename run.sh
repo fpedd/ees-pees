@@ -30,7 +30,7 @@ echo "Clean and compile the External Controller"
 make clean -C .${EXT_CTRL}
 make all -C .${EXT_CTRL}
 
-echo "Clean and compile the Interal Controller"
+echo "Clean and compile the Internal Controller"
 make clean -C .${INT_CTRL}
 make all -C .${INT_CTRL}
 
