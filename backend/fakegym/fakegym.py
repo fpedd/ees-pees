@@ -131,7 +131,7 @@ class FakeGym(gym.Env):
     def close(self):
         pass
 
-    def get_target_distance(self, normalized=True):
+    def get_target_distance(self, normalized=False):
         """Calculate euklidian distance to target."""
         dist = utils.euklidian_distance(self.gps_actual, self.gps_target)
         if normalized is True:
@@ -189,9 +189,10 @@ class FakeGym(gym.Env):
                 reward = reward - 10
         return reward
 
-    def reset(self):
+    def reset(self, seed=None):
         self.total_reward = 0
-        seed = utils.np_random_seed(set=False)
+        if seed is None:
+            seed = utils.np_random_seed(set=False)
         self.seed(seed)
         self.com = FakeCom(self.seeds, self.com_inits[0], self.com_inits[1],
                            self.com_inits[2], self.com_inits[3])
