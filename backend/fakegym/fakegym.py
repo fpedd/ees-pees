@@ -89,7 +89,10 @@ class FakeGym(gym.Env):
                            self.com_inits[2], self.com_inits[3])
         self.plotpadding = 0
 
-        self.obs = (obs)(self)
+        if type(obs) == type:
+            self.obs = (obs)(self)
+        else:
+            self.obs = obs
         self.observation_space = spaces.Box(0, np.inf, shape=self.obs.shape(),
                                             dtype=np.float32)
 
