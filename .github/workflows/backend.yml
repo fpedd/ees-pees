@@ -31,9 +31,9 @@ jobs:
       - name: install matplotlib
         run: pip install matplotlib
 
-      - name: pylint automation_test
-        working-directory: backend
-        run: pylint automation_test.py --disable=missing-docstring --disable=C0103 || pylint-exit -efail $?
+#       - name: pylint automation_test
+#         working-directory: backend
+#         run: pylint automation_test.py --disable=missing-docstring --disable=C0103 || pylint-exit -efail $?
       - name: pylint timmy
         working-directory: backend
         run: pylint timmy.py --disable=missing-docstring --disable=C0103 --extension-pkg-whitelist=numpy --extension-pkg-whitelist=pynput || pylint-exit -efail $?
