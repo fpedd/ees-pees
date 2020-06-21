@@ -223,13 +223,8 @@ sv_world_def *sv_simulation_init() {
 	  // stop first ongoing simulation
 	wb_supervisor_simulation_set_mode(WB_SUPERVISOR_SIMULATION_MODE_PAUSE);
 	
-#ifndef NDEBUG
 	 // check if supervisor is enabled and snychronization is disabled
-	WbNodeRef sv_node = wb_supervisor_node_get_self();
-	WbFieldRef sv_sven_field = wb_supervisor_node_get_field(sv_node, "supervisor");
-	WbFieldRef sv_sync_field = wb_supervisor_node_get_field(sv_node, "synchronization");
-	assert(wb_supervisor_field_get_sf_bool(sv_sven_field) && !wb_supervisor_field_get_sf_bool(sv_sync_field));
-#endif
+	assert(wb_robot_get_supervisor() && !wb_robot_get_synchronization());
 
 	 //malloc struct
 	sv_world_def *world = (sv_world_def *) malloc(sizeof(sv_world_def));
