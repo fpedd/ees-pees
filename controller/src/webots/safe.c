@@ -11,37 +11,17 @@
 #include "util.h"
 
 // (should be odd for symmetry!) number of entries combined to one sensor datum
-#define CONDENSE_WIDTH 21
+#define CONDENSE_WIDTH 31
 
-#define STEPS_STOP 20.0
+#define STEPS_STOP 30.0
+#define CLOSEST_ALLOWED 0.04
 
 
 int safety_check(init_to_ext_msg_t init_data, data_from_wb_msg_t data_from_wb,
-	             data_to_bcknd_msg_t* data_to_bcknd, cmd_to_wb_msg_t* cmd_to_wb) {
+	             cmd_to_wb_msg_t* cmd_to_wb) {
 
-	// /************ get direction from gps + accelerometer ************/
-	// // init to current position on first function call
-	// static double last_gps[2] = {data_from_wb.actual_gps[0], data_from_wb.actual_gps[2]};
-	// //
-	// double move_vec[2];
-	// move_vec[0] = data_from_wb.actual_gps[0] - last_gps[0];
-	// move_vec[1] = data_from_wb.actual_gps[2] - last_gps[1];
-	// double length = sqrt(pow(move_vec[0], 2) + pow(move_vec[1], 2));
-	// move_vec[0] = move_vec[0] / length;
-	// move_vec[1] = move_vec[1] / length;
-	// printf("SAFE: move_vec[0] = %f, move_vec[1] = %f\n", move_vec[0], move_vec[1]);
-	//
-	// double compass[2];
-	// compass[0] = data_from_wb.compass[0];
-	// compass[1] = data_from_wb.compass[2];
-	// printf("SAFE: compass[0] = %f, compass[1] = %f\n", compass[0], compass[1]);
-	//
-	// int direction = compare_direction(move_vec, compass, 2);
-	// // printf("SAFE: direction = %d\n", direction);
-	// /***********************************************************/
-	(void) init_data;
-	(void) data_to_bcknd;
 
+	int action_denied = 0;
 
 
 	// get distance array subtract shiloutte
@@ -61,20 +41,23 @@ int safety_check(init_to_ext_msg_t init_data, data_from_wb_msg_t data_from_wb,
 
 	float diff_front = dist_front - last_dist_front;
 	float diff_back = dist_back - last_dist_back;
-	if (diff_front <= 0.01 && diff_back >= -0.01) {
+	// printf("SAFE: diff_front: %f diff_back %f\n", diff_front, diff_back);
+	if (diff_front <= 0.0 && diff_back >= 0.0) {
 		direction = FORWARDS;
-	} else if (diff_back <= 0.01 && diff_front >= -0.01) {
+	} else if (diff_back <= 0.0 && diff_front >= 0.0) {
 		direction = BACKWARDS;
 	}
 
 	float dist_in_direction = FLT_MAX;
 	if (direction == FORWARDS) {
-		printf("SAFE: direction = FORWARDS\n");
+		// printf("SAFE: direction = FORWARDS\n");
 		dist_in_direction = dist_front;
 	} else if (direction == BACKWARDS) {
-		printf("SAFE: direction = BACKWARDS\n");
+		// printf("SAFE: direction = BACKWARDS\n");
 		dist_in_direction = dist_back;
 		// printf("SAFE: direction = %d\n", direction);
+	} else {
+		// dist_in_direction = min(dist_front, dist_back);
 	}
 
 	// calculate time till obstacle if command is send
@@ -83,15 +66,28 @@ int safety_check(init_to_ext_msg_t init_data, data_from_wb_msg_t data_from_wb,
 	if (steps_till_crash <= 0.0) {
 		printf("SAFE: we crashed!\n");
 		cmd_to_wb->speed = 0;
-		data_to_bcknd->action_denied = 1;
+		action_denied = 1;
 
 	} else if (steps_till_crash <= STEPS_STOP) {
 		fprintf(stderr, "SAFE: Close to obstacle. steps_till_crash = %f\n", steps_till_crash);
 		cmd_to_wb->speed = 0;
-		data_to_bcknd->action_denied = 1;
+		action_denied = 1;
+	} else {
+		// printf("SAFE: steps = %f dist =  %f current speed = %f direction: %d\n", steps_till_crash, dist_in_direction, data_from_wb.current_speed, direction);
+	}
+
+	// Failsafe: dont drive forwards/backwards if obstacle is close
+	if (dist_front < CLOSEST_ALLOWED && cmd_to_wb->speed < 0.0) {
+		// printf("SAFE: Cant drive forward!\n");
+		cmd_to_wb->speed = 0;
+		action_denied = 1;
+
+	} else if (dist_back < CLOSEST_ALLOWED && cmd_to_wb->speed > 0.0) {
+		// printf("SAFE: Cant drive backward!\n");
+		cmd_to_wb->speed = 0;
+		action_denied = 1;
 
 	}
-	printf("SAFE: steps = %f dist =  %f current speed = %f\n", steps_till_crash, dist_in_direction, data_from_wb.current_speed);
 
 	// last_gps[0] = data_from_wb.actual_gps[0];
 	// last_gps[1] = data_from_wb.actual_gps[2];
@@ -99,7 +95,8 @@ int safety_check(init_to_ext_msg_t init_data, data_from_wb_msg_t data_from_wb,
 	last_dist_front = dist_front;
 	last_dist_back = dist_back;
 
-	return 0;
+
+	return action_denied;
 }
 
 int direction_from_speed(double speed) {
@@ -170,7 +167,9 @@ int touching(data_from_wb_msg_t data_from_wb) {
 			touching ++;
 		}
 	}
-
+	if (touching != 0) {
+		printf("SAFE: !CRASH! !CRASH! !CRASH! !CRASH! !CRASH! \n");
+	}
 	return touching;
 }
 

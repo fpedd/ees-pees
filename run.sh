@@ -11,8 +11,8 @@ WORLD_FILE=/webots/worlds/test_run.wbt
 INT_CTRL=/webots/controllers/internal
 
 ### Path to Backend Script
-# BCKND_SCRIPT=/backend/james.py    # <- continous action example
-BCKND_SCRIPT=/backend/timmy.py    # <- discrete action example
+BCKND_SCRIPT=/backend/james.py    # <- continous action example
+# BCKND_SCRIPT=/backend/timmy.py    # <- discrete action example
 # BCKND_SCRIPT=/backend/schnitty.py    # <- continous and discrete action example
                                        # (use space to switch between modes)
 
