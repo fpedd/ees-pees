@@ -19,26 +19,26 @@
 int safety_check(init_to_ext_msg_t init_data, data_from_wb_msg_t data_from_wb,
 	             data_to_bcknd_msg_t* data_to_bcknd, cmd_to_wb_msg_t* cmd_to_wb) {
 
-	/************ get direction from gps + accelerometer ************/
-	// init to current position on first function call
-	static double last_gps[2] = {data_from_wb.actual_gps[0], data_from_wb.actual_gps[2]};
+	// /************ get direction from gps + accelerometer ************/
+	// // init to current position on first function call
+	// static double last_gps[2] = {data_from_wb.actual_gps[0], data_from_wb.actual_gps[2]};
+	// //
+	// double move_vec[2];
+	// move_vec[0] = data_from_wb.actual_gps[0] - last_gps[0];
+	// move_vec[1] = data_from_wb.actual_gps[2] - last_gps[1];
+	// double length = sqrt(pow(move_vec[0], 2) + pow(move_vec[1], 2));
+	// move_vec[0] = move_vec[0] / length;
+	// move_vec[1] = move_vec[1] / length;
+	// printf("SAFE: move_vec[0] = %f, move_vec[1] = %f\n", move_vec[0], move_vec[1]);
 	//
-	double move_vec[2];
-	move_vec[0] = data_from_wb.actual_gps[0] - last_gps[0];
-	move_vec[1] = data_from_wb.actual_gps[2] - last_gps[1];
-	double length = sqrt(pow(move_vec[0], 2) + pow(move_vec[1], 2));
-	move_vec[0] = move_vec[0] / length;
-	move_vec[1] = move_vec[1] / length;
-	printf("SAFE: move_vec[0] = %f, move_vec[1] = %f\n", move_vec[0], move_vec[1]);
-
-	double compass[2];
-	compass[0] = data_from_wb.compass[0];
-	compass[1] = data_from_wb.compass[2];
-	printf("SAFE: compass[0] = %f, compass[1] = %f\n", compass[0], compass[1]);
-
-	int direction = compare_direction(move_vec, compass, 2);
-	// printf("SAFE: direction = %d\n", direction);
-	/***********************************************************/
+	// double compass[2];
+	// compass[0] = data_from_wb.compass[0];
+	// compass[1] = data_from_wb.compass[2];
+	// printf("SAFE: compass[0] = %f, compass[1] = %f\n", compass[0], compass[1]);
+	//
+	// int direction = compare_direction(move_vec, compass, 2);
+	// // printf("SAFE: direction = %d\n", direction);
+	// /***********************************************************/
 	(void) init_data;
 	(void) data_to_bcknd;
 
@@ -50,13 +50,30 @@ int safety_check(init_to_ext_msg_t init_data, data_from_wb_msg_t data_from_wb,
 	subtract_silhouette(distance);
 
 	// get condensed sensor data in moving direction
-	float dist_in_direction;
+	float dist_front, dist_back;
+	dist_front = condense_data(distance, FORWARDS);
+	dist_back = condense_data(distance, BACKWARDS);
+
+	static float last_dist_front = dist_front;
+	static float last_dist_back = dist_back;
+
+	int direction = STOPPED;
+
+	float diff_front = dist_front - last_dist_front;
+	float diff_back = dist_back - last_dist_back;
+	if (diff_front <= 0.01 && diff_back >= -0.01) {
+		direction = FORWARDS;
+	} else if (diff_back <= 0.01 && diff_front >= -0.01) {
+		direction = BACKWARDS;
+	}
+
+	float dist_in_direction = FLT_MAX;
 	if (direction == FORWARDS) {
-		dist_in_direction = condense_data(distance, FORWARDS);
 		printf("SAFE: direction = FORWARDS\n");
+		dist_in_direction = dist_front;
 	} else if (direction == BACKWARDS) {
-		dist_in_direction = condense_data(distance, BACKWARDS);
 		printf("SAFE: direction = BACKWARDS\n");
+		dist_in_direction = dist_back;
 		// printf("SAFE: direction = %d\n", direction);
 	}
 
@@ -76,9 +93,11 @@ int safety_check(init_to_ext_msg_t init_data, data_from_wb_msg_t data_from_wb,
 	}
 	printf("SAFE: steps = %f dist =  %f current speed = %f\n", steps_till_crash, dist_in_direction, data_from_wb.current_speed);
 
-	last_gps[0] = data_from_wb.actual_gps[0];
-	last_gps[1] = data_from_wb.actual_gps[2];
+	// last_gps[0] = data_from_wb.actual_gps[0];
+	// last_gps[1] = data_from_wb.actual_gps[2];
 
+	last_dist_front = dist_front;
+	last_dist_back = dist_back;
 
 	return 0;
 }
