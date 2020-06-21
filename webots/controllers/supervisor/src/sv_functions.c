@@ -4,7 +4,8 @@
 #include <webots/supervisor.h>
 
 #define _USE_MATH_DEFINES
-// #define NDEBUG //uncomment to enable assertions
+//uncomment to disable assertions
+// #define NDEBUG
 
 #include <math.h>
 #include <assert.h>
@@ -16,17 +17,6 @@
 #define SUPERVISOR_ROBOT_HEIGHT_OFFSET 0.02
 #define SUPERVISOR_MIN_SCALE 0.25 //~0.17 would be the size of robot
 
-
-//QA-TODO: assert multiple things given by world:
-// -target/robot spawned?
-// -supervisor robot has supervisor enabled and synchro disabled? !!
-
-/*
- Todays schedule:
- - do tcp parsing and forwarding to sv_functions
- - send target to backend after start and each reset
-synchronization: if timestep triggers while obejects are moved, robot might get stuck in a block
-*/
 
 /*
  * Calculates the center of a checker field
@@ -81,8 +71,8 @@ void sv_obstacle_put_all(sv_world_def *world) {
 	id = 0;
 	 // place all obstacle on individual coordinates
 	while(id < world->num_obstacles) {
-		x = rand_int(0, world->size - 1);
-		y = rand_int(0, world->size - 1);
+		x = rand_int(world->size);
+		y = rand_int(world->size);
 		if(world_array[x*world->size + y] == 0) {
 			world_array[x*world->size + y] = 1;
 			sv_obstacle_put(world, x, y, id);
@@ -99,9 +89,9 @@ void sv_obstacle_spawn(sv_world_def *world) {
 	double coord[3], scale[3];
 
 	 // spawn outside of the grid
-	coord[0] = sv_to_coord(world, -1);	//x in Webots
+	coord[0] = -world->scale;			//x in Webots
 	coord[1] = sv_to_coord(world, 0);	//y in Webots
-	coord[2] = sv_to_coord(world, -1);	//z in Webots
+	coord[2] = -world->scale;			//z in Webots
 
 	scale[0] = world->scale;
 	scale[1] = world->scale;
@@ -151,6 +141,10 @@ void sv_world_init(sv_world_def *world, int world_size, double scale, int num_ob
 	for(int i = 0; i < world->num_obstacles; i++) {
 		sv_obstacle_spawn(world);
 	}
+	
+	// save current world temporarily as a template after resets
+	sv_simulation_update(world); //to register changes made
+	wb_supervisor_world_save("../../worlds/tmp.wbt");
 
 	 // (Maybe TODO: adjust camera position to new arena)
 }
@@ -161,14 +155,20 @@ void sv_world_init(sv_world_def *world, int world_size, double scale, int num_ob
  */
 void sv_world_generate(sv_world_def *world, int seed) {
 	srand(seed);
+	
+	// reset to template first
+	wb_supervisor_simulation_reset();
+	wb_supervisor_simulation_reset_physics();
+	sv_simulation_update(world); //to execute reset
+	
 
 	double translation_vec[3] = {0.0, 0.0, 0.0};
 	double rotation_vec[4]    = {0.0, 1.0, 0.0, 0};
 
 	 // place target randomly in arena
 
-	world->target[0] = sv_to_coord(world, rand_int(0, world->size - 1));
-	world->target[1] = sv_to_coord(world, rand_int(0, world->size - 1));
+	world->target[0] = sv_to_coord(world, rand_int(world->size));
+	world->target[1] = sv_to_coord(world, rand_int(world->size));
 
 	translation_vec[0] = world->target[0];
 	translation_vec[2] = world->target[1];
@@ -176,13 +176,13 @@ void sv_world_generate(sv_world_def *world, int seed) {
 	wb_supervisor_field_set_sf_vec3f(world->target_translation_field, translation_vec);
 
 	 // place robot randomly with random rotation
-	world->start[0] = sv_to_coord(world, rand_int(0, world->size - 1));
-	world->start[1] = sv_to_coord(world, rand_int(0, world->size - 1));
+	world->start[0] = sv_to_coord(world, rand_int(world->size));
+	world->start[1] = sv_to_coord(world, rand_int(world->size));
 
 	translation_vec[0] = world->start[0];
 	translation_vec[1] = SUPERVISOR_ROBOT_HEIGHT_OFFSET;
 	translation_vec[2] = world->start[1];
-	rotation_vec[3] = rand_int(0, 359)*M_PI/180; //1-deg resolution
+	rotation_vec[3] = rand_int(360)*M_PI/180; //1-deg resolution
 
 	WbFieldRef robot_translation_field = wb_supervisor_node_get_field(world->robot_node, "translation");
 	WbFieldRef robot_rotation_field = wb_supervisor_node_get_field(world->robot_node, "rotation");
@@ -214,8 +214,6 @@ void sv_world_clear(sv_world_def *world) {
 
 	wb_supervisor_field_set_sf_vec3f(robot_translation_field, translation_vec);
 	wb_supervisor_field_set_sf_rotation(robot_rotation_field, rotation_vec);
-
-	//wb_supervisor_simulation_reset();
 }
 
 /*
@@ -224,6 +222,14 @@ void sv_world_clear(sv_world_def *world) {
 sv_world_def *sv_simulation_init() {
 	  // stop first ongoing simulation
 	wb_supervisor_simulation_set_mode(WB_SUPERVISOR_SIMULATION_MODE_PAUSE);
+	
+#ifndef NDEBUG
+	 // check if supervisor is enabled and snychronization is disabled
+	WbNodeRef sv_node = wb_supervisor_node_get_self();
+	WbFieldRef sv_sven_field = wb_supervisor_node_get_field(sv_node, "supervisor");
+	WbFieldRef sv_sync_field = wb_supervisor_node_get_field(sv_node, "synchronization");
+	assert(wb_supervisor_field_get_sf_bool(sv_sven_field) && !wb_supervisor_field_get_sf_bool(sv_sync_field));
+#endif
 
 	 //malloc struct
 	sv_world_def *world = (sv_world_def *) malloc(sizeof(sv_world_def));
@@ -244,11 +250,14 @@ sv_world_def *sv_simulation_init() {
 	world->children_field = obstacles_children_field;
 	world->robot_node = robot_node;
 	world->target_translation_field = target_translation_field;
+	world->timestep = wb_robot_get_basic_time_step();
 
 	return world;
 }
 
-
+/*
+ * Starts the simulation in the given mode and starts the controller
+ */
 void sv_simulation_start(sv_world_def *world) {
 	// starts simulation (with given mode) and (re)starts the controller
 	WbSimulationMode mode = WB_SUPERVISOR_SIMULATION_MODE_PAUSE;
@@ -264,12 +273,25 @@ void sv_simulation_start(sv_world_def *world) {
 	wb_supervisor_node_restart_controller(world->robot_node);
 }
 
-//-Wrapper functions-
+/*
+ * Stops the simulation
+ */
 void sv_simulation_stop() {
 	wb_supervisor_simulation_set_mode(WB_SUPERVISOR_SIMULATION_MODE_PAUSE);
 }
 
+/*
+ * Does a full timestep as a followup of any action that needs a timestep
+ */
+void sv_simulation_update(sv_world_def *world) {
+	wb_supervisor_simulation_set_mode(WB_SUPERVISOR_SIMULATION_MODE_FAST);
+	wb_robot_step(world->timestep);
+	wb_supervisor_simulation_set_mode(WB_SUPERVISOR_SIMULATION_MODE_PAUSE);
+}
 
+/*
+ * Cleanup routine for program termination
+ */
 void sv_simulation_cleanup(sv_world_def *world) {
 	free(world);
 }

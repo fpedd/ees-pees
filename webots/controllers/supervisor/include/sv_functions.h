@@ -22,6 +22,7 @@ typedef struct {
 	WbNodeRef robot_node;
 	WbFieldRef target_translation_field;
 	WbFieldRef children_field;
+	int timestep;
 } sv_world_def;
 
 double sv_to_coord(sv_world_def *world, int xy);
@@ -35,6 +36,7 @@ void sv_world_clear(sv_world_def *world);
 sv_world_def *sv_simulation_init();
 void sv_simulation_start(sv_world_def *world);
 void sv_simulation_stop();
+void sv_simulation_update(sv_world_def *world);
 void sv_simulation_cleanup(sv_world_def *world);
 
 #endif //SV_FUNCTIONS_H

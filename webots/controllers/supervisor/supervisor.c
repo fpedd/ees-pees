@@ -1,31 +1,16 @@
-/*
-* Copyright 1996-2020 Cyberbotics Ltd.
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-*     http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
 
 #include <webots/robot.h>
 #include <webots/supervisor.h>
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
 #include <unistd.h>
 
-#include "sv_com.h"
-#include "sv_functions.h"
 
-#define RECONNECT_WAIT_TIME_MS 4000
+#include "sv_functions.h"
+#include "sv_com.h"
+
+#define RECONNECT_WAIT_TIME_S 4
 
 void print_recvd_packet(bcknd_to_sv_msg_t *packet) {
 	printf("=========== received packet ===========\n");
@@ -41,8 +26,6 @@ void print_recvd_packet(bcknd_to_sv_msg_t *packet) {
 
 int main() {
 	wb_robot_init();
-	int timestep = wb_robot_get_basic_time_step();
-
 	int connection = 1;
 	int com_ret = 0;
 
@@ -57,7 +40,7 @@ int main() {
 		if(com_ret) {
 			fprintf(stderr, "SUPERVISOR: Can't connect to backend\n");
 			fprintf(stderr, "SUPERVISOR: Retrying to connect...");
-			usleep(RECONNECT_WAIT_TIME_MS);
+			sleep(RECONNECT_WAIT_TIME_S);
 			continue;
 		}
 
@@ -71,7 +54,7 @@ int main() {
 		sv_world_generate(world, recv_buffer.seed);
 
 		send_buffer.return_code = SUCCESS;
-		send_buffer.sim_time_step = timestep;
+		send_buffer.sim_time_step = world->timestep;
 		send_buffer.target[0] = (float) world->target[0];
 		send_buffer.target[1] = (float) world->target[1];
 
@@ -92,7 +75,7 @@ int main() {
 				sv_world_generate(world, recv_buffer.seed);
 
 				send_buffer.return_code = SUCCESS;
-				send_buffer.sim_time_step = timestep;
+				send_buffer.sim_time_step = world->timestep;
 				send_buffer.target[0] = (float) world->target[0];
 				send_buffer.target[1] = (float) world->target[1];
 
@@ -104,7 +87,7 @@ int main() {
 				sv_world_generate(world, recv_buffer.seed);
 
 				send_buffer.return_code = SUCCESS;
-				send_buffer.sim_time_step = timestep;
+				send_buffer.sim_time_step = world->timestep;
 				send_buffer.target[0] = (float) world->target[0];
 				send_buffer.target[1] = (float) world->target[1];
 

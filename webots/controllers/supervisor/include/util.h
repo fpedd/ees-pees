@@ -13,6 +13,6 @@ int delay(double s);
 
 double get_time();
 
-int rand_int(int min, int max);
+int rand_int(int max);
 
 #endif // UTIL_H
