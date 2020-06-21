@@ -31,7 +31,7 @@ void *webot_worker(void *ptr) {
 	printf("WEBOT_WORKER: Running\n");
 
 	int discrete_action_done = 0;
-	int action_denied = 0;
+	// int action_denied = 0;
 
 	while (1) {
 
@@ -46,7 +46,7 @@ void *webot_worker(void *ptr) {
 		data_to_bcknd_msg_t data_to_backend_worker;
 		memset(&data_to_backend_worker, 0, sizeof(data_to_bcknd_msg_t));
 		webot_format_wb_to_bcknd(&data_to_backend_worker, data_from_wb, init_data,
-		                         action_denied, discrete_action_done);
+		                         discrete_action_done);
 		pthread_mutex_lock(arg_struct->itc_data_lock);
 		memcpy(arg_struct->itc_data, &data_to_backend_worker, sizeof(data_to_bcknd_msg_t));
 		pthread_mutex_unlock(arg_struct->itc_data_lock);
@@ -63,10 +63,7 @@ void *webot_worker(void *ptr) {
 
 		// print_cmd_from_bcknd(cmd_from_backend_worker);
 
-		/***** 4) Prepare and send to Webots *****/
-		// TODO: implement safety checks
-		action_denied = safety_check(init_data, data_to_backend_worker, &cmd_from_backend_worker);
-
+		/***** 4) Calculate next command *****/
 		cmd_to_wb_msg_t cmd_to_wb;
 		memset(&cmd_to_wb, 0, sizeof(cmd_to_wb_msg_t));
 
@@ -81,7 +78,10 @@ void *webot_worker(void *ptr) {
 			start = 0;
 		}
 
-		// print_cmd_to_wb(cmd_to_wb);
+		/***** 5) Do safety checks *****/
+		safety_check(init_data, data_from_wb, &data_to_backend_worker, &cmd_to_wb);
+
+		/***** 5) Send command to robot *****/
 		wb_send(cmd_to_wb);
 
 	}
@@ -93,7 +93,6 @@ void *webot_worker(void *ptr) {
 int webot_format_wb_to_bcknd(data_to_bcknd_msg_t* data_to_bcknd,
                              data_from_wb_msg_t data_from_wb,
                              init_to_ext_msg_t init_data,
-                             unsigned int action_denied,
                              unsigned int discrete_action_done) {
 
 	// cast sim time and robot speed to float
@@ -114,7 +113,7 @@ int webot_format_wb_to_bcknd(data_to_bcknd_msg_t* data_to_bcknd,
 		data_to_bcknd->touching = touching(data_from_wb);
 	}
 
-	data_to_bcknd->action_denied = action_denied;
+	// data_to_bcknd->action_denied = action_denied;
 
 	data_to_bcknd->discr_act_done = discrete_action_done;
 
