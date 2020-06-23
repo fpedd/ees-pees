@@ -159,12 +159,13 @@ class WebotsEnv(gym.Env):
         """Check done."""
         return self.evaluate_class.check_done()
 
-    def reset(self):
+    def reset(self, seed=None):
         """Reset environment to random."""
         if self.supervisor_connected is True:
             self.reset_history.append(time.time())
 
-            seed = utils.set_random_seed(apply=False)
+            if seed is None:
+                seed = utils.set_random_seed(apply=False)
             self.seed(seed)
             # print("resetting with seed: ", seed)
             # self.supervisor.reset_environment(self.main_seed)
