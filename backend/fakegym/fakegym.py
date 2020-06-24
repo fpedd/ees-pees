@@ -257,7 +257,7 @@ class FakeGym(gym.Env):
         """Check how many environmnents with current settings are solvable."""
         solves = 0
         for _ in range(test_cases):
-            self.reset()
+            self.reset(hard=False)
             if self.is_path():
                 solves += 1
         return solves / test_cases
