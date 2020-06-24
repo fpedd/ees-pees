@@ -18,6 +18,7 @@ int safety_check(init_to_ext_msg_t init_data, data_from_wb_msg_t data_from_wb,
 
 int predict_angle(int direction, double speed, double steering);
 
+int too_close(float *distance, double cmd_speed, int direction);
 
 int subtract_silhouette(float *distance);
 

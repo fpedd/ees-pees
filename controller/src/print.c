@@ -4,6 +4,7 @@
 
 #include "webots/wb_com.h"
 #include "backend/backend_com.h"
+#include "silhouette.h"
 
 void print_diff_distance(data_from_wb_msg_t data_from_wb, data_to_bcknd_msg_t data_to_bcknd) {
 
@@ -80,4 +81,20 @@ void print_init_data(init_to_ext_msg_t init_data) {
 	printf("WEBOT_WORKER: init_data.lidar_min_range: %f\n", init_data.lidar_min_range);
 	printf("WEBOT_WORKER: init_data.lidar_max_range: %f\n", init_data.lidar_max_range);
 	printf("WEBOT_WORKER: =================================================\n");
+}
+
+void print_silhouette() {
+	float max = 0.0;
+	int max_i = 0;
+
+	printf("PRINT: =================== silhouette ===================\n");
+	for (int i = 0; i < DIST_VECS; i++) {
+		printf("PRINT: sil[%d] = %f\n", i, silhouette[i]);
+		if (silhouette[i] > max) {
+			max = silhouette[i];
+			max_i = i;
+		}
+	}
+	printf("PRINT: sil_max[%d] = %f\n", max_i, max);
+	printf("PRINT: ==================================================\n");
 }

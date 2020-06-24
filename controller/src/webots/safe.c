@@ -10,7 +10,7 @@
 #include "silhouette.h"
 #include "util.h"
 
-#define CONDENSE_WIDTH 21   // (should be odd for symmetry!) number of entries combined to one sensor datum
+#define CONDENSE_WIDTH 11   // (should be odd for symmetry!) number of entries combined to one sensor datum
 
 #define SPEED_PREDICT 0.0
 #define STEERING_PREDICT 45.0
@@ -18,6 +18,13 @@
 #define STEPS_STOP 30.0        // if number of steps till obstacle lower than this, STOP
 #define CLOSEST_ALLOWED 0.04   // if distance in move direction lower than this, STOP
 
+// angles with longest distańce in silhoutte (corners of hitbox)
+#define FRONT_LEFT    127
+#define FRONT         179
+#define FRONT_RIGHT   232
+#define BACK_LEFT     39
+#define BACK          0
+#define BACK_RIGHT    320
 
 int safety_check(init_to_ext_msg_t init_data, data_from_wb_msg_t data_from_wb, cmd_to_wb_msg_t* cmd_to_wb) {
 
@@ -60,29 +67,22 @@ int safety_check(init_to_ext_msg_t init_data, data_from_wb_msg_t data_from_wb, c
 	float steps_till_crash = fabs(dist_in_direction / data_from_wb.current_speed) * 1000 / init_data.timestep;
 
 	if (steps_till_crash <= 0.0) {
-		// printf("SAFE: we crashed!\n");
+		printf("SAFE: we crashed!\n");
 		cmd_to_wb->speed = 0;
 		action_denied = 1;
 
 	} else if (steps_till_crash <= STEPS_STOP) {
-		// fprintf(stderr, "SAFE: Close to obstacle. steps_till_crash = %f\n", steps_till_crash);
+		fprintf(stderr, "SAFE: Close to obstacle. steps_till_crash = %f\n", steps_till_crash);
 		cmd_to_wb->speed = 0;
 		action_denied = 1;
 	} else {
 		// printf("SAFE: steps = %f dist =  %f current speed = %f direction: %d\n", steps_till_crash, dist_in_direction, data_from_wb.current_speed, direction);
 	}
 
-	if (dist_in_direction < CLOSEST_ALLOWED) {
-		// printf("SAFE: dist_in_direction %f \n", dist_in_direction);
-		if (direction == FORWARDS && cmd_to_wb->speed < 0.0) {
-			// fprintf(stderr, "SAFE: Obstacle in front, cant drive forwards\n");
-			cmd_to_wb->speed = 0;
-			action_denied = 1;
-		} else if (direction == BACKWARDS && cmd_to_wb->speed > 0.0) {
-			// fprintf(stderr, "SAFE: Obstacle in back, cant drive backwards\n");
-			cmd_to_wb->speed = 0;
-			action_denied = 1;
-		}
+	// check if distance falls below CLOSEST_ALLOWED in any direction
+	if (too_close(distance, cmd_to_wb->speed, direction) == 1) {
+		cmd_to_wb->speed = 0;
+		action_denied = 1;
 	}
 
 	last_gps[0] = data_from_wb.actual_gps[0];
@@ -97,17 +97,41 @@ int predict_angle(int direction, double speed, double steering) {
 
 	if (direction == FORWARDS) {
 		angle = (DIST_VECS - 1) / 2;
-		angle += (STEERING_PREDICT * steering);
+		angle += (int) (STEERING_PREDICT * steering) * (1 + SPEED_PREDICT * speed/0.58);
 
 	} else if (direction == BACKWARDS) {
 		angle = 0;
-		angle += /* (SPEED_PREDICT * speed) + */ (STEERING_PREDICT * steering);
+		angle += (int) (STEERING_PREDICT * steering) * (1 + SPEED_PREDICT * speed/0.58);
 
 	} else {
 		return (DIST_VECS - 1) / 2;
 	}
 
-	return angle;
+	return (angle + DIST_VECS) % DIST_VECS;
+}
+
+int too_close(float *distance, double cmd_speed, int direction) {
+
+	float front_left  = condense_data(distance, FRONT_LEFT,  CONDENSE_WIDTH);
+	float front       = condense_data(distance, FRONT,       CONDENSE_WIDTH);
+	float front_right = condense_data(distance, FRONT_RIGHT, CONDENSE_WIDTH);
+	float back_left   = condense_data(distance, BACK_LEFT,   CONDENSE_WIDTH);
+	float back        = condense_data(distance, BACK,        CONDENSE_WIDTH);
+	float back_right  = condense_data(distance, BACK_RIGHT,  CONDENSE_WIDTH);
+
+	// printf("SAFE: dist_in_direction %f \n", dist_in_direction);
+	if (direction == FORWARDS && cmd_speed < 0.0) {
+		if(front_left < CLOSEST_ALLOWED || front_right < CLOSEST_ALLOWED || front < CLOSEST_ALLOWED) {
+			fprintf(stderr, "SAFE: Obstacle in front, cant drive forwards\n");
+			return 1; // deny action
+		}
+	} else if (direction == BACKWARDS && cmd_speed > 0.0) {
+		if(back_left < CLOSEST_ALLOWED || back_right < CLOSEST_ALLOWED || back < CLOSEST_ALLOWED) {
+			fprintf(stderr, "SAFE: Obstacle in back, cant drive backwards\n");
+			return 1; // deny action
+		}
+	}
+	return 0;	// action is safe
 }
 
 int subtract_silhouette(float *distance) {
@@ -122,15 +146,18 @@ float condense_data(float *distance, int angle, int width) {
 
 	if (angle < 0 || angle > 359) {
 		fprintf(stderr, "SAFE: Invalid angle: %d\n", angle);
+		return 0.0;
 	}
 
 	float sum = 0.0;
 
-	for (int i = angle - width/2; i <= angle + width/2; i++) {
-		printf("i%DIST_VECS: %d \n", i%DIST_VECS);
+	int angle_plus = angle + DIST_VECS;
+
+	for (int i = angle_plus - width/2; i <= angle_plus + width/2; i++) {
+		// printf("i%%DIST_VECS: %d \n", i%DIST_VECS);
 		sum += distance[i%DIST_VECS];
 	}
-	printf("\n\n");
+	// printf("\n\n");
 
 	return sum / width;
 }
