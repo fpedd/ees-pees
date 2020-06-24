@@ -22,7 +22,7 @@ int too_close(float *distance, double cmd_speed, int direction);
 
 int subtract_silhouette(float *distance);
 
-float condense_data(float *distance, int angle, int width);
+float condense_data(float *distance, int width, int angle);
 
 int compare_direction(double *vec1, double *vec2, int size);
 

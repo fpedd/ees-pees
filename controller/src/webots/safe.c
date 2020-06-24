@@ -10,12 +10,13 @@
 #include "silhouette.h"
 #include "util.h"
 
-#define CONDENSE_WIDTH 11   // (should be odd for symmetry!) number of entries combined to one sensor datum
+#define CONDENSE_WIDTH 20   // number of entries combined to one sensor datum
 
 #define SPEED_PREDICT 0.0
 #define STEERING_PREDICT 45.0
 
-#define STEPS_STOP 30.0        // if number of steps till obstacle lower than this, STOP
+#define STEPS_STOP 10.0        // if number of steps till obstacle lower than this, deny action
+#define STEPS_SLOW 25.0        // if number of steps till obstacle lower than this, slow down
 #define CLOSEST_ALLOWED 0.04   // if distance in move direction lower than this, STOP
 
 // angles with longest distańce in silhoutte (corners of hitbox)
@@ -54,17 +55,36 @@ int safety_check(init_to_ext_msg_t init_data, data_from_wb_msg_t data_from_wb, c
 	compass[1] = data_from_wb.compass[0];
 	// printf("SAFE: compass[0] = %f, compass[1] = %f\n", compass[0], compass[1]);
 
+
+	// get three condensed sensor values in moving direction
 	int direction = compare_direction(move_vec, compass, 2);
 
-	int angle = predict_angle(direction, data_from_wb.current_speed/init_data.maxspeed,
-		cmd_to_wb->heading);
+	float dist_left = FLT_MAX;
+	float dist_straight = FLT_MAX;
+	float dist_right = FLT_MAX;
 
-	// printf("SAFE: predict_angle %d\n", angle);
-
-	float dist_in_direction = condense_data(distance, angle, CONDENSE_WIDTH);
+	if (direction == FORWARDS) {
+		dist_left     = condense_data(distance, CONDENSE_WIDTH, FRONT_LEFT);
+		dist_straight = condense_data(distance, CONDENSE_WIDTH, FRONT);
+		dist_right    = condense_data(distance, CONDENSE_WIDTH, FRONT_RIGHT);
+	} else if (direction == BACKWARDS) {
+		dist_left     = condense_data(distance, CONDENSE_WIDTH, BACK_LEFT);
+		dist_straight = condense_data(distance, CONDENSE_WIDTH, BACK);
+		dist_right    = condense_data(distance, CONDENSE_WIDTH, BACK_RIGHT);
+	} else {
+		// not moving
+	}
+	// printf("SAVE: Dist: l: %f \t s: %f \t r: %f\n", dist_left, dist_straight, dist_right);
 
 	// calculate time till obstacle if command is send
-	float steps_till_crash = fabs(dist_in_direction / data_from_wb.current_speed) * 1000 / init_data.timestep;
+	double movement_per_step = data_from_wb.current_speed * init_data.timestep / 1000;
+
+	float steps_left     = fabs(dist_left / movement_per_step);
+	float steps_straight = fabs(dist_straight / movement_per_step);
+	float steps_right    = fabs(dist_right / movement_per_step);
+
+	// printf("SAVE: Steps: l: %f \t s: %f \t r: %f v: %f\n", steps_left, steps_straight, steps_right, movement_per_step);
+	float steps_till_crash = min(steps_straight, min(steps_left, steps_right));
 
 	if (steps_till_crash <= 0.0) {
 		printf("SAFE: we crashed!\n");
@@ -72,10 +92,12 @@ int safety_check(init_to_ext_msg_t init_data, data_from_wb_msg_t data_from_wb, c
 		action_denied = 1;
 
 	} else if (steps_till_crash <= STEPS_STOP) {
-		fprintf(stderr, "SAFE: Close to obstacle. steps_till_crash = %f\n", steps_till_crash);
+		fprintf(stderr, "SAFE: Close to obstacle. STEPS: l= %f\t s=%f\t r=%f\n", steps_left, steps_straight, steps_right);
 		cmd_to_wb->speed = 0;
 		action_denied = 1;
-	} else {
+	} else if (steps_till_crash <= STEPS_SLOW){
+		fprintf(stderr, "SAFE: Slowing down. STEPS: l= %f\t s=%f\t r=%f\n", steps_left, steps_straight, steps_right);
+		cmd_to_wb->speed = 0;
 		// printf("SAFE: steps = %f dist =  %f current speed = %f direction: %d\n", steps_till_crash, dist_in_direction, data_from_wb.current_speed, direction);
 	}
 
@@ -90,6 +112,7 @@ int safety_check(init_to_ext_msg_t init_data, data_from_wb_msg_t data_from_wb, c
 
 	return action_denied;
 }
+
 
 int predict_angle(int direction, double speed, double steering) {
 
@@ -112,12 +135,12 @@ int predict_angle(int direction, double speed, double steering) {
 
 int too_close(float *distance, double cmd_speed, int direction) {
 
-	float front_left  = condense_data(distance, FRONT_LEFT,  CONDENSE_WIDTH);
-	float front       = condense_data(distance, FRONT,       CONDENSE_WIDTH);
-	float front_right = condense_data(distance, FRONT_RIGHT, CONDENSE_WIDTH);
-	float back_left   = condense_data(distance, BACK_LEFT,   CONDENSE_WIDTH);
-	float back        = condense_data(distance, BACK,        CONDENSE_WIDTH);
-	float back_right  = condense_data(distance, BACK_RIGHT,  CONDENSE_WIDTH);
+	float front_left  = condense_data(distance, CONDENSE_WIDTH, FRONT_LEFT);
+	float front       = condense_data(distance, CONDENSE_WIDTH, FRONT);
+	float front_right = condense_data(distance, CONDENSE_WIDTH, FRONT_RIGHT);
+	float back_left   = condense_data(distance, CONDENSE_WIDTH, BACK_LEFT);
+	float back        = condense_data(distance, CONDENSE_WIDTH, BACK);
+	float back_right  = condense_data(distance, CONDENSE_WIDTH, BACK_RIGHT);
 
 	// printf("SAFE: dist_in_direction %f \n", dist_in_direction);
 	if (direction == FORWARDS && cmd_speed < 0.0) {
@@ -142,7 +165,7 @@ int subtract_silhouette(float *distance) {
 	return 0;
 }
 
-float condense_data(float *distance, int angle, int width) {
+float condense_data(float *distance, int width, int angle) {
 
 	if (angle < 0 || angle > 359) {
 		fprintf(stderr, "SAFE: Invalid angle: %d\n", angle);

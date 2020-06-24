@@ -19,7 +19,7 @@ void *webot_worker(void *ptr) {
 
 	// Init communication with webot
 	printf("WEBOT_WORKER: Initalizing\n");
-	print_silhouette();
+	// print_silhouette();
 
 	wb_init_com();
 	drive_init();
