@@ -3,6 +3,8 @@ import matplotlib.pyplot as plt
 import copy
 import gym
 from gym import spaces
+from pathfinding.core.grid import Grid
+from pathfinding.finder.a_star import AStarFinder
 
 import fakegym.utils as utils
 
@@ -88,6 +90,7 @@ class FakeGym(gym.Env):
         self.com = FakeCom(self.seeds, self.com_inits[0], self.com_inits[1],
                            self.com_inits[2], self.com_inits[3])
         self.plotpadding = 0
+        self.visited_count = np.zeros(self.com.field.shape)
 
         if type(obs) == type:
             self.obs = (obs)(self)
@@ -124,6 +127,7 @@ class FakeGym(gym.Env):
         """
         action = self.action_mapping(action)
         self.com.send(action)
+        self.visited_count[self.gps_actual] += 1
         reward = self.calc_reward()
         self.total_reward += reward
         done = self.check_done()
@@ -165,20 +169,15 @@ class FakeGym(gym.Env):
         return self.com.state.gps_actual
 
     @property
+    def gps_visited_count(self):
+        return self.visited_count[self.gps_actual]
+
+    @property
     def gps_target(self):
         return self.com.state.gps_target
 
     def calc_reward(self):
-        """Calculate reward function.
-
-        Idea(Mats):
-        - negative reward for normal move so that james moves faster to goal
-        - still lower negative reward if james gets closer to goal
-        - high positive award for reaching it
-        - high negative award to hitting a wall
-        - epsilon only to divide never by 0
-
-        """
+        """Calculate reward function."""
         if self.gps_actual == self.gps_target:
             reward = 1000
         else:
@@ -192,13 +191,18 @@ class FakeGym(gym.Env):
                 reward = reward - 10
         return reward
 
-    def reset(self, seed=None):
+    def reset(self, seed=None, hard=True):
         self.total_reward = 0
         if seed is None:
             seed = utils.np_random_seed(set=False)
         self.seed(seed)
         self.com = FakeCom(self.seeds, self.com_inits[0], self.com_inits[1],
                            self.com_inits[2], self.com_inits[3])
+        self.visited_count = np.zeros(self.com.field.shape)
+        if hard is True and self.is_path() is False:
+            seed = utils.np_random_seed(set=False)
+            print("No path available, reset with seed: ", seed)
+            self.reset(seed)
         return self.state
 
     def render(self):
@@ -225,6 +229,38 @@ class FakeGym(gym.Env):
     @property
     def field(self):
         return self.com.field
+
+    def is_path(self):
+        """Check if path exists from gps_actual to gps_target."""
+        # transform field to specifications
+        grid = self.field.copy()
+        grid[grid > 0] = 99
+        grid[grid == 0] = 1
+        grid[grid == 99] = 0
+        grid = grid.astype(int)
+        grid = grid.tolist()
+        grid = Grid(matrix=grid)
+
+        # find path
+        sx, sy = self.gps_actual
+        tx, ty = self.gps_target
+        start = grid.node(sy, sx)
+        end = grid.node(ty, tx)
+        finder = AStarFinder()
+        path, _ = finder.find_path(start, end, grid)
+
+        if len(path) > 0:
+            return True
+        return False
+
+    def average_solvability(self, test_cases=1000):
+        """Check how many environmnents with current settings are solvable."""
+        solves = 0
+        for _ in range(test_cases):
+            self.reset()
+            if self.is_path():
+                solves += 1
+        return solves / test_cases
 
 
 WALLSIZE = 1
