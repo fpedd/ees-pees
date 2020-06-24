@@ -1,5 +1,5 @@
 from pynput import keyboard
-
+import time
 import webotsgym.environment as environment
 from webotsgym.action import ContinuousAction
 from webotsgym.webot import WebotAction
@@ -39,6 +39,10 @@ class Keyboard():
     def on_release(self, key):
         if key == keyboard.Key.esc:
             return False
+        else:
+            time.sleep(0.1)
+            return False
+
 
 
 class James():
