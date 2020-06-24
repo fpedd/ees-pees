@@ -10,103 +10,104 @@
 #include "silhouette.h"
 #include "util.h"
 
-// (should be odd for symmetry!) number of entries combined to one sensor datum
-#define CONDENSE_WIDTH 31
+#define CONDENSE_WIDTH 21   // (should be odd for symmetry!) number of entries combined to one sensor datum
 
-#define STEPS_STOP 30.0
-#define CLOSEST_ALLOWED 0.04
+#define SPEED_PREDICT 0.0
+#define STEERING_PREDICT 45.0
+
+#define STEPS_STOP 30.0        // if number of steps till obstacle lower than this, STOP
+#define CLOSEST_ALLOWED 0.04   // if distance in move direction lower than this, STOP
 
 
-int safety_check(init_to_ext_msg_t init_data, data_from_wb_msg_t data_from_wb,
-	             cmd_to_wb_msg_t* cmd_to_wb) {
-
+int safety_check(init_to_ext_msg_t init_data, data_from_wb_msg_t data_from_wb, cmd_to_wb_msg_t* cmd_to_wb) {
 
 	int action_denied = 0;
 
+	static double last_gps[2] = {data_from_wb.actual_gps[0], data_from_wb.actual_gps[2]};
 
 	// get distance array subtract shiloutte
 	float distance[DIST_VECS];
 	memcpy(&distance, data_from_wb.distance, sizeof(float) * DIST_VECS);
 	subtract_silhouette(distance);
 
-	// get condensed sensor data in moving direction
-	float dist_front, dist_back;
-	dist_front = condense_data(distance, FORWARDS);
-	dist_back = condense_data(distance, BACKWARDS);
+	// get movement direction from gps data
+	double move_vec[2];
+	move_vec[0] = data_from_wb.actual_gps[0] - last_gps[0];
+	move_vec[1] = data_from_wb.actual_gps[2] - last_gps[1];
 
-	static float last_dist_front = dist_front;
-	static float last_dist_back = dist_back;
+	// norm move_vec
+	double length = sqrt(pow(move_vec[0], 2) + pow(move_vec[1], 2));
+	move_vec[0] = move_vec[0] / length;
+	move_vec[1] = move_vec[1] / length;
+	// printf("SAFE: move_vec[0] = %f, move_vec[1] = %f\n", move_vec[0], move_vec[1]);
 
-	int direction = STOPPED;
+	// get roboter heading from compass data
+	double compass[2];
+	compass[0] = data_from_wb.compass[2];
+	compass[1] = data_from_wb.compass[0];
+	// printf("SAFE: compass[0] = %f, compass[1] = %f\n", compass[0], compass[1]);
 
-	float diff_front = dist_front - last_dist_front;
-	float diff_back = dist_back - last_dist_back;
-	// printf("SAFE: diff_front: %f diff_back %f\n", diff_front, diff_back);
-	if (diff_front <= 0.0 && diff_back >= 0.0) {
-		direction = FORWARDS;
-	} else if (diff_back <= 0.0 && diff_front >= 0.0) {
-		direction = BACKWARDS;
-	}
+	int direction = compare_direction(move_vec, compass, 2);
 
-	float dist_in_direction = FLT_MAX;
-	if (direction == FORWARDS) {
-		// printf("SAFE: direction = FORWARDS\n");
-		dist_in_direction = dist_front;
-	} else if (direction == BACKWARDS) {
-		// printf("SAFE: direction = BACKWARDS\n");
-		dist_in_direction = dist_back;
-		// printf("SAFE: direction = %d\n", direction);
-	} else {
-		// dist_in_direction = min(dist_front, dist_back);
-	}
+	int angle = predict_angle(direction, data_from_wb.current_speed/init_data.maxspeed,
+		cmd_to_wb->heading);
+
+	// printf("SAFE: predict_angle %d\n", angle);
+
+	float dist_in_direction = condense_data(distance, angle, CONDENSE_WIDTH);
 
 	// calculate time till obstacle if command is send
 	float steps_till_crash = fabs(dist_in_direction / data_from_wb.current_speed) * 1000 / init_data.timestep;
 
 	if (steps_till_crash <= 0.0) {
-		printf("SAFE: we crashed!\n");
+		// printf("SAFE: we crashed!\n");
 		cmd_to_wb->speed = 0;
 		action_denied = 1;
 
 	} else if (steps_till_crash <= STEPS_STOP) {
-		fprintf(stderr, "SAFE: Close to obstacle. steps_till_crash = %f\n", steps_till_crash);
+		// fprintf(stderr, "SAFE: Close to obstacle. steps_till_crash = %f\n", steps_till_crash);
 		cmd_to_wb->speed = 0;
 		action_denied = 1;
 	} else {
 		// printf("SAFE: steps = %f dist =  %f current speed = %f direction: %d\n", steps_till_crash, dist_in_direction, data_from_wb.current_speed, direction);
 	}
 
-	// Failsafe: dont drive forwards/backwards if obstacle is close
-	if (dist_front < CLOSEST_ALLOWED && cmd_to_wb->speed < 0.0) {
-		// printf("SAFE: Cant drive forward!\n");
-		cmd_to_wb->speed = 0;
-		action_denied = 1;
-
-	} else if (dist_back < CLOSEST_ALLOWED && cmd_to_wb->speed > 0.0) {
-		// printf("SAFE: Cant drive backward!\n");
-		cmd_to_wb->speed = 0;
-		action_denied = 1;
-
+	if (dist_in_direction < CLOSEST_ALLOWED) {
+		// printf("SAFE: dist_in_direction %f \n", dist_in_direction);
+		if (direction == FORWARDS && cmd_to_wb->speed < 0.0) {
+			// fprintf(stderr, "SAFE: Obstacle in front, cant drive forwards\n");
+			cmd_to_wb->speed = 0;
+			action_denied = 1;
+		} else if (direction == BACKWARDS && cmd_to_wb->speed > 0.0) {
+			// fprintf(stderr, "SAFE: Obstacle in back, cant drive backwards\n");
+			cmd_to_wb->speed = 0;
+			action_denied = 1;
+		}
 	}
 
-	// last_gps[0] = data_from_wb.actual_gps[0];
-	// last_gps[1] = data_from_wb.actual_gps[2];
-
-	last_dist_front = dist_front;
-	last_dist_back = dist_back;
-
+	last_gps[0] = data_from_wb.actual_gps[0];
+	last_gps[1] = data_from_wb.actual_gps[2];
 
 	return action_denied;
 }
 
-int direction_from_speed(double speed) {
-	if (speed < 0) {
-		return FORWARDS;
-	} else if (speed > 0){
-		return BACKWARDS;
+int predict_angle(int direction, double speed, double steering) {
+
+	int angle = -1;
+
+	if (direction == FORWARDS) {
+		angle = (DIST_VECS - 1) / 2;
+		angle += (STEERING_PREDICT * steering);
+
+	} else if (direction == BACKWARDS) {
+		angle = 0;
+		angle += /* (SPEED_PREDICT * speed) + */ (STEERING_PREDICT * steering);
+
 	} else {
-		return STOPPED;
+		return (DIST_VECS - 1) / 2;
 	}
+
+	return angle;
 }
 
 int subtract_silhouette(float *distance) {
@@ -117,42 +118,38 @@ int subtract_silhouette(float *distance) {
 	return 0;
 }
 
-float condense_data(float *distance, int direction) {
+float condense_data(float *distance, int angle, int width) {
 
-	int start;
-	float sum = 0.0;
-
-	if (direction == FORWARDS) { // front of robot --> values around index 179
-
-		start = (DIST_VECS - 1) / 2 - CONDENSE_WIDTH / 2;
-
-		for (int i = start; i <= start + CONDENSE_WIDTH; i++) {
-			sum += distance[i];
-		}
-
-		return sum / CONDENSE_WIDTH;
-
-	} else if (direction == BACKWARDS) { // back of robot --> values around 0
-
-		start = DIST_VECS - CONDENSE_WIDTH / 2;
-
-		// "left" side of 0
-		for (int i = start; i < DIST_VECS; i++) {
-			sum += distance[i];
-		}
-
-		// "right" side of 0
-		for (int i = 0; i <= CONDENSE_WIDTH / 2; i++) {
-			sum += distance[i];
-		}
-
-		return sum / CONDENSE_WIDTH;
-	} else {
-		return -1.0;
+	if (angle < 0 || angle > 359) {
+		fprintf(stderr, "SAFE: Invalid angle: %d\n", angle);
 	}
 
+	float sum = 0.0;
+
+	for (int i = angle - width/2; i <= angle + width/2; i++) {
+		printf("i%DIST_VECS: %d \n", i%DIST_VECS);
+		sum += distance[i%DIST_VECS];
+	}
+	printf("\n\n");
+
+	return sum / width;
+}
 
 
+int compare_direction(double *vec1, double *vec2, int size) {
+
+	double skalarprod =  0;
+	for (int i = 0; i < size; i++) {
+		skalarprod += vec1[i] * vec2[i];
+	}
+
+	if (skalarprod > 0.0) {
+		return FORWARDS;
+	} else if (skalarprod < 0.0){
+		return BACKWARDS;
+	} else {
+		return STOPPED;
+	}
 }
 
 int touching(data_from_wb_msg_t data_from_wb) {

@@ -27,21 +27,7 @@ double get_time() {
 	return (double)time_raw.tv_sec + ((double)time_raw.tv_nsec / (double)1000000000);
 }
 
-int compare_direction(double *vec1, double *vec2, int size) {
 
-	double skalarprod =  0;
-	for (int i = 0; i < size; i++) {
-		skalarprod += vec1[i] * vec2[i];
-	}
-
-	if (skalarprod > 0.0) {
-		return FORWARDS;
-	} else if (skalarprod < 0.0){
-		return BACKWARDS;
-	} else {
-		return STOPPED;
-	}
-}
 
 double heading_in_norm(double x, double y, double z) {
 
