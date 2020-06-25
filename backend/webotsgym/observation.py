@@ -40,7 +40,8 @@ class GridObservation(Observation):
 
     @property
     def observation_space(self):
-        return spaces.Box(-np.inf, np.inf, shape=(9,), dtype=np.float32)
+        return spaces.Box(-np.inf, np.inf, shape=(10,),
+                          dtype=np.float32)
 
     @property
     def lidar(self):
@@ -65,4 +66,5 @@ class GridObservation(Observation):
         arr = np.hstack((arr, self.gps_target))
         arr = np.hstack((arr, self.lidar))
         arr = np.hstack((arr, np.array(self.env.state._action_denied)))
+        arr = np.hstack((arr, np.array(self.env.gps_visited_count)))
         return arr
