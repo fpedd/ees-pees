@@ -51,6 +51,9 @@ void *webot_worker(void *ptr) {
 		webot_format_wb_to_bcknd(&data_to_backend_worker, data_from_wb, init_data,
 		                         action_denied, discrete_action_done);
 		pthread_mutex_lock(arg_struct->itc_data_lock);
+		if (arg_struct->itc_data->action_denied == 1) {
+			data_to_backend_worker.action_denied = 1;
+		}
 		memcpy(arg_struct->itc_data, &data_to_backend_worker, sizeof(data_to_bcknd_msg_t));
 		pthread_mutex_unlock(arg_struct->itc_data_lock);
 
@@ -96,7 +99,7 @@ void *webot_worker(void *ptr) {
 int webot_format_wb_to_bcknd(data_to_bcknd_msg_t* data_to_bcknd,
                              data_from_wb_msg_t data_from_wb,
                              init_to_ext_msg_t init_data,
-							 int action_denied,
+                             int action_denied,
                              unsigned int discrete_action_done) {
 
 	// cast sim time and robot speed to float
