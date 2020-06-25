@@ -24,6 +24,7 @@ void *webot_worker(void *ptr) {
 	wb_init_com();
 	drive_init();
 	navi_init();
+	// safety_init();
 
 	init_to_ext_msg_t init_data;
 	wb_recv_init(&init_data);

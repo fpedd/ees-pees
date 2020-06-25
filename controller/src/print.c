@@ -98,3 +98,13 @@ void print_silhouette() {
 	printf("PRINT: sil_max[%d] = %f\n", max_i, max);
 	printf("PRINT: ==================================================\n");
 }
+
+
+void print_dist_to_python(float *dist){
+	printf("[");
+	int i = 0;
+	for (; i < DIST_VECS - 1; i++) {
+		printf("%f, ", dist[i]);
+	}
+	printf("%f]\n", dist[i]);
+}

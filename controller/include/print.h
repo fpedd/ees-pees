@@ -19,5 +19,7 @@ void print_init_data(init_to_ext_msg_t init_data);
 
 void print_silhouette();
 
+void print_dist_to_python(float *dist);
+
 
 #endif // PRINT_H
