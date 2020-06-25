@@ -191,7 +191,7 @@ class FakeGym(gym.Env):
                 reward = reward - 10
         return reward
 
-    def reset(self, seed=None, hard=True):
+    def reset(self, seed=None, hard=True, min_complexity=1):
         self.total_reward = 0
         if seed is None:
             seed = utils.np_random_seed(set=False)
@@ -199,9 +199,9 @@ class FakeGym(gym.Env):
         self.com = FakeCom(self.seeds, self.com_inits[0], self.com_inits[1],
                            self.com_inits[2], self.com_inits[3])
         self.visited_count = np.zeros(self.com.field.shape)
-        if hard is True and self.is_path() is False:
+        if hard is True and len(self.finder_path()) < min_complexity:
             seed = utils.np_random_seed(set=False)
-            print("No path available, reset with seed: ", seed)
+            # print("No path available or too simple, reset with seed: ", seed)
             self.reset(seed)
         return self.state
 
@@ -230,9 +230,7 @@ class FakeGym(gym.Env):
     def field(self):
         return self.com.field
 
-    def is_path(self):
-        """Check if path exists from gps_actual to gps_target."""
-        # transform field to specifications
+    def finder_path(self, finder=AStarFinder):
         grid = self.field.copy()
         grid[grid > 0] = 99
         grid[grid == 0] = 1
@@ -246,12 +244,10 @@ class FakeGym(gym.Env):
         tx, ty = self.gps_target
         start = grid.node(sy, sx)
         end = grid.node(ty, tx)
-        finder = AStarFinder()
+        finder = finder()
         path, _ = finder.find_path(start, end, grid)
 
-        if len(path) > 0:
-            return True
-        return False
+        return path
 
     def average_solvability(self, test_cases=1000):
         """Check how many environmnents with current settings are solvable."""
