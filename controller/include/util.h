@@ -8,6 +8,7 @@
 #include "backend/backend_com.h"
 
 #define min(X, Y) (((X) < (Y)) ? (X) : (Y))
+#define min_floor(X, Y) ((min(X, Y) < 0) ? 0 : min(X, Y))
 #define max(X, Y) (((X) > (Y)) ? (X) : (Y))
 
 typedef struct {

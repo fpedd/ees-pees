@@ -40,7 +40,7 @@ int drive_manual(cmd_to_wb_msg_t *cmd_to_wb, init_to_ext_msg_t init_data,
                  float speed, float heading) {
 
 	memset(cmd_to_wb, 0, sizeof(cmd_to_wb_msg_t));
-	cmd_to_wb->speed = speed * init_data.maxspeed * -1;
+	cmd_to_wb->speed = speed * init_data.maxspeed * -0.5;
 	cmd_to_wb->heading = heading;
 
 	// printf("DRIVE MAN: speed %f, heading %f \n", cmd_to_wb.speed, cmd_to_wb.heading);
@@ -83,7 +83,7 @@ int drive_automatic(cmd_to_wb_msg_t *cmd_to_wb, init_to_ext_msg_t init_data,
 	last_time = curr_time;
 
 	memset(cmd_to_wb, 0, sizeof(cmd_to_wb_msg_t));
-	cmd_to_wb->speed = com_speed * init_data.maxspeed * -1;
+	cmd_to_wb->speed = com_speed * init_data.maxspeed * -0.5;
 	cmd_to_wb->heading = com_heading;
 
 	// printf("DRIVE AUTO: speed %f, heading %f \n", cmd_to_wb.speed, cmd_to_wb.heading);
