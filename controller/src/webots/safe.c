@@ -99,7 +99,7 @@ int safety_check(init_to_ext_msg_t init_data, data_from_wb_msg_t data_from_wb, c
 
 	min_i = (min_i + start) % DIST_VECS;
 
-	printf("SAFE: min_steps: %f, dist[%d]: %f, v: %f steer: %f\n", min_steps, min_i, distance[min_i], data_from_wb.current_speed, cmd_to_wb->heading);
+	// printf("SAFE: min_steps: %f, dist[%d]: %f, v: %f steer: %f\n", min_steps, min_i, distance[min_i], data_from_wb.current_speed, cmd_to_wb->heading);
 
 	// slow the robot down if needed
 	if (min_steps <= 0.0) {
