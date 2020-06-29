@@ -120,6 +120,7 @@ int safety_check(init_to_ext_msg_t init_data, data_from_wb_msg_t data_from_wb, c
 	// check if distance falls below CLOSEST_ALLOWED in any directio
 	if (too_close(distance, cmd_to_wb->speed, direction) == 1) {
 		cmd_to_wb->speed = 0;
+		// cmd_to_wb->heading = 0;  // for testing purposes
 		action_denied = 1;
 	}
 
