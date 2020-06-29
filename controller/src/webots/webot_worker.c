@@ -54,6 +54,13 @@ void *webot_worker(void *ptr) {
 		if (arg_struct->itc_data->action_denied == 1) {
 			data_to_backend_worker.action_denied = 1;
 		}
+		int touching = arg_struct->itc_data->touching;
+		if (touching == -1) {
+			data_to_backend_worker.touching = -1;
+		} else if (touching > 0) {
+			data_to_backend_worker.touching += touching;
+		}
+
 		memcpy(arg_struct->itc_data, &data_to_backend_worker, sizeof(data_to_bcknd_msg_t));
 		pthread_mutex_unlock(arg_struct->itc_data_lock);
 
@@ -128,5 +135,9 @@ int webot_format_wb_to_bcknd(data_to_bcknd_msg_t* data_to_bcknd,
 	memcpy(&data_to_bcknd->distance, data_from_wb.distance, sizeof(float) * DIST_VECS);
 
 	return 0;
+
+}
+
+int update_flags(data_to_bcknd_msg_t *itc_data, int action_denied){
 
 }
