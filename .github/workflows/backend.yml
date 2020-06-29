@@ -22,38 +22,28 @@ jobs:
         run: pip install pylint-exit
       - name: install numpy
         run: pip install numpy
+      - name: install pynput
+        run: pip install pynput
+      - name: install gym
+        run: pip install gym
+      - name: install psutil
+        run: pip install psutil
+      - name: install matplotlib
+        run: pip install matplotlib
 
-      # - name: pylint Action
-      #   working-directory: backend
-      #   run: pylint Action.py --disable=missing-docstring --extension-pkg-whitelist=numpy || pylint-exit -efail $?
-      # - name: pylint Config
-      #   working-directory: backend
-      #   run: pylint Config.py --disable=missing-docstring || pylint-exit -efail $?
-      - name: pylint Observation
+#       - name: pylint automation_test
+#         working-directory: backend
+#         run: pylint automation_test.py --disable=missing-docstring --disable=C0103 || pylint-exit -efail $?
+      - name: pylint timmy
         working-directory: backend
-        run: pylint Observation.py --disable=missing-docstring || pylint-exit -efail $?
-      # - name: pylint Reward
-      #   working-directory: backend
-      #   run: pylint Reward.py --disable=missing-docstring --extension-pkg-whitelist=numpy || pylint-exit -efail $?
-      # - name: pylint automate
-      #   working-directory: backend
-      #   run: pylint automate.py --disable=missing-docstring --extension-pkg-whitelist=numpy|| pylint-exit -efail $?
-      # - name: pylint communicate
-      #   working-directory: backend
-      #   run: pylint communicate.py --disable=missing-docstring --extension-pkg-whitelist=numpy || pylint-exit -efail $?
-      # - name: pylint environment
-      #   working-directory: backend
-      #   run: pylint environment.py --disable=missing-docstring --extension-pkg-whitelist=numpy || pylint-exit -efail $?
-      # - name: pylint james
-      #   working-directory: backend
-      #   run: pylint james.py --disable=missing-docstring || pylint-exit -efail $?
-      # - name: pylint utils
-      #   working-directory: backend
-      #   run: pylint utils.py --disable=missing-docstring --extension-pkg-whitelist=numpy || pylint-exit -efail $?
-      # - name: pylint webot
-      #   working-directory: backend
-      #   run: pylint webot.py --disable=missing-docstring --extension-pkg-whitelist=numpy || pylint-exit -efail $?
-
+        run: pylint timmy.py --disable=missing-docstring --disable=C0103 --extension-pkg-whitelist=numpy --extension-pkg-whitelist=pynput || pylint-exit -efail $?
+      - name: pylint james
+        working-directory: backend
+        run: pylint james.py --disable=missing-docstring --disable=C0103 --extension-pkg-whitelist=numpy|| pylint-exit -efail $?
+      - name: pylint webotsgym
+        working-directory: backend
+        run: pylint webotsgym --ignored-classes=matplotlib.pyplot --ignored-classes=matplotlib.cm --ignored-classes=numpy.random --disable=missing-docstring --disable=C0103 --disable=E1101 --extension-pkg-whitelist=matplotlib --extension-pkg-whitelist=psutil --extension-pkg-whitelist=gym --extension-pkg-whitelist=numpy --extension-pkg-whitelist=pynput || pylint-exit -efail $?
+  
   Pytest:
     runs-on: ubuntu-18.04
     steps:
@@ -61,10 +51,9 @@ jobs:
       - uses: actions/setup-python@v2
       - name: install-pytest
         run: pip install pytest
-      - name: pytest
-        working-directory: backend
-        run: pytest -q test.py
+      - name: pytest_test
+        working-directory: backend/test
+        run: pytest -q test_test.py
   
-
 
         

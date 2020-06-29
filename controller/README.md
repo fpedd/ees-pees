@@ -72,9 +72,9 @@ typedef struct {
 	double actual_gps[3];         // coordiantes where the robot is
 	double compass[3];            // direction the front of the robot points in
 	float distance[DIST_VECS];    // distance to the next object from robot prespective
-} __attribute__((packed)) wb_to_ext_msg_t;
+} __attribute__((packed)) data_from_wb_msg_t;
 ```
-* sim_time is the current time (in ms) starting at 0 when the simulation starts.
+* sim_time is the current time (in seconds) starting at 0 when the simulation starts.
 * current_speed is the robots current speed (in m/s) measured by the gps
 * compass gives back a 3D vector pointing in the direction the robot points. This is used to calculate the heading of the robot and whether or not it is upright (TODO).
 * distance is the data from the lidar sensor where the first entry is in front of the robot and the following entries are in clockwise direction
@@ -84,7 +84,7 @@ typedef struct {
 typedef struct {
 	double heading;               // the direction the robot should move in next
 	double speed;                 // the speed the robot should drive at
-} __attribute__((packed)) ext_to_wb_msg_t;
+} __attribute__((packed)) cmd_to_wb_msg_t;
 ```
 * the heading value tells the robot at which angle it positions its back axle. It _can_ range from 0 to 1 but should be between 0,25 and 0,75 to avoid clipping. 0,5 is used to drive straight
 * speed gives the webots motor a value. It should be between -max_speed and +max_speed. Negative numbers mean the robot is driving forwards (ONLY INTERNALLY, values from backend should have the more intuitive positive=forward format)
@@ -108,7 +108,7 @@ to the external controller. They currently look like this:
 typedef struct {
 	unsigned long long msg_cnt;    // total number of messages (even) (internal)
 	double time_stmp;              // time the message got send (internal)
-	float sim_time;                // actual simulation time in webots
+	float sim_time;                // actual simulation time in webots in seconds
 	float speed;                   // current speed of robot in webots [-1, 1]
 	float actual_gps[2];           // coordiantes where the robot is
 	float heading;                 // direction the front of the robot points in [-1, 1]
@@ -117,7 +117,7 @@ typedef struct {
 	unsigned int action_denied;    // did we have to take over control for saftey reasons
 	unsigned int discr_act_done;   // did the robot complete its discrete action
 	float distance[DIST_VECS];     // distance to the next object from robot prespective
-} __attribute__((packed)) ext_to_bcknd_msg_t;
+} __attribute__((packed)) data_to_bcknd_msg_t;
 
 // external controller <-- backend
 typedef struct {
@@ -128,7 +128,7 @@ typedef struct {
 	enum direction_type dir_type;  // heading or steering command from backend
 	float heading;                 // the direction the robot should move in next [-1, 1]
 	float speed;                   // the speed the robot should drive at [-1, 1]
-} __attribute__((packed)) bcknd_to_ext_msg_t;
+} __attribute__((packed)) cmd_from_bcknd_msg_t;
 ```
 
 Variables inside the messages with `(internal)` next to them should never be written
@@ -143,7 +143,7 @@ Explanation of `to_bcknd_msg_t`:
   only ever send even numbers, the backend only odd numbers.
 * `double time_stmp` is the local system time in seconds (with nanosecond precision)
   since 1970. It gets set as the last variable, just before the message gets send out.
-* `float sim_time` Actual simulation time in webots in ms.
+* `float sim_time` Actual simulation time in webots in seconds.
 * `float speed` Current speed of robot in webots [-1, 1].
 * `float actual_gps[2]` are the coordinates the robot is currently at.
   It is in the same format as the `target_gps`.

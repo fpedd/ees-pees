@@ -6,7 +6,29 @@ from webotsgym.webot import WebotAction
 
 
 class Action(object):
+    def __init__(self):
+        self.type = "normal"
     pass
+
+
+# =========================================================================
+# ==========================     WEBOT GRID      ==========================
+# =========================================================================
+class GridAction(Action):
+    """Map proposed fake environment moves to webots.
+
+    0: Right -> Up    (1)
+    1: Down  -> Left  (2)
+    2: Left  -> Down  (3)
+    3: Up    -> Right (4)
+    """
+    def __init__(self):
+        self.action_space = Discrete(4)
+        self.direction_type = "steering"  # just a dummy
+        self.type = "grid"
+
+    def map(self, action):
+        return int(action + 1)
 
 
 # =========================================================================
@@ -39,6 +61,7 @@ class DiscreteAction(Action):
 
     def __init__(self, directions=3, speeds=3, dspeed=0.2, dhead=0.2,
                  mode="flatten", direction_type="heading", relative=False):
+        self.type = "normal"
         self.mode = mode
         self.direction_type = direction_type
         self.relative = relative
@@ -87,22 +110,23 @@ class DiscreteAction(Action):
         action = (self.dirspace[dir_idx], self.speedspace[speed_idx])
         if self.relative is True:
             action = utils.add_tuples(pre_action, action)
-        action = WebotAction(action)
+        action = WebotAction(action, direction_type=self.direction_type)
         return action
 
 
 # =========================================================================
-# =========================       CONTINOUS        ========================
+# =========================       CONTINUOUS       ========================
 # =========================================================================
 class ContinuousAction(Action):
     def __init__(self, direction_type="heading", relative=False):
         self.action_space = Box(-1, 1, shape=(2,), dtype=np.float32)
         self.direction_type = direction_type
         self.relative = relative
+        self.type = "normal"
 
     def map(self, action, pre_action):
         action = tuple(action)
         if self.relative is True:
             action = utils.add_tuples(pre_action, action)
-        action = WebotAction(action)
+        action = WebotAction(action, direction_type=self.direction_type)
         return action

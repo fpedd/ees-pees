@@ -30,7 +30,7 @@ extern const char* direction_type_str[];
 typedef struct {
 	unsigned long long msg_cnt;    // total number of messages (even) (internal)
 	double time_stmp;              // time the message got send (internal)
-	float sim_time;                // actual simulation time in webots
+	float sim_time;                // actual simulation time in webots in seconds
 	float speed;                   // current speed of robot in webots [-1, 1]
 	float actual_gps[2];           // coordiantes where the robot is
 	float heading;                 // direction the front of the robot points in [-1, 1]
@@ -39,7 +39,7 @@ typedef struct {
 	unsigned int action_denied;    // did we have to take over control for saftey reasons
 	unsigned int discr_act_done;   // did the robot complete its discrete action
 	float distance[DIST_VECS];     // distance to the next object from robot prespective
-} __attribute__((packed)) ext_to_bcknd_msg_t;
+} __attribute__((packed)) data_to_bcknd_msg_t;
 
 // external controller <-- backend
 typedef struct {
@@ -50,7 +50,7 @@ typedef struct {
 	enum direction_type dir_type;  // heading or steering command from backend
 	float heading;                 // the direction the robot should move in next [-1, 1]
 	float speed;                   // the speed the robot should drive at [-1, 1]
-} __attribute__((packed)) bcknd_to_ext_msg_t;
+} __attribute__((packed)) cmd_from_bcknd_msg_t;
 
 int com_init();
 
@@ -58,8 +58,8 @@ int com_deinit();
 
 float link_qualitiy(float factor);
 
-int com_send(ext_to_bcknd_msg_t data);
+int com_send(data_to_bcknd_msg_t data);
 
-int com_recv(bcknd_to_ext_msg_t *data);
+int com_recv(cmd_from_bcknd_msg_t *data);
 
 #endif // COM_H

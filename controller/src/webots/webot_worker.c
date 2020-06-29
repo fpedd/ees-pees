@@ -14,14 +14,17 @@
 
 void *webot_worker(void *ptr) {
 
+
 	arg_struct_t *arg_struct = (arg_struct_t*) ptr;
 
 	// Init communication with webot
 	printf("WEBOT_WORKER: Initalizing\n");
+	// print_silhouette();
 
 	wb_init_com();
 	drive_init();
 	navi_init();
+	// safety_init();
 
 	init_to_ext_msg_t init_data;
 	wb_recv_init(&init_data);
@@ -36,49 +39,63 @@ void *webot_worker(void *ptr) {
 	while (1) {
 
 		/***** 1) Receive from Webots *****/
-		wb_to_ext_msg_t wb_to_ext;
-		memset(&wb_to_ext, 0, sizeof(wb_to_ext_msg_t));
-		wb_recv(&wb_to_ext);
+		data_from_wb_msg_t data_from_wb;
+		memset(&data_from_wb, 0, sizeof(data_from_wb_msg_t));
+		wb_recv(&data_from_wb);
 
-		// print_wb_to_ext(wb_to_ext, 0);
+		// print_data_from_wb(data_from_wb, 0);
 
 		/***** 2) Push message to backend worker *****/
-		ext_to_bcknd_msg_t ext_to_bcknd;
-		memset(&ext_to_bcknd, 0, sizeof(ext_to_bcknd_msg_t));
-		webot_format_wb_to_bcknd(&ext_to_bcknd, wb_to_ext, init_data,
+		data_to_bcknd_msg_t data_to_backend_worker;
+		memset(&data_to_backend_worker, 0, sizeof(data_to_bcknd_msg_t));
+		webot_format_wb_to_bcknd(&data_to_backend_worker, data_from_wb, init_data,
 		                         action_denied, discrete_action_done);
-		pthread_mutex_lock(arg_struct->ext_to_bcknd_lock);
-		memcpy(arg_struct->ext_to_bcknd, &ext_to_bcknd, sizeof(ext_to_bcknd_msg_t));
-		pthread_mutex_unlock(arg_struct->ext_to_bcknd_lock);
+		pthread_mutex_lock(arg_struct->itc_data_lock);
+		if (arg_struct->itc_data->action_denied == 1) {
+			data_to_backend_worker.action_denied = 1;
+		}
+		int touching = arg_struct->itc_data->touching;
+		if (touching == -1) {
+			data_to_backend_worker.touching = -1;
+		} else if (touching > 0) {
+			data_to_backend_worker.touching += touching;
+		}
 
-		// print_ext_to_bcknd(ext_to_bcknd, 0);
+		memcpy(arg_struct->itc_data, &data_to_backend_worker, sizeof(data_to_bcknd_msg_t));
+		pthread_mutex_unlock(arg_struct->itc_data_lock);
+
+		// print_data_to_bcknd(data_to_backend_worker, 0);
 		// printf("WEBOT_WORKER: backend link_qual %f \n", link_qualitiy(0));
 
 		/***** 3) Get message from backend worker *****/
-		bcknd_to_ext_msg_t bcknd_to_ext;
-		memset(&bcknd_to_ext, 0, sizeof(bcknd_to_ext_msg_t));
-		pthread_mutex_lock(arg_struct->bcknd_to_ext_lock);
-		memcpy(&bcknd_to_ext, arg_struct->bcknd_to_ext, sizeof(bcknd_to_ext_msg_t));
-		pthread_mutex_unlock(arg_struct->bcknd_to_ext_lock);
+		cmd_from_bcknd_msg_t cmd_from_backend_worker;
+		memset(&cmd_from_backend_worker, 0, sizeof(cmd_from_bcknd_msg_t));
+		pthread_mutex_lock(arg_struct->itc_cmd_lock);
+		memcpy(&cmd_from_backend_worker, arg_struct->itc_cmd, sizeof(cmd_from_bcknd_msg_t));
+		pthread_mutex_unlock(arg_struct->itc_cmd_lock);
 
-		// print_bcknd_to_ext(bcknd_to_ext);
+		// print_cmd_from_bcknd(cmd_from_backend_worker);
 
-		/***** 4) Prepare and send to Webots *****/
-		// TODO: implement safety checks
-		action_denied = safety_check(&bcknd_to_ext);
+		/***** 4) Calculate next command *****/
+		cmd_to_wb_msg_t cmd_to_wb;
+		memset(&cmd_to_wb, 0, sizeof(cmd_to_wb_msg_t));
 
-		ext_to_wb_msg_t ext_to_wb;
-		memset(&ext_to_wb, 0, sizeof(ext_to_wb_msg_t));
-
+		static int start = 1;
 		// check if we should do a continous or discrete action
-		if (bcknd_to_ext.move == NONE) {
-			drive(&ext_to_wb, bcknd_to_ext, ext_to_bcknd, init_data);
+		// TODO: also reset PID controller when switching over
+		if (cmd_from_backend_worker.move == NONE) {
+			drive(&cmd_to_wb, cmd_from_backend_worker, data_to_backend_worker, init_data);
+			start = 1;
 		} else {
-			discrete_action_done = discr_step(&ext_to_wb, bcknd_to_ext, ext_to_bcknd, init_data);
+			discrete_action_done = discr_step(&cmd_to_wb, cmd_from_backend_worker, data_to_backend_worker, init_data, start, action_denied);
+			start = 0;
 		}
 
-		// print_ext_to_wb(ext_to_wb);
-		wb_send(ext_to_wb);
+		/***** 5) Do safety checks *****/
+		action_denied = safety_check(init_data, data_from_wb, &cmd_to_wb);
+
+		/***** 6) Send command to robot *****/
+		wb_send(cmd_to_wb);
 
 	}
 
@@ -86,37 +103,41 @@ void *webot_worker(void *ptr) {
 }
 
 
-int webot_format_wb_to_bcknd(ext_to_bcknd_msg_t* ext_to_bcknd,
-                             wb_to_ext_msg_t wb_to_ext,
+int webot_format_wb_to_bcknd(data_to_bcknd_msg_t* data_to_bcknd,
+                             data_from_wb_msg_t data_from_wb,
                              init_to_ext_msg_t init_data,
-                             unsigned int action_denied,
+                             int action_denied,
                              unsigned int discrete_action_done) {
 
 	// cast sim time and robot speed to float
-	ext_to_bcknd->sim_time = (float) wb_to_ext.sim_time;
-	ext_to_bcknd->speed = (float) wb_to_ext.current_speed / init_data.maxspeed;
+	data_to_bcknd->sim_time = (float) data_from_wb.sim_time;
+	data_to_bcknd->speed = (float) data_from_wb.current_speed / init_data.maxspeed;
 
-	// calculate projecions for 3D gps/compass data to bcknd format
+	// calculate projecions for 3D gps/compass data_to_bcknd to bcknd format
 	// (x, z coorinates represent horizontal plane in webots system)
-	ext_to_bcknd->actual_gps[0] = (float) wb_to_ext.actual_gps[0];
-	ext_to_bcknd->actual_gps[1] = (float) wb_to_ext.actual_gps[2];
+	data_to_bcknd->actual_gps[0] = (float) data_from_wb.actual_gps[0];
+	data_to_bcknd->actual_gps[1] = (float) data_from_wb.actual_gps[2];
 
-	double heading = heading_in_norm(wb_to_ext.compass[0], wb_to_ext.compass[1], wb_to_ext.compass[2]);
-	ext_to_bcknd->heading = (float) heading;
+	double heading = heading_in_norm(data_from_wb.compass[0], data_from_wb.compass[1], data_from_wb.compass[2]);
+	data_to_bcknd->heading = (float) heading;
 
-	if (check_for_tipover(wb_to_ext) != 0) {
-		ext_to_bcknd->touching = -1;
+	if (check_for_tipover(data_from_wb) != 0) {
+		data_to_bcknd->touching = -1;
 	} else {
-		ext_to_bcknd->touching = touching(wb_to_ext.distance);
+		data_to_bcknd->touching = touching(data_from_wb);
 	}
 
-	ext_to_bcknd->action_denied = action_denied;
+	data_to_bcknd->action_denied = action_denied;
 
-	ext_to_bcknd->discr_act_done = discrete_action_done;
+	data_to_bcknd->discr_act_done = discrete_action_done;
 
-	// copy lidar data
-	memcpy(&ext_to_bcknd->distance, wb_to_ext.distance, sizeof(float) * DIST_VECS);
+	// copy lidar data_to_bcknd
+	memcpy(&data_to_bcknd->distance, data_from_wb.distance, sizeof(float) * DIST_VECS);
 
 	return 0;
+
+}
+
+int update_flags(data_to_bcknd_msg_t *itc_data, int action_denied){
 
 }

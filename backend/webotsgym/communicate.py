@@ -3,7 +3,7 @@ import struct
 import time
 from enum import Enum
 
-from webotsgym.config import WebotConfig
+from webotsgym.config import WebotConfig, SimSpeedMode
 from webotsgym.webot import WebotState, WebotAction
 
 
@@ -94,8 +94,8 @@ class OutgoingPacket():
                            self.msg_cnt,
                            time.time(),
                            self.packet_type,
-                           self.discrete_move,
-                           self.direction_type,
+                           int(self.discrete_move),
+                           int(self.direction_type),
                            self.action.heading,
                            self.action.speed)
         return data
@@ -119,7 +119,7 @@ class Com(object):
         else:
             self.dir_type = DirectionType.HEADING
 
-        if config.fast_simulation is True:
+        if not (self.config.sim_mode is SimSpeedMode.NORMAL):
             print("USE FAST MODE")
 
     # ------------------------------  SETUPS  ---------------------------------
@@ -172,6 +172,7 @@ class Com(object):
         pack_out = OutgoingPacket(self.msg_cnt, PacketType.COM_REQ,
                                   DiscreteMove.NONE, self.dir_type, action)
         self.send(pack_out)
+        time.sleep(self.wait_time)
         self.recv()
 
     def send_discrete_move(self, move):
@@ -179,10 +180,18 @@ class Com(object):
         pack_out = OutgoingPacket(self.msg_cnt, PacketType.COM, move, 0)
         self.send(pack_out)
 
+    def _wait_for_discrete_done(self, wait_time=0.1):
+        # give controller some time to update internal data
+        time.sleep(wait_time)
+        self.send_data_request()
+        while self.state._discrete_action_done != 1:
+            self.send_data_request()
+            time.sleep(wait_time)
+
     @property
     def wait_time(self):
         divider = 1
-        if self.config.fast_simulation is True:
+        if not (self.config.sim_mode is SimSpeedMode.NORMAL):
             divider = 3
         return self.config.send_recv_wait_time / 1000 / divider
 

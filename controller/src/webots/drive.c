@@ -20,35 +20,35 @@ int drive_init() {
 	return 0;
 }
 
-int drive(ext_to_wb_msg_t *ext_to_wb, bcknd_to_ext_msg_t bcknd_to_ext,
-          ext_to_bcknd_msg_t ext_to_bcknd, init_to_ext_msg_t init_data) {
+int drive(cmd_to_wb_msg_t *cmd_to_wb, cmd_from_bcknd_msg_t cmd_from_bcknd,
+          data_to_bcknd_msg_t data_to_bcknd, init_to_ext_msg_t init_data) {
 
-	if (bcknd_to_ext.dir_type == STEERING) {
-		drive_manual(ext_to_wb, init_data,
-		             bcknd_to_ext.speed, bcknd_to_ext.heading);
+	if (cmd_from_bcknd.dir_type == STEERING) {
+		drive_manual(cmd_to_wb, init_data,
+		             cmd_from_bcknd.speed, cmd_from_bcknd.heading);
 	} else {
-		drive_automatic(ext_to_wb, init_data,
-		                bcknd_to_ext.speed, bcknd_to_ext.heading,
-		                ext_to_bcknd.speed, ext_to_bcknd.heading,
-		                ext_to_bcknd.sim_time);
+		drive_automatic(cmd_to_wb, init_data,
+		                cmd_from_bcknd.speed, cmd_from_bcknd.heading,
+		                data_to_bcknd.speed, data_to_bcknd.heading,
+		                data_to_bcknd.sim_time);
 	}
 
 	return 0;
 }
 
-int drive_manual(ext_to_wb_msg_t *ext_to_wb, init_to_ext_msg_t init_data,
+int drive_manual(cmd_to_wb_msg_t *cmd_to_wb, init_to_ext_msg_t init_data,
                  float speed, float heading) {
 
-	memset(ext_to_wb, 0, sizeof(ext_to_wb_msg_t));
-	ext_to_wb->speed = speed * init_data.maxspeed * -1;
-	ext_to_wb->heading = heading;
+	memset(cmd_to_wb, 0, sizeof(cmd_to_wb_msg_t));
+	cmd_to_wb->speed = speed * init_data.maxspeed * -0.5;
+	cmd_to_wb->heading = heading;
 
-	// printf("DRIVE MAN: speed %f, heading %f \n", ext_to_wb.speed, ext_to_wb.heading);
+	// printf("DRIVE MAN: speed %f, heading %f \n", cmd_to_wb.speed, cmd_to_wb.heading);
 
 	return 0;
 }
 
-int drive_automatic(ext_to_wb_msg_t *ext_to_wb, init_to_ext_msg_t init_data,
+int drive_automatic(cmd_to_wb_msg_t *cmd_to_wb, init_to_ext_msg_t init_data,
                     float set_speed, float set_heading,
                     float act_speed, float act_heading,
                     float curr_time) {
@@ -82,11 +82,11 @@ int drive_automatic(ext_to_wb_msg_t *ext_to_wb, init_to_ext_msg_t init_data,
 
 	last_time = curr_time;
 
-	memset(ext_to_wb, 0, sizeof(ext_to_wb_msg_t));
-	ext_to_wb->speed = com_speed * init_data.maxspeed * -1;
-	ext_to_wb->heading = com_heading;
+	memset(cmd_to_wb, 0, sizeof(cmd_to_wb_msg_t));
+	cmd_to_wb->speed = com_speed * init_data.maxspeed * -0.5;
+	cmd_to_wb->heading = com_heading;
 
-	// printf("DRIVE AUTO: speed %f, heading %f \n", ext_to_wb.speed, ext_to_wb.heading);
+	// printf("DRIVE AUTO: speed %f, heading %f \n", cmd_to_wb.speed, cmd_to_wb.heading);
 
 	return 0;
 }

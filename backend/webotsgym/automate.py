@@ -2,12 +2,11 @@ import subprocess
 import socket
 import struct
 import time
-import numpy as np
 from enum import IntEnum
 import psutil
 import os
 
-from webotsgym.config import WebotConfig
+from webotsgym.config import WebotConfig, SimSpeedMode
 import webotsgym.utils as utils
 
 
@@ -112,7 +111,7 @@ class WebotCtrl():
         data = struct.pack('iiiiif',
                            FunctionCode.START,
                            seed,
-                           int(self.config.fast_simulation),
+                           int(self.config.sim_mode),
                            self.config.num_obstacles,
                            self.config.world_size,
                            self.config.world_scaling)

@@ -15,26 +15,26 @@ int main(int argc, char **argv) {
 	(void) argc;
 	(void) argv;
 
-	ext_to_bcknd_msg_t itc_ext_to_bcknd;
-	memset(&itc_ext_to_bcknd, 0, sizeof(ext_to_bcknd_msg_t));
+	data_to_bcknd_msg_t itc_data;
+	memset(&itc_data, 0, sizeof(data_to_bcknd_msg_t));
 
-	bcknd_to_ext_msg_t itc_bcknd_to_ext;
-	memset(&itc_bcknd_to_ext, 0, sizeof(bcknd_to_ext_msg_t));
+	cmd_from_bcknd_msg_t itc_cmd;
+	memset(&itc_cmd, 0, sizeof(cmd_from_bcknd_msg_t));
 
-	pthread_mutex_t ext_to_bcknd_lock;
-	pthread_mutex_t bcknd_to_ext_lock;
+	pthread_mutex_t itc_data_lock;
+	pthread_mutex_t itc_cmd_lock;
 
-	if ((pthread_mutex_init(&ext_to_bcknd_lock, NULL) |
-	     pthread_mutex_init(&bcknd_to_ext_lock, NULL)) != 0) {
+	if ((pthread_mutex_init(&itc_data_lock, NULL) |
+	     pthread_mutex_init(&itc_cmd_lock, NULL)) != 0) {
 		fprintf(stderr, "MAIN: ERROR on creating mutexes\n");
 		return 1;
 	}
 
 	arg_struct_t arg_struct;
-	arg_struct.ext_to_bcknd      = &itc_ext_to_bcknd;
-	arg_struct.ext_to_bcknd_lock = &ext_to_bcknd_lock;
-	arg_struct.bcknd_to_ext      = &itc_bcknd_to_ext;
-	arg_struct.bcknd_to_ext_lock = &bcknd_to_ext_lock;
+	arg_struct.itc_data      = &itc_data;
+	arg_struct.itc_data_lock = &itc_data_lock;
+	arg_struct.itc_cmd       = &itc_cmd;
+	arg_struct.itc_cmd_lock  = &itc_cmd_lock;
 
 	pthread_t webot_worker_thread, backend_worker_thread;
 

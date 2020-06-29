@@ -32,8 +32,6 @@ class DiscreteAction(ActionMapper):
         elif mode == "tuple":
             self.action_space = spaces.Tuple((spaces.Discrete(num_of_directions),
                                               spaces.Discrete(self.steps)))
-        # elif mode == "multi_discrete":
-        #     self.action_space = spaces.MultiDiscrete([num_of_directions, self.steps])
 
     def action_map(self, action):
         if self.mode == "flatten":
@@ -42,21 +40,6 @@ class DiscreteAction(ActionMapper):
         else:
             orientation, step_length = action
         return (orientation, step_length + self.step_range[0])
-
-
-class ContinuousAction(ActionMapper):
-    def __init__(self, num_of_directions, step_range):
-        super(ContinuousAction, self).__init__()
-        self.num_of_directions = num_of_directions
-        self.step_range = step_range
-        self.steps = step_range[1] - step_range[0] + 1
-        self.action_space = spaces.Box(-1, 1, shape=(2,), dtype=np.float32)
-
-    def action_map(self, action):
-        orientation, length = action
-        orientation = utils.id_in_range(-1, 1, self.num_of_directions, orientation)
-        length = utils.id_in_range(-1, 1, self.steps, length) + self.step_range[0]
-        return orientation, length
 
 
 class Observation():
@@ -88,24 +71,22 @@ class Observation():
 class FakeGym(gym.Env):
     def __init__(self, seed=None, N=10, num_of_sensors=4, obstacles_each=4,
                  step_range=(1, 1), action_type="discrete",
-                 discrete_action_shaping="flatten", obs=Observation):
+                 discrete_action_shaping="flatten", obs=Observation, obs_len=1):
         super(FakeGym, self).__init__()
 
         self.history = {}
 
-        if action_type == "continous":
-            self.action_mapper = ContinuousAction(num_of_sensors, step_range)
-        else:
-            self.action_mapper = DiscreteAction(num_of_sensors, step_range,
-                                                discrete_action_shaping)
+        self.action_mapper = DiscreteAction(4, step_range,
+                                            discrete_action_shaping)
+
         self.seed(seed)
         self.reward_range = (-100, 100)
         self.action_mapping = self.action_mapper.action_map
         self.action_space = self.action_mapper.action_space
 
-        self.com_inits = (N, num_of_sensors, obstacles_each)
+        self.com_inits = (N, num_of_sensors, obstacles_each, obs_len)
         self.com = FakeCom(self.seeds, self.com_inits[0], self.com_inits[1],
-                           self.com_inits[2])
+                           self.com_inits[2], self.com_inits[3])
         self.plotpadding = 0
 
         self.obs = (obs)(self)
@@ -150,9 +131,12 @@ class FakeGym(gym.Env):
     def close(self):
         pass
 
-    def get_target_distance(self):
+    def get_target_distance(self, normalized=True):
         """Calculate euklidian distance to target."""
-        return utils.euklidian_distance(self.gps_actual, self.gps_target)
+        dist = utils.euklidian_distance(self.gps_actual, self.gps_target)
+        if normalized is True:
+            dist = dist / self.max_distance
+        return dist
 
     def check_done(self):
         if self.com.time_steps == 1000:
@@ -197,8 +181,8 @@ class FakeGym(gym.Env):
         else:
             epsilon = 10**-5
             cost_step = 1
-            distance = self.get_target_distance()+epsilon
-            cost_distance = (distance**0.4)/(distance)
+            distance = self.get_target_distance() + epsilon
+            cost_distance = (distance**0.4) / (distance)
             reward_factor = -1
             reward = reward_factor * (cost_step * cost_distance)
             if self.state_object:
@@ -210,7 +194,7 @@ class FakeGym(gym.Env):
         seed = utils.np_random_seed(set=False)
         self.seed(seed)
         self.com = FakeCom(self.seeds, self.com_inits[0], self.com_inits[1],
-                           self.com_inits[2])
+                           self.com_inits[2], self.com_inits[3])
         return self.state
 
     def render(self):
@@ -262,23 +246,25 @@ class FakeState():
 
 
 class FakeCom():
-    def __init__(self, seeds, N=100, num_of_sensors=4, obstacles_each=2):
+    def __init__(self, seeds, N=10, num_of_sensors=4, obstacles_each=2,
+                 obs_len=1):
         self.seeds = seeds
         self.next_seed_idx = 1
-        self.inits = (N, num_of_sensors, obstacles_each)
+        self.inits = (N, num_of_sensors, obstacles_each, obs_len)
         self.N = N
         self.offset = int(2 * N)
         self.num_of_sensors = num_of_sensors
-        self._init(N, obstacles_each)
+        self.obs_len = obs_len
+        self._init(N, obstacles_each, obs_len)
         self.time_steps = 0
 
-    def _init(self, N, obstacles_each):
+    def _init(self, N, obstacles_each, obs_len):
         self.state = FakeState()
         self._setup_fields()
 
         # place obstacles randomly (horizontal and vertical walls)
-        self.place_random_obstacle(dx=1, dy=int(N / 3), N=obstacles_each)
-        self.place_random_obstacle(int(N / 3), 1, N=obstacles_each)
+        self.place_random_obstacle(dx=1, dy=obs_len, N=obstacles_each)
+        self.place_random_obstacle(obs_len, 1, N=obstacles_each)
 
         # random start and finish positions
         self.state.gps_actual = self.random_position()
@@ -400,7 +386,7 @@ class FakeCom():
         #     raise TypeError("Action must be of a tuple of 2 integers.")
         orientation_idx, action_length = action
 
-        pts_on_line = self.pts_to_anchor(self.anchors[orientation_idx],
+        pts_on_line = self.pts_to_anchor(self.anchors[::int(self.num_of_sensors/4)][orientation_idx],
                                          filterout=False)[0]
         self.pt = pts_on_line
         self.state.touching = False

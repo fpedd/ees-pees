@@ -5,9 +5,9 @@ import time
 import webotsgym.utils as utils
 import webotsgym.automate as automate
 from webotsgym.config import WebotConfig
-from webotsgym.action import DiscreteAction
+from webotsgym.action import DiscreteAction, GridAction
 from webotsgym.evaluate import Evaluate
-from webotsgym.observation import Observation
+from webotsgym.observation import Observation, GridObservation
 from webotsgym.communicate import Com
 
 
@@ -16,8 +16,8 @@ class WebotsEnv(gym.Env):
                  seed=None,
                  gps_target=(1, 1),
                  train=False,
-                 start_controller=False,
                  action_class=DiscreteAction,
+                 request_start_data=True,
                  evaluate_class=Evaluate,
                  observation_class=Observation,
                  config: WebotConfig = WebotConfig()):
@@ -46,11 +46,8 @@ class WebotsEnv(gym.Env):
         self._setup_train()
         self._init_com()
 
-        if train is False and start_controller is True:
-            self.external_controller = automate.ExtCtrl()
-            self.external_controller.init()
-
-        self.send_data_request()
+        if request_start_data:
+            self.send_data_request()
     # =========================================================================
     # ====================       IMPORTANT PROPERTIES       ===================
     # =========================================================================
@@ -83,11 +80,11 @@ class WebotsEnv(gym.Env):
         np.random.seed(seed)
         self.seeds.extend(utils.seed_list(seed, n=1000))
 
-    def get_next_seed(self):
-        """Get next random seed, increment next_seed_idx."""
-        seed = self.seeds[self.next_seed_idx]
-        self.next_seed_idx += 1
-        return seed
+    # def get_next_seed(self):
+    #     """Get next random seed, increment next_seed_idx."""
+    #     seed = self.seeds[self.next_seed_idx]
+    #     self.next_seed_idx += 1
+    #     return seed
 
     @property
     def main_seed(self):
@@ -136,18 +133,21 @@ class WebotsEnv(gym.Env):
 
         Handled inside com class.
         """
-        time.sleep(self.config.step_wait_time)
+        if self.action_class.type == "grid":
+            raise TypeError("Grid action class must be used in WebotsGrid.")
 
         pre_action = self.state.get_pre_action()
         action = self.action_class.map(action, pre_action)
         self.send_command_and_data_request(action)
 
         reward = self.calc_reward()
+        done = self.check_done()
+
+        # logging, printing
         self.rewards.append(reward)
         self.distances.append(self.get_target_distance())
-        if len(self.history) % 250 == 0:
+        if len(self.history) % 500 == 0:
             print("Reward (", len(self.history), ")\t", reward)
-        done = self.check_done()
 
         return self.observation, reward, done, {}
 
@@ -163,17 +163,23 @@ class WebotsEnv(gym.Env):
         """Reset environment to random."""
         if self.supervisor_connected is True:
             self.reset_history.append(time.time())
-            # print("TIME FOR RESET:", self.reset_history[-1] - self.reset_history[-2])
 
             seed = utils.set_random_seed(apply=False)
             self.seed(seed)
             # print("resetting with seed: ", seed)
-            self.supervisor.reset_environment(self.main_seed)
+            # self.supervisor.reset_environment(self.main_seed)
+            # this leads to breakdown of robbie
+            self.supervisor.start_env(self.main_seed)
             # print("========= TARGET", self.config.gps_target)
+
+            self.rewards = []
+            self.distances = []
 
             self._init_com()
             self.send_data_request()
-            # print("========= DISTANCE", self.get_target_distance())
+
+            if self.get_target_distance(False) < 0.05:
+                self.reset()
 
             return self.observation
 
@@ -185,6 +191,16 @@ class WebotsEnv(gym.Env):
     def render(self):
         """Render dummy, does nothing."""
         pass
+
+    # =========================================================================
+    # ==============================   PLOTTING   =============================
+    # =========================================================================
+    def plot_lidar(self, relative=False):
+        if relative is True:
+            data = self.state.lidar_relative
+        else:
+            data = self.state.lidar_absolute
+        utils.plot_lidar(data)
 
     # =========================================================================
     # ========================   HELPER / PROPERTIES   ========================
@@ -205,18 +221,39 @@ class WebotsEnv(gym.Env):
         self.com.recv()
         self._update_history()
 
+    def _time_for_requests(self, requests=1000):
+        t0 = time.time()
+        for _ in range(requests):
+            self.send_data_request()
+        return time.time() - t0
+
+    def _time_for_actions(self, actions=1000):
+        t0 = time.time()
+        for _ in range(actions):
+            h = np.random.random() * 2 - 1
+            s = np.random.random() * 2 - 1
+            self.step((h, s))
+        return time.time() - t0
+
     def _update_history(self):
         """Add current state of Com to history."""
         self.history[self.i] = self.state
         self.i += 1
 
-    def get_target_distance(self):
+    def get_target_distance(self, normalized=False):
         """Calculate euklidian distance to target."""
-        return utils.euklidian_distance(self.gps_actual, self.gps_target)
+        distance = utils.euklidian_distance(self.gps_actual, self.gps_target)
+        if normalized is True:
+            distance = distance / self.max_distance
+        return distance
 
     @property
     def iterations(self):
         return len(self.history)
+
+    @property
+    def total_reward(self):
+        return sum(self.rewards)
 
     @property
     def gps_actual(self):
@@ -225,3 +262,41 @@ class WebotsEnv(gym.Env):
     @property
     def max_distance(self):
         return np.sqrt(2) * self.config.world_size
+
+
+class WebotsGrid(WebotsEnv):
+    def __init__(self, seed=None, gps_target=(1, 1),
+                 train=False, evaluate_class=Evaluate,
+                 config: WebotConfig = WebotConfig()):
+        config.world_scaling = 0.5
+        super(WebotsGrid, self).__init__(seed=seed,
+                                         gps_target=gps_target,
+                                         train=train,
+                                         action_class=GridAction,
+                                         evaluate_class=Evaluate,
+                                         observation_class=GridObservation,
+                                         config=config)
+
+    def step(self, action):
+        """Perform action on environment.
+
+        Handled inside com class.
+        """
+        if self.action_class.type != "grid":
+            raise TypeError("WebotsGrid need grid action class.")
+
+        self.state._action_denied = 0
+        if self.observation_class.lidar[action] < 1:
+            self.state._action_denied = 1
+        else:
+            action = self.action_class.map(action)
+            self.com.send_discrete_move(action)
+            self.com._wait_for_discrete_done()
+
+        reward = self.calc_reward()
+        done = self.check_done()
+
+        # logging, printing
+        self.rewards.append(reward)
+        self.distances.append(self.get_target_distance())
+        return self.observation, reward, done, {}
