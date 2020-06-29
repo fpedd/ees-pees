@@ -250,18 +250,12 @@ int compare_direction(double *vec1, double *vec2, int size) {
 int touching(data_from_wb_msg_t data_from_wb) {
 
 	int touching = 0;
-	int currently_touching = 0;
 	for (int i=0; i<DIST_VECS; i++) {
 		if (data_from_wb.distance[i] < silhouette[i] && currently_touching == 0) {
-			currently_touching = 1;
-		} else if (!(data_from_wb.distance[i] < silhouette[i]) && currently_touching == 1) {
-			currently_touching = 0;
-			touching ++;
-		}
+			touching = 1;
+			printf("SAFE: !CRASH! !CRASH! !CRASH! !CRASH! !CRASH! \n");
 	}
-	if (touching != 0) {
-		printf("SAFE: !CRASH! !CRASH! !CRASH! !CRASH! !CRASH! \n");
-	}
+
 	return touching;
 }
 
