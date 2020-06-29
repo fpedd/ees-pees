@@ -121,10 +121,10 @@ int main(int argc, char **argv) {
 		// printf("receiving Message on Webots Controller\n");
 		internal_recv(&buf);
 
-		printf("===========RECEIVED=========\n");
-		printf("Steering:    %f\n", buf.heading);
-		printf("Motor Speed: %f\n", buf.speed);
-		printf("============================\n");
+		// printf("===========RECEIVED=========\n");
+		// printf("Steering:    %f\n", buf.heading);
+		// printf("Motor Speed: %f\n", buf.speed);
+		// printf("============================\n");
 
 		// Set motor speed and steering
 		wb_motor_set_position(steer, buf.heading);
