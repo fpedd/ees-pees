@@ -153,6 +153,7 @@ class WebotsEnv(gym.Env):
 
     def calc_reward(self):
         """Calc reward with evaluate class."""
+        print("i am in here")
         return self.evaluate_class.calc_reward()
 
     def check_done(self):
@@ -309,6 +310,7 @@ class WebotsGrid(WebotsEnv):
         super().reset()
         len = int(self.config.world_size * self.config.world_scaling) * 2 + 1
         self.visited_count = np.zeros((len, len))
+        return self.observation
 
     @property
     def gps_visited_count(self):
