@@ -85,7 +85,10 @@ def id_in_range(low, high, num_of_actions, value):
 
 
 def get_line(start, end):
+    """Bresenheim's Line Algorithm.
 
+    From: https://stackoverflow.com/questions/54353083/
+    """
     # Setup initial conditions
     x1, y1 = start
     x2, y2 = end

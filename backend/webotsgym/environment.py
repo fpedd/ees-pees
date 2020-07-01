@@ -159,12 +159,13 @@ class WebotsEnv(gym.Env):
         """Check done."""
         return self.evaluate_class.check_done()
 
-    def reset(self):
+    def reset(self, seed=None):
         """Reset environment to random."""
         if self.supervisor_connected is True:
             self.reset_history.append(time.time())
 
-            seed = utils.set_random_seed(apply=False)
+            if seed is None:
+                seed = utils.set_random_seed(apply=False)
             self.seed(seed)
             # print("resetting with seed: ", seed)
             # self.supervisor.reset_environment(self.main_seed)
@@ -276,6 +277,8 @@ class WebotsGrid(WebotsEnv):
                                          evaluate_class=Evaluate,
                                          observation_class=GridObservation,
                                          config=config)
+        len = int(config.world_size * config.world_scaling) * 2 + 1
+        self.visited_count = np.zeros((len, len))
 
     def step(self, action):
         """Perform action on environment.
@@ -293,6 +296,7 @@ class WebotsGrid(WebotsEnv):
             self.com.send_discrete_move(action)
             self.com._wait_for_discrete_done()
 
+        self.visited_count[self.gps_actual_scaled] += 1
         reward = self.calc_reward()
         done = self.check_done()
 
@@ -300,3 +304,16 @@ class WebotsGrid(WebotsEnv):
         self.rewards.append(reward)
         self.distances.append(self.get_target_distance())
         return self.observation, reward, done, {}
+
+    def reset(self):
+        super().reset()
+        len = int(self.config.world_size * self.config.world_scaling) * 2 + 1
+        self.visited_count = np.zeros((len, len))
+
+    @property
+    def gps_visited_count(self):
+        return self.visited_count[self.gps_actual_scaled]
+
+    @property
+    def gps_actual_scaled(self):
+        return tuple(np.round(0.5 + np.array(self.gps_actual) * 2).astype(int))
