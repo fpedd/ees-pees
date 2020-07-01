@@ -305,6 +305,7 @@ class WebotsGrid(WebotsEnv):
         # logging, printing
         self.rewards.append(reward)
         self.distances.append(self.get_target_distance())
+        self.time_steps += 1
         return self.observation, reward, done, {}
 
     def reset(self, seed=None):
