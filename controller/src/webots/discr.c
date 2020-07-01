@@ -73,11 +73,12 @@ int discr_step(cmd_to_wb_msg_t *cmd_to_wb, cmd_from_bcknd_msg_t cmd_from_bcknd,
 	//print_cood(data_to_bcknd.actual_gps, target);
 
 	// revert to former target
-	if (action_denied != 0) {
-		printf("DISCR: Reverted from target [%.2f,%.2f] to [%.2f,%.2f]\n", target[0], target[1], last_target[0], last_target[1]);
-		target[0] = last_target[0];
-		target[1] = last_target[1];
-	}
+	// TODO: the action denied is too strict, we need to fix this
+	// if (action_denied != 0) {
+	// 	printf("DISCR: Reverted from target [%.2f,%.2f] to [%.2f,%.2f]\n", target[0], target[1], last_target[0], last_target[1]);
+	// 	target[0] = last_target[0];
+	// 	target[1] = last_target[1];
+	// }
 
 	return navigate(cmd_to_wb, data_to_bcknd, init_data, target);
 }

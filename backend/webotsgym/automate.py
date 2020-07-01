@@ -115,7 +115,7 @@ class WebotCtrl():
                            self.config.num_obstacles,
                            self.config.world_size,
                            self.config.world_scaling)
-        print("sending: env")
+        print("sending: start env", int(self.config.sim_mode))
         self.client_sock.send(data)
         time.sleep(waiting_time)
         self.get_metadata()

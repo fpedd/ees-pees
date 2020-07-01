@@ -20,7 +20,7 @@ int navi_init() {
 	                   0.0,   // k_d
 	                  -1.0,   // min
 	                   1.0,   // max
-	                   0.01,  // deadband
+	                   0.03,  // deadband
 	                   NORM); // special function?
 
 	return 0;
