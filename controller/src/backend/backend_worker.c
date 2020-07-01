@@ -47,6 +47,7 @@ void *backend_worker(void *ptr) {
 				pthread_mutex_lock(arg_struct->itc_data_lock);
 				memcpy(&data_to_bcknd, arg_struct->itc_data, sizeof(data_to_bcknd_msg_t));
 				arg_struct->itc_data->action_denied = 0;
+				arg_struct->itc_data->touching = 0;
 				pthread_mutex_unlock(arg_struct->itc_data_lock);
 
 				// Transmit data to backend
@@ -65,6 +66,7 @@ void *backend_worker(void *ptr) {
 				pthread_mutex_lock(arg_struct->itc_data_lock);
 				memcpy(&data_to_bcknd, arg_struct->itc_data, sizeof(data_to_bcknd_msg_t));
 				arg_struct->itc_data->action_denied = 0;
+				arg_struct->itc_data->touching = 0;
 				pthread_mutex_unlock(arg_struct->itc_data_lock);
 
 				// Transmit data to backend
