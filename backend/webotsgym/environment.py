@@ -279,6 +279,7 @@ class WebotsGrid(WebotsEnv):
                                          config=config)
         len = int(config.world_size * config.world_scaling) * 2 + 1
         self.visited_count = np.zeros((len, len))
+        self.time_steps = 0
 
     def step(self, action):
         """Perform action on environment.
@@ -298,6 +299,7 @@ class WebotsGrid(WebotsEnv):
 
         self.visited_count[self.gps_actual_scaled] += 1
         reward = self.calc_reward()
+        self.rewards.append(reward)
         done = self.check_done()
 
         # logging, printing
@@ -307,6 +309,8 @@ class WebotsGrid(WebotsEnv):
 
     def reset(self, seed=None):
         super().reset(seed)
+        self.time_steps = 0
+
         len = int(self.config.world_size * self.config.world_scaling) * 2 + 1
         self.visited_count = np.zeros((len, len))
         return self.observation
