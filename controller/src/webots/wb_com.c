@@ -15,12 +15,12 @@ void wb_init_com(){
 }
 
 
-int wb_send(ext_to_wb_msg_t data) {
+int wb_send(cmd_to_wb_msg_t data) {
 
-	int len = tcp_send((char *) &data, sizeof(ext_to_wb_msg_t));
-	if (len < (int) sizeof(ext_to_wb_msg_t)) {
+	int len = tcp_send((char *) &data, sizeof(cmd_to_wb_msg_t));
+	if (len < (int) sizeof(cmd_to_wb_msg_t)) {
 		fprintf(stderr, "WB_COM: wb_send did not send complete data, is %d, should %ld \n",
-		       len, sizeof(ext_to_wb_msg_t));
+		       len, sizeof(cmd_to_wb_msg_t));
 	}
 
 	return 0;
@@ -33,21 +33,21 @@ int wb_recv_init(init_to_ext_msg_t *data){
 	int len = tcp_recv((char *)data, sizeof(init_to_ext_msg_t));
 	if (len != (int) sizeof(init_to_ext_msg_t)) {
 		fprintf(stderr, "WB_COM: wb_recv did not receive complete data, is %d, should %ld \n",
-		       len, sizeof(ext_to_wb_msg_t));
+		       len, sizeof(cmd_to_wb_msg_t));
 	}
 
 	return 0;
 }
 
 
-int wb_recv(wb_to_ext_msg_t *data) {
+int wb_recv(data_from_wb_msg_t *data) {
 
-	memset(data, 0, sizeof(wb_to_ext_msg_t));
+	memset(data, 0, sizeof(data_from_wb_msg_t));
 
-	int len = tcp_recv((char *)data, sizeof(wb_to_ext_msg_t));
-	if (len != (int) sizeof(wb_to_ext_msg_t)) {
+	int len = tcp_recv((char *)data, sizeof(data_from_wb_msg_t));
+	if (len != (int) sizeof(data_from_wb_msg_t)) {
 		fprintf(stderr, "WB_COM: wb_recv did not receive complete data, is %d, should %ld \n",
-		       len, sizeof(wb_to_ext_msg_t));
+		       len, sizeof(data_from_wb_msg_t));
 	}
 
 	return 0;
@@ -60,8 +60,8 @@ void wb_test_com(){
 
 	while(1) {
 
-		wb_to_ext_msg_t test_buf;
-		memset(&test_buf, 0, sizeof(wb_to_ext_msg_t));
+		data_from_wb_msg_t test_buf;
+		memset(&test_buf, 0, sizeof(data_from_wb_msg_t));
 
 		// printf("receiving test_msg on ext Controller\n");
 		wb_recv(&test_buf);
@@ -71,8 +71,8 @@ void wb_test_com(){
 		printf("============================\n");
 
 
-		ext_to_wb_msg_t test_msg;
-		memset(&test_msg, 0, sizeof(ext_to_wb_msg_t));
+		cmd_to_wb_msg_t test_msg;
+		memset(&test_msg, 0, sizeof(cmd_to_wb_msg_t));
 
 		test_msg.heading = 0.8;
 		test_msg.speed = -0.20;

@@ -81,8 +81,8 @@ copy or merge your changes into one of the corresponding three branches.
 ## C/C++ Coding Guide
 
 #### Whitespace
-* Indent with 4 spaces, not tabs. This way we will stay (mostly) consistent with
-  Python and Webots.
+* Indent with tabs, not spaces. This way we will not stay consistent with
+  Python and Webots, but who cares :D 
 * End file with a new line (as requested per C99 standard).
 * Use empty line to divide code into logical chunks.
 * Put spaces around binary operators : `x <= 2 && y > 10` is way easier to read than `x<=2&&y>10`.

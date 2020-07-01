@@ -27,6 +27,8 @@ double get_time() {
 	return (double)time_raw.tv_sec + ((double)time_raw.tv_nsec / (double)1000000000);
 }
 
+
+
 double heading_in_norm(double x, double y, double z) {
 
 	double heading = -atan2(z, x) / M_PI;

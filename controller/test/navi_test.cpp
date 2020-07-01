@@ -4,65 +4,83 @@
 
 TEST(navi, get_heading) {
 
-	float start1[] = {0, 0};
+	data_to_bcknd_msg_t data_to_bcknd;
+
+	data_to_bcknd.actual_gps[0] = 0;
+	data_to_bcknd.actual_gps[1] = 0;
 	float dest1[] = {0, 1};
-	ASSERT_NEAR(navi_get_heading(start1, dest1), 0.0, 1.0e-10);
+	ASSERT_NEAR(navi_get_heading(data_to_bcknd, dest1), 0.0, 1.0e-10);
 
-	float start2[] = {0, 0};
+	data_to_bcknd.actual_gps[0] = 0;
+	data_to_bcknd.actual_gps[1] = 0;
 	float dest2[] = {1, 0};
-	ASSERT_NEAR(navi_get_heading(start2, dest2), -0.5, 1.0e-10);
+	ASSERT_NEAR(navi_get_heading(data_to_bcknd, dest2), -0.5, 1.0e-10);
 
-	float start3[] = {0, 0};
+	data_to_bcknd.actual_gps[0] = 0;
+	data_to_bcknd.actual_gps[1] = 0;
 	float dest3[] = {-1, 0};
-	ASSERT_NEAR(navi_get_heading(start3, dest3), 0.5, 1.0e-10);
+	ASSERT_NEAR(navi_get_heading(data_to_bcknd, dest3), 0.5, 1.0e-10);
 
-	float start4[] = {0, 0};
+	data_to_bcknd.actual_gps[0] = 0;
+	data_to_bcknd.actual_gps[1] = 0;
 	float dest4[] = {1, 1};
-	ASSERT_NEAR(navi_get_heading(start4, dest4), -0.25, 1.0e-10);
+	ASSERT_NEAR(navi_get_heading(data_to_bcknd, dest4), -0.25, 1.0e-10);
 
-	float start5[] = {0, 0};
+	data_to_bcknd.actual_gps[0] = 0;
+	data_to_bcknd.actual_gps[1] = 0;
 	float dest5[] = {0, -1};
-	ASSERT_NEAR(navi_get_heading(start5, dest5), 1.0, 1.0e-10);
+	ASSERT_NEAR(navi_get_heading(data_to_bcknd, dest5), 1.0, 1.0e-10);
 
-	float start6[] = {0, 0};
+	data_to_bcknd.actual_gps[0] = 0;
+	data_to_bcknd.actual_gps[1] = 0;
 	float dest6[] = {-1, -1};
-	ASSERT_NEAR(navi_get_heading(start6, dest6), 0.75, 1.0e-10);
+	ASSERT_NEAR(navi_get_heading(data_to_bcknd, dest6), 0.75, 1.0e-10);
 
-	float start7[] = {0, 0};
+	data_to_bcknd.actual_gps[0] = 0;
+	data_to_bcknd.actual_gps[1] = 0;
 	float dest7[] = {0, 0};
-	ASSERT_NEAR(navi_get_heading(start7, dest7), 0.0, 1.0e-10);
+	ASSERT_NEAR(navi_get_heading(data_to_bcknd, dest7), 0.0, 1.0e-10);
 
 }
 
 TEST(navi, get_distance) {
 
-	float start1[] = {0, 0};
+	data_to_bcknd_msg_t data_to_bcknd;
+
+	data_to_bcknd.actual_gps[0] = 0;
+	data_to_bcknd.actual_gps[1] = 0;
 	float dest1[] = {0, 1};
-	ASSERT_NEAR(navi_get_distance(start1, dest1), 1.0, 1.0e-5);
+	ASSERT_NEAR(navi_get_distance(data_to_bcknd, dest1), 1.0, 1.0e-5);
 
-	float start2[] = {0, 0};
+	data_to_bcknd.actual_gps[0] = 0;
+	data_to_bcknd.actual_gps[1] = 0;
 	float dest2[] = {1, 0};
-	ASSERT_NEAR(navi_get_distance(start2, dest2), 1.0, 1.0e-5);
+	ASSERT_NEAR(navi_get_distance(data_to_bcknd, dest2), 1.0, 1.0e-5);
 
-	float start3[] = {0, 0};
+	data_to_bcknd.actual_gps[0] = 0;
+	data_to_bcknd.actual_gps[1] = 0;
 	float dest3[] = {-1, 0};
-	ASSERT_NEAR(navi_get_distance(start3, dest3), 1.0, 1.0e-5);
+	ASSERT_NEAR(navi_get_distance(data_to_bcknd, dest3), 1.0, 1.0e-5);
 
-	float start4[] = {0, 0};
+	data_to_bcknd.actual_gps[0] = 0;
+	data_to_bcknd.actual_gps[1] = 0;
 	float dest4[] = {1, 1};
-	ASSERT_NEAR(navi_get_distance(start4, dest4), 1.41421356237, 1.0e-5);
+	ASSERT_NEAR(navi_get_distance(data_to_bcknd, dest4), 1.41421356237, 1.0e-5);
 
-	float start5[] = {0, 0};
+	data_to_bcknd.actual_gps[0] = 0;
+	data_to_bcknd.actual_gps[1] = 0;
 	float dest5[] = {0, -1};
-	ASSERT_NEAR(navi_get_distance(start5, dest5), 1.0, 1.0e-5);
+	ASSERT_NEAR(navi_get_distance(data_to_bcknd, dest5), 1.0, 1.0e-5);
 
-	float start6[] = {0, 0};
+	data_to_bcknd.actual_gps[0] = 0;
+	data_to_bcknd.actual_gps[1] = 0;
 	float dest6[] = {-1, -1};
-	ASSERT_NEAR(navi_get_distance(start6, dest6), 1.41421356237, 1.0e-5);
+	ASSERT_NEAR(navi_get_distance(data_to_bcknd, dest6), 1.41421356237, 1.0e-5);
 
-	float start7[] = {0, 0};
+	data_to_bcknd.actual_gps[0] = 0;
+	data_to_bcknd.actual_gps[1] = 0;
 	float dest7[] = {0, 0};
-	ASSERT_NEAR(navi_get_distance(start7, dest7), 0.0, 1.0e-5);
+	ASSERT_NEAR(navi_get_distance(data_to_bcknd, dest7), 0.0, 1.0e-5);
 
 }
 

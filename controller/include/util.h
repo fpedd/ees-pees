@@ -8,13 +8,14 @@
 #include "backend/backend_com.h"
 
 #define min(X, Y) (((X) < (Y)) ? (X) : (Y))
+#define min_floor(X, Y) ((min(X, Y) < 0) ? 0 : min(X, Y))
 #define max(X, Y) (((X) > (Y)) ? (X) : (Y))
 
 typedef struct {
-	ext_to_bcknd_msg_t *ext_to_bcknd;
-	pthread_mutex_t    *ext_to_bcknd_lock;
-	bcknd_to_ext_msg_t *bcknd_to_ext;
-	pthread_mutex_t    *bcknd_to_ext_lock;
+	data_to_bcknd_msg_t *itc_data;
+	pthread_mutex_t    *itc_data_lock;
+	cmd_from_bcknd_msg_t *itc_cmd;
+	pthread_mutex_t    *itc_cmd_lock;
 } arg_struct_t;
 
 int time_diff_start(double *time);

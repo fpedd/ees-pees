@@ -72,7 +72,7 @@ typedef struct {
 	double actual_gps[3];         // coordiantes where the robot is
 	double compass[3];            // direction the front of the robot points in
 	float distance[DIST_VECS];    // distance to the next object from robot prespective
-} __attribute__((packed)) wb_to_ext_msg_t;
+} __attribute__((packed)) data_from_wb_msg_t;
 ```
 * sim_time is the current time (in seconds) starting at 0 when the simulation starts.
 * current_speed is the robots current speed (in m/s) measured by the gps
@@ -84,7 +84,7 @@ typedef struct {
 typedef struct {
 	double heading;               // the direction the robot should move in next
 	double speed;                 // the speed the robot should drive at
-} __attribute__((packed)) ext_to_wb_msg_t;
+} __attribute__((packed)) cmd_to_wb_msg_t;
 ```
 * the heading value tells the robot at which angle it positions its back axle. It _can_ range from 0 to 1 but should be between 0,25 and 0,75 to avoid clipping. 0,5 is used to drive straight
 * speed gives the webots motor a value. It should be between -max_speed and +max_speed. Negative numbers mean the robot is driving forwards (ONLY INTERNALLY, values from backend should have the more intuitive positive=forward format)
@@ -117,7 +117,7 @@ typedef struct {
 	unsigned int action_denied;    // did we have to take over control for saftey reasons
 	unsigned int discr_act_done;   // did the robot complete its discrete action
 	float distance[DIST_VECS];     // distance to the next object from robot prespective
-} __attribute__((packed)) ext_to_bcknd_msg_t;
+} __attribute__((packed)) data_to_bcknd_msg_t;
 
 // external controller <-- backend
 typedef struct {
@@ -128,7 +128,7 @@ typedef struct {
 	enum direction_type dir_type;  // heading or steering command from backend
 	float heading;                 // the direction the robot should move in next [-1, 1]
 	float speed;                   // the speed the robot should drive at [-1, 1]
-} __attribute__((packed)) bcknd_to_ext_msg_t;
+} __attribute__((packed)) cmd_from_bcknd_msg_t;
 ```
 
 Variables inside the messages with `(internal)` next to them should never be written

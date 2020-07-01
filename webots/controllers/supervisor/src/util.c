@@ -30,6 +30,6 @@ double get_time() {
     return (double)time_raw.tv_sec + ((double)time_raw.tv_nsec / (double)1000000000);
 }
 
-int rand_int(int min, int max) {
-	return (rand() % (max + 1 - min)) + min;
+int rand_int(int max) {
+	return rand() % max;
 }
