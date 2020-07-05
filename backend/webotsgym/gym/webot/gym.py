@@ -1,14 +1,14 @@
 import numpy as np
-import gym
+import env
 import time
 
 import webotsgym.utils as utils
 from webotsgym import WbtConfig
-from webotsgym.gym import WbtActContinuous, WbtObs, WbtReward
+from webotsgym.env import WbtActContinuous, WbtObs, WbtReward
 from webotsgym.com import WbtCtrl, Communication
 
 
-class WbtGym(gym.Env):
+class WbtGym(env.Env):
     def __init__(self,
                  seed=None,
                  gps_target=(1, 1),
@@ -35,10 +35,10 @@ class WbtGym(gym.Env):
         # init action, reward, observation
         self.action_class = action_class
         self.evaluate_class = evaluate_class
-        self.obscommervation_class = observation_class
+        self.obscomervation_class = observation_class
         self._init_act_rew_obs(self)
 
-        # communication and supervisor
+        # comunication and supervisor
         self.train = train
         self._setup_train()
         self._init_com()
@@ -135,7 +135,7 @@ class WbtGym(gym.Env):
 
         pre_action = self.state.get_pre_action()
         action = self.action_class.map(action, pre_action)
-        self.send_command_and_data_request(action)
+        self.send_comand_and_data_request(action)
 
         reward = self.calc_reward()
         done = self.check_done()
@@ -207,11 +207,11 @@ class WbtGym(gym.Env):
         self.com.send_data_request()
         self._update_history()
 
-    def send_command(self, action):
-        self.com.send_command(action)
+    def send_comand(self, action):
+        self.com.send_comand(action)
 
-    def send_command_and_data_request(self, action):
-        self.com.send_command_and_data_request(action)
+    def send_comand_and_data_request(self, action):
+        self.com.send_comand_and_data_request(action)
         self._update_history()
 
     def recv(self):

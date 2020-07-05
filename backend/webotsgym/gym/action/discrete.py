@@ -1,9 +1,9 @@
-from gym.spaces import Discrete, Tuple
+from env.spaces import Discrete, Tuple
 import numpy as np
 
 from webotsgym.action import WbtAct
 from webotsgym.utils import add_tuples
-from webotsgym.comm import ActionOut
+from webotsgym.com import ActionOut
 
 
 class WbtActDiscrete(WbtAct):

@@ -1,9 +1,9 @@
-from gym.spaces import Box
+from env.spaces import Box
 import numpy as np
 
 from webotsgym.action import WbtAct
 from webotsgym.utils import add_tuples
-from webotsgym.comm import ActionOut
+from webotsgym.com import ActionOut
 
 
 class WbtActContinuous(WbtAct):

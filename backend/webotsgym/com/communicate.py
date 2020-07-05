@@ -2,7 +2,7 @@ import socket
 import time
 
 from webotsgym.config import WbtConfig, SimSpeedMode, DiscreteMove
-from webotsgym.comm import PacketIn, PacketOut, WbtState, PacketType, DirectionType  # noqa E501
+from webotsgym.com import PacketIn, PacketOut, WbtState, PacketType, DirectionType  # noqa E501
 
 
 class Communication():
@@ -60,11 +60,11 @@ class Communication():
         time.sleep(self.wait_time)
         self.recv()
 
-    def send_command(self, action):
+    def send_comand(self, action):
         pack_out = PacketOut(self.msg_cnt, PacketType.COM, DiscreteMove.NONE, self.dir_type, action)
         self.send(pack_out)
 
-    def send_command_and_data_request(self, action):
+    def send_comand_and_data_request(self, action):
         pack_out = PacketOut(self.msg_cnt, PacketType.COM_REQ, DiscreteMove.NONE, self.dir_type, action)
         self.send(pack_out)
         time.sleep(self.wait_time)

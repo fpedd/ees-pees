@@ -8,8 +8,8 @@ import os
 
 from webotsgym.config import WebotConfig
 import webotsgym.utils as utils
-from webotsgym.comm.automate import get_repo_dir
-from webotsgym.comm.automate import ExtCtrl
+from webotsgym.com.automate import get_repo_dir
+from webotsgym.com.automate import ExtCtrl
 
 
 class FunctionCode(IntEnum):
@@ -36,14 +36,14 @@ class WbtCtrl():
         self.extr_ctrl = ExtCtrl()
 
     def init(self):
-        """Init webots, gymironment and external controller."""
+        """Init webots, environment and external controller."""
         self.compile_program()
         self.start_program()
         self.establish_connection()
         self.extr_ctrl.init()
 
     def close(self):
-        """Close webots gymironment."""
+        """Close webots environment."""
         self.close_connection()
         self.close_program()
         self.extr_ctrl.close()
@@ -71,7 +71,7 @@ class WbtCtrl():
         if self.is_program_started() is False:
             # start webots with the path of the world as argument
             subprocess.Popen(["webots", os.path.join(get_repo_dir(),
-                "webots/worlds/training_gym.wbt")])
+                "webots/worlds/training_env.wbt")])
 
     def close_program(self):
         """Kill webots process."""
@@ -94,8 +94,8 @@ class WbtCtrl():
         """Close tcp connection to webot supervisor."""
         self.sock.close()
 
-    def start_gym(self, seed=None, waiting_time=1):
-        """Start gymironment with seed and config info."""
+    def start_env(self, seed=None, waiting_time=1):
+        """Start environment with seed and config info."""
         self.extr_ctrl.reset()
         if seed is None:
             seed = utils.set_random_seed()
@@ -106,37 +106,37 @@ class WbtCtrl():
                            self.config.num_obstacles,
                            self.config.world_size,
                            self.config.world_scaling)
-        print("sending: start gym", int(self.config.sim_mode))
+        print("sending: start env", int(self.config.sim_mode))
         self.client_sock.send(data)
         time.sleep(waiting_time)
         self.get_metadata()
 
-        time.sleep(self.config.wait_gym_creation)
+        time.sleep(self.config.wait_env_creation)
 
     def get_metadata(self):
-        """Get current gymironment metadata."""
+        """Get current environment metadata."""
         buffer = self.client_sock.recv(self.config.PACKET_SIZE_S)
         self.return_code = struct.unpack('i', buffer[0:4])[0]
         self.config.sim_time_step = struct.unpack('i', buffer[4:8])[0]
         self.config.gps_target = struct.unpack('2f', buffer[8:16])
 
-    def reset_gymironment(self, seed=None, waiting_time=1):
-        """Reset gymironment with seed."""
+    def reset_environment(self, seed=None, waiting_time=1):
+        """Reset environment with seed."""
         self.extr_ctrl.reset()
         if seed is None:
             seed = utils.set_random_seed()
-        # gymironment sollte sein wie beim start der simulation
+        # environment sollte sein wie beim start der simulation
         data = struct.pack('iiiiif', FunctionCode.RESET, seed, 0, 0, 0, 0.0)
         print("sending: reset")
         self.client_sock.send(data)
         time.sleep(waiting_time)
         self.get_metadata()
 
-        time.sleep(self.config.wait_gym_reset)
+        time.sleep(self.config.wait_env_reset)
 
-    def close_gymironment(self):
-        """Close gymironment."""
-        # gymironment sollte sein wie beim start der simulation
+    def close_environment(self):
+        """Close environment."""
+        # environment sollte sein wie beim start der simulation
         data = struct.pack('iiiiif', FunctionCode.CLOSE, 0, 0, 0, 0, 0.0)
         print("sending: close")
         self.client_sock.send(data)

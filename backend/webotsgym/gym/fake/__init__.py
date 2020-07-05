@@ -1,3 +1,3 @@
-from webotsgym.gym.fake.gym import WbtGymFake
-from webotsgym.gym.fake.action import FakeAction
-from webotsgym.gym.fake.state import FakeState
+from webotsgym.env.fake.env import WbtGymFake
+from webotsgym.env.fake.action import FakeAction
+from webotsgym.env.fake.state import FakeState

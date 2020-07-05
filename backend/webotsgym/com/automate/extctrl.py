@@ -1,7 +1,7 @@
 import subprocess
 import os
 
-from webotsgym.comm.automate import get_repo_dir
+from webotsgym.com.automate import get_repo_dir
 
 
 class ExtCtrl():

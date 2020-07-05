@@ -1,7 +1,7 @@
 import numpy as np
 
-from webotsgym.gym.webot import WbtGym
-from webotsgym.gym.webot.grid import WbtActGrid, WbtObsGrid
+from webotsgym.env.webot import WbtGym
+from webotsgym.env.webot.grid import WbtActGrid, WbtObsGrid
 from webotsgym import WbtConfig
 
 

@@ -1,4 +1,4 @@
-from webotsgym.gym.webot import WbtGymGrid, WbtGymContinuous
-from webotsgym.gym.action import WbtActContinuous, WbtActDiscrete
-from webotsgym.gym.fake import WbtGymFake
-from webotsgym.gym.reward import WbtReward
+from webotsgym.env.webot import WbtGymGrid, WbtGymContinuous
+from webotsgym.env.action import WbtActContinuous, WbtActDiscrete
+from webotsgym.env.fake import WbtGymFake
+from webotsgym.env.reward import WbtReward

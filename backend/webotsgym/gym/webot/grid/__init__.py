@@ -1,3 +1,3 @@
-from webotsgym.gym.webot.grid.gym import WbtGymGrid
-from webotsgym.gym.webot.grid.action import WbtActGrid
-from webotsgym.gym.webot.grid.observation import WbtObsGrid
+from webotsgym.env.webot.grid.env import WbtGymGrid
+from webotsgym.env.webot.grid.action import WbtActGrid
+from webotsgym.env.webot.grid.observation import WbtObsGrid
