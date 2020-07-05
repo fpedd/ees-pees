@@ -49,7 +49,7 @@ class WbtConfig():
         self.seed = None
         self.sim_mode = SimSpeedMode.NORMAL
         self.num_obstacles = 10
-        self.world_size = 20
+        self.world_size = 8
         self._world_scaling = 0.25  # meters: 20*0.25 -> 5m x 5m
 
         # (received) world metadata

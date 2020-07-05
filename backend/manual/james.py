@@ -44,7 +44,6 @@ class Keyboard():
             return False
 
 
-
 class James():
     def __init__(self, direction_type="heading"):
         action_class = ContinuousAction(direction_type=direction_type)

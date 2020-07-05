@@ -17,7 +17,7 @@ class WbtGym(gym.Env):
                  gps_target=(1, 1),
                  train=False,
                  action_class=WbtActContinuous,
-                 request_start_data=True,
+                 request_start_data=False,
                  evaluate_class=WbtReward,
                  observation_class=WbtObs,
                  config: WbtConfig = WbtConfig()):
@@ -27,13 +27,10 @@ class WbtGym(gym.Env):
         self._gps_target = gps_target
 
         # some general inits
-        self.i = 0
-        self.history = {}
+        self.history = []
         self.config = config
         self.distances = []
         self.rewards = []
-
-        self.reset_history = [time.time()]
 
         # init action, reward, observation
         self.action_class = action_class
@@ -46,8 +43,9 @@ class WbtGym(gym.Env):
         self._setup_train()
         self._init_com()
 
-        if request_start_data:
+        if request_start_data is True:
             self.send_data_request()
+
     # =========================================================================
     # ====================       IMPORTANT PROPERTIES       ===================
     # =========================================================================
@@ -155,20 +153,13 @@ class WbtGym(gym.Env):
     def reset(self, seed=None):
         """Reset environment to random."""
         if self.supervisor_connected is True:
-            self.reset_history.append(time.time())
-
             if seed is None:
                 seed = utils.set_random_seed(apply=False)
             self.seed(seed)
-            # print("resetting with seed: ", seed)
-            # self.supervisor.reset_environment(self.main_seed)
-            # this leads to breakdown of robbie
-            self.supervisor.start_env(self.main_seed)
-            # print("========= TARGET", self.config.gps_target)
 
+            self.supervisor.start_env(self.main_seed)
             self.rewards = []
             self.distances = []
-
             self._init_com()
             self.send_data_request()
 
@@ -231,8 +222,7 @@ class WbtGym(gym.Env):
 
     def _update_history(self):
         """Add current state of Com to history."""
-        self.history[self.i] = self.state
-        self.i += 1
+        self.history.append(self.state)
 
     def get_target_distance(self, normalized=False):
         """Calculate euklidian distance to target."""

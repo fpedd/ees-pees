@@ -1,4 +1,4 @@
-from enum import Enum
+from enum import IntEnum
 import time
 import numpy as np
 import struct
@@ -6,8 +6,7 @@ import struct
 from webotsgym.config import WbtConfig
 
 
-
-class PacketError(Enum):
+class PacketError(IntEnum):
     UNITILIZED = -1
     NO_ERROR = 0
     SIZE = 1
@@ -16,7 +15,7 @@ class PacketError(Enum):
     TIME = 4
 
 
-class PacketType(Enum):
+class PacketType(IntEnum):
     UNDEF = 0
     COM = 1
     REQ = 2
@@ -24,6 +23,7 @@ class PacketType(Enum):
 
 
 class PacketIn():
+    # TODO: should be filled by buffer -> state gets package as input ....
     def __init__(self, config: WbtConfig = WbtConfig()):
         self.config = config
         self.time_in = None
@@ -91,25 +91,10 @@ class ActionOut():
 class PacketOut():
     def __init__(self, msg_cnt, packet_type, discrete_move, direction_type,
                  action: ActionOut = ActionOut(action=(0, 0))):
-
         self.msg_cnt = msg_cnt
-        self.time = time.time()
-
-        if isinstance(packet_type, int):
-            self.packet_type = packet_type
-        else:
-            self.packet_type = packet_type.value
-
-        if isinstance(discrete_move, int):
-            self.discrete_move = discrete_move
-        else:
-            self.discrete_move = discrete_move.value
-
-        if isinstance(direction_type, int):
-            self.direction_type = direction_type
-        else:
-            self.direction_type = direction_type.value
-
+        self.packet_type = int(packet_type)
+        self.discrete_move = int(discrete_move)
+        self.direction_type = int(direction_type)
         self.action = action
 
     def pack(self):

@@ -4,7 +4,6 @@ import numpy as np
 from webotsgym.config import WbtConfig
 
 
-
 class WbtState():
     def __init__(self, config: WbtConfig = WbtConfig()):
         # meta
