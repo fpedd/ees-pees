@@ -20,7 +20,7 @@ class DiscreteMove(IntEnum):
     RIGHT = 4
 
 
-class WbtConfig(object):
+class WbtConfig():
 
     def __init__(self):
         # -------------------------- General Settings  ------------------------

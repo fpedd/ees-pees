@@ -1,8 +1,8 @@
 import socket
 import time
 
-from webotsgym.config import WbtConfig, SimSpeedMode, DiscreteMove
-from webotsgym.com import PacketIn, PacketOut, WbtState, PacketType, DirectionType  # noqa E501
+from webotsgym.config import WbtConfig, SimSpeedMode, DiscreteMove, DirectionType
+from webotsgym.com import PacketIn, PacketOut, WbtState, PacketType  # noqa E501
 
 
 class Communication():

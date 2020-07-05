@@ -6,7 +6,7 @@ from enum import IntEnum
 import psutil
 import os
 
-from webotsgym.config import WebotConfig
+from webotsgym.config import WbtConfig
 import webotsgym.utils as utils
 from webotsgym.com.automate import get_repo_dir
 from webotsgym.com.automate import ExtCtrl
@@ -27,7 +27,7 @@ class ReturnCode(IntEnum):
 
 
 class WbtCtrl():
-    def __init__(self, config: WebotConfig = WebotConfig()):
+    def __init__(self, config: WbtConfig = WbtConfig()):
         self.config = config
         self.sock = None
         self.client_sock = None

@@ -2,7 +2,8 @@ import numpy as np
 
 from webotsgym.env.webot import WbtGym
 from webotsgym.env.webot.grid import WbtActGrid, WbtObsGrid
-from webotsgym import WbtConfig
+from webotsgym.config import WbtConfig
+
 
 
 class WbtGymGrid(WbtGym):

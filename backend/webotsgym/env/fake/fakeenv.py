@@ -6,9 +6,10 @@ import gym
 from pathfinding.core.grid import Grid
 from pathfinding.finder.a_star import AStarFinder
 
-from webotsgym.env.fake import FakeState, FakeAction
-from webtosenv.env.util import get_line
-import webotsgum.utils as utils
+from webotsgym.env.fake.state import FakeState
+from webotsgym.env.fake.action import FakeAction
+from webotsgym.env.fake.util import get_line
+import webotsgym.utils as utils
 
 WALLSIZE = 1
 VAL_WALL = 1
@@ -17,7 +18,7 @@ VAL_ROBBIE = 4
 VAL_TARGET = 6
 
 
-class WbtGymFake(env.Env):
+class WbtGymFake(gym.Env):
     def __init__(self, seed=None, N=10, num_of_sensors=4, obstacles_each=4, step_range=(1, 1), obs=FakeState, obs_len=1):
         super(WbtGymFake, self).__init__()
 

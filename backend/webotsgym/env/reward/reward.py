@@ -1,5 +1,6 @@
-from webotsgym import WbtConfig
-from webotsgym.reward import step_penalty_04, step_penalty_tanh
+from webotsgym.config import WbtConfig
+
+from webotsgym.env.reward.steppenalty import step_penalty_04, step_penalty_tanh
 
 
 class WbtReward():

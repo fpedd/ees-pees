@@ -3,7 +3,8 @@ import time
 import numpy as np
 import struct
 
-from webotsgym import WbtConfig
+from webotsgym.config import WbtConfig
+
 
 
 class PacketError(Enum):

@@ -1,7 +1,7 @@
 from gym.spaces import Box
 import numpy as np
 
-from webotsgym.action import WbtAct
+from webotsgym.env.action import WbtAct
 from webotsgym.utils import add_tuples
 from webotsgym.com import ActionOut
 

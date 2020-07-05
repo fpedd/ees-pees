@@ -1,7 +1,8 @@
 import struct
 import numpy as np
 
-from webotsgym import WbtConfig
+from webotsgym.config import WbtConfig
+
 
 
 class WbtState():

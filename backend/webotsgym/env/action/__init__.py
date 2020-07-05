@@ -1,3 +1,3 @@
-from webotsgym.action.action import WbtAct
-from webotsgym.action.contiuous import WbtActContinuous
-from webotsgym.action.discrete import WbtActDiscrete
+from webotsgym.env.action.action import WbtAct
+from webotsgym.env.action.continuous import WbtActContinuous
+from webotsgym.env.action.discrete import WbtActDiscrete
