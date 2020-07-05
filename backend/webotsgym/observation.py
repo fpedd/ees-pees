@@ -33,6 +33,7 @@ class Observation():
         arr = np.hstack((arr, np.array(self.env.state.lidar_absolute)))
         return arr
 
+
 class StepObservation(Observation):
     def __init__(self, env):
         super(StepObservation, self).__init__(env)
@@ -44,7 +45,11 @@ class StepObservation(Observation):
 
     @property
     def lidar(self):
-        """Build new lidar function with average distance."""
+        """Build new lidar function with average distance.
+
+        TODO:
+        Rewrite lidar to grap lowest distance out of 30 sensors.
+        """
         dists = self.env.state.get_grid_distances(4)
         dists = np.flip(dists)
         roll = int(len(dists) / 4)
@@ -53,7 +58,7 @@ class StepObservation(Observation):
         return np.round(dists)
 
     def get(self):
-        """Get standard observation.
+        """Get step observation.
 
         sim_time:   1
         gps_actual: 2
@@ -74,7 +79,6 @@ class StepObservation(Observation):
         arr = np.hstack((arr, np.array(self.env.state.touching)))
         arr = np.hstack((arr, np.array(self.lidar)))
         return arr
-
 
 
 class GridObservation(Observation):

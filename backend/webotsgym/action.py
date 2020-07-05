@@ -57,6 +57,9 @@ class DiscreteAction(Action):
         1: top second to the left
         ...
         -1: bottom right
+
+    TODO:
+    Think and add a proper action space for discrete action in con space.
     """
 
     def __init__(self, directions=3, speeds=3, dspeed=0.2, dhead=0.2,
