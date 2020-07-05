@@ -3,12 +3,9 @@ import gym
 import time
 
 import webotsgym.utils as utils
-import webotsgym.automate as automate
-from webotsgym.config import WebotConfig
-from webotsgym.action import DiscreteAction, GridAction
-from webotsgym.evaluate import Evaluate
-from webotsgym.observation import Observation, GridObservation
-from webotsgym.communicate import Com
+from webotsgym import WbtConfig
+from webotsgym.gym import WbtActContinuous, WbtObs, WbtReward
+from webotsgym.comm import WbtCtrl, Communication
 
 
 class WbtGym(gym.Env):
@@ -16,12 +13,12 @@ class WbtGym(gym.Env):
                  seed=None,
                  gps_target=(1, 1),
                  train=False,
-                 action_class=DiscreteAction,
+                 action_class=WbtActContinuous,
                  request_start_data=True,
-                 evaluate_class=Evaluate,
-                 observation_class=Observation,
-                 config: WebotConfig = WebotConfig()):
-        super(webotsgym, self).__init__()
+                 evaluate_class=WbtReward,
+                 observation_class=WbtObs,
+                 config: WbtConfig = WbtConfig()):
+        super(WbtGym, self).__init__()
         self.seed(seed)
 
         self._gps_target = gps_target
@@ -95,13 +92,13 @@ class WbtGym(gym.Env):
     # ==========================        SETUPS       ==========================
     # =========================================================================
     def _init_com(self):
-        self.com = Com(self.config)
+        self.com = Communication(self.config)
 
     def _setup_train(self):
         self.supervisor = None
         if self.train is True:
             # start webots program, establish tcp connection
-            self.supervisor = automate.WebotCtrl(self.config)
+            self.supervisor = WbtCtrl(self.config)
             self.supervisor.init()
 
             # start environment and update config
@@ -263,6 +260,3 @@ class WbtGym(gym.Env):
     @property
     def max_distance(self):
         return np.sqrt(2) * self.config.world_size
-
-
-class WebotsGrid(WbtGym):

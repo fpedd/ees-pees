@@ -10,7 +10,7 @@ class Schnitty():
         self.dheading = 0.05
         self.dspeed = 0.05
         action_class = ContinuousAction(direction_type=direction_type)
-        self.env = environment.WebotsEnv(action_class=action_class)
+        self.env = environment.webotsgym(action_class=action_class)
         self._init_action()
         self.grid = False
 

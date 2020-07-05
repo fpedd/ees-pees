@@ -48,7 +48,7 @@ class Keyboard():
 class James():
     def __init__(self, direction_type="heading"):
         action_class = ContinuousAction(direction_type=direction_type)
-        self.env = environment.WebotsEnv(action_class=action_class)
+        self.env = environment.webotsgym(action_class=action_class)
         kb = Keyboard(self.callback)
         kb.action()
 
