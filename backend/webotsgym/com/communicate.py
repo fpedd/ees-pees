@@ -5,7 +5,7 @@ from webotsgym.config import WbtConfig, SimSpeedMode, DiscreteMove
 from webotsgym.comm import PacketIn, PacketOut, WbtState, PacketType, DirectionType  # noqa E501
 
 
-class Communication(object):
+class Communication():
     def __init__(self, config: WbtConfig = WbtConfig()):
         self.config = config
         self.msg_cnt = 0

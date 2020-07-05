@@ -9,67 +9,6 @@ from pathfinding.finder.a_star import AStarFinder
 import fakegym.utils as utils
 
 
-def no_mapping(self, action):
-    return action
-
-
-class ActionMapper(object):
-    def __init__(self):
-        self.action_space = None
-
-    def action_map(self, action):
-        return action
-
-
-class DiscreteAction(ActionMapper):
-    def __init__(self, num_of_directions, step_range, mode):
-        super(DiscreteAction, self).__init__()
-        self.num_of_directions = num_of_directions
-        self.step_range = step_range
-        self.steps = step_range[1] - step_range[0] + 1
-        self.mode = mode
-
-        if mode == "flatten":
-            self.action_space = spaces.Discrete(num_of_directions * self.steps)
-        elif mode == "tuple":
-            self.action_space = spaces.Tuple((spaces.Discrete(num_of_directions),
-                                              spaces.Discrete(self.steps)))
-
-    def action_map(self, action):
-        if self.mode == "flatten":
-            orientation = action % self.num_of_directions
-            step_length = int((action - orientation) / self.num_of_directions)
-        else:
-            orientation, step_length = action
-        return (orientation, step_length + self.step_range[0])
-
-
-class Observation():
-    def __init__(self, env):
-        self.gps_actual = None
-        self.gps_target = None
-        self.distance = None
-        self.touching = None
-
-    def _update(self, env):
-        self.gps_actual = env.state_object.gps_actual
-        self.gps_target = env.state_object.gps_target
-        self.distance = env.state_object.distance
-        self.touching = env.state_object.touching
-
-    def shape(self):
-        return (9, )
-
-    def get(self, env):
-        """Get observation as numpy array."""
-        self._update(env)
-        arr = np.empty(0)
-        for k, v in self.__dict__.items():
-            if k != "env":
-                arr = np.hstack((arr, np.array(v)))
-        return arr
-
-
 class FakeGym(gym.Env):
     def __init__(self, seed=None, N=10, num_of_sensors=4, obstacles_each=4,
                  step_range=(1, 1), action_type="discrete",
@@ -258,27 +197,6 @@ class FakeGym(gym.Env):
                 solves += 1
         return solves / test_cases
 
-
-WALLSIZE = 1
-VAL_WALL = 1
-VAL_OBSTACLE = 2
-VAL_ROBBIE = 4
-VAL_TARGET = 6
-
-
-class FakeState():
-    def __init__(self):
-        self.gps_actual = None
-        self.gps_target = None
-        self.distance = None
-        self.touching = 0
-
-    @property
-    def observation_shape(self):
-        if self.state_filled:
-            arr = self.get()
-            return arr.shape
-        return None
 
 
 class FakeCom():

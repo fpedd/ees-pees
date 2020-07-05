@@ -5,7 +5,7 @@ import time
 import webotsgym.utils as utils
 from webotsgym import WbtConfig
 from webotsgym.gym import WbtActContinuous, WbtObs, WbtReward
-from webotsgym.comm import WbtCtrl, Communication
+from webotsgym.com import WbtCtrl, Communication
 
 
 class WbtGym(gym.Env):
@@ -35,7 +35,7 @@ class WbtGym(gym.Env):
         # init action, reward, observation
         self.action_class = action_class
         self.evaluate_class = evaluate_class
-        self.observation_class = observation_class
+        self.obscommervation_class = observation_class
         self._init_act_rew_obs(self)
 
         # communication and supervisor
