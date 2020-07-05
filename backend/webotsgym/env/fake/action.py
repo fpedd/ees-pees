@@ -1,4 +1,4 @@
-from env import spaces
+from gym import spaces
 
 
 class FakeAction():

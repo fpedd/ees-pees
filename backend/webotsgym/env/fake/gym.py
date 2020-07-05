@@ -1,8 +1,8 @@
-from env import spaces
+from gym import spaces
 import numpy as np
 import matplotlib.pyplot as plt
 import copy
-import env
+import gym
 from pathfinding.core.grid import Grid
 from pathfinding.finder.a_star import AStarFinder
 

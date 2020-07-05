@@ -3,25 +3,22 @@ import gym
 import time
 
 import webotsgym.utils as utils
-import webotsgym.automate as automate
-from webotsgym.config import WebotConfig
-from webotsgym.action import DiscreteAction, GridAction
-from webotsgym.evaluate import Evaluate
-from webotsgym.observation import Observation, GridObservation
-from webotsgym.communicate import Com
+from webotsgym import WbtConfig
+from webotsgym.env import WbtActContinuous, WbtObs, WbtReward
+from webotsgym.com import WbtCtrl, Communication
 
 
-class WbtGym(gym.Env):
+class WbtGym(env.Env):
     def __init__(self,
                  seed=None,
                  gps_target=(1, 1),
                  train=False,
-                 action_class=DiscreteAction,
+                 action_class=WbtActContinuous,
                  request_start_data=True,
-                 evaluate_class=Evaluate,
-                 observation_class=Observation,
-                 config: WebotConfig = WebotConfig()):
-        super(webotsgym, self).__init__()
+                 evaluate_class=WbtReward,
+                 observation_class=WbtObs,
+                 config: WbtConfig = WbtConfig()):
+        super(WbtGym, self).__init__()
         self.seed(seed)
 
         self._gps_target = gps_target
@@ -38,10 +35,10 @@ class WbtGym(gym.Env):
         # init action, reward, observation
         self.action_class = action_class
         self.evaluate_class = evaluate_class
-        self.observation_class = observation_class
+        self.obscomervation_class = observation_class
         self._init_act_rew_obs(self)
 
-        # communication and supervisor
+        # comunication and supervisor
         self.train = train
         self._setup_train()
         self._init_com()
@@ -95,13 +92,13 @@ class WbtGym(gym.Env):
     # ==========================        SETUPS       ==========================
     # =========================================================================
     def _init_com(self):
-        self.com = Com(self.config)
+        self.com = Communication(self.config)
 
     def _setup_train(self):
         self.supervisor = None
         if self.train is True:
             # start webots program, establish tcp connection
-            self.supervisor = automate.WebotCtrl(self.config)
+            self.supervisor = WbtCtrl(self.config)
             self.supervisor.init()
 
             # start environment and update config
@@ -138,7 +135,7 @@ class WbtGym(gym.Env):
 
         pre_action = self.state.get_pre_action()
         action = self.action_class.map(action, pre_action)
-        self.send_command_and_data_request(action)
+        self.send_comand_and_data_request(action)
 
         reward = self.calc_reward()
         done = self.check_done()
@@ -210,11 +207,11 @@ class WbtGym(gym.Env):
         self.com.send_data_request()
         self._update_history()
 
-    def send_command(self, action):
-        self.com.send_command(action)
+    def send_comand(self, action):
+        self.com.send_comand(action)
 
-    def send_command_and_data_request(self, action):
-        self.com.send_command_and_data_request(action)
+    def send_comand_and_data_request(self, action):
+        self.com.send_comand_and_data_request(action)
         self._update_history()
 
     def recv(self):
@@ -263,6 +260,3 @@ class WbtGym(gym.Env):
     @property
     def max_distance(self):
         return np.sqrt(2) * self.config.world_size
-
-
-class WebotsGrid(WbtGym):

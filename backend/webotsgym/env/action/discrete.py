@@ -1,4 +1,4 @@
-from env.spaces import Discrete, Tuple
+from gym.spaces import Discrete, Tuple
 import numpy as np
 
 from webotsgym.action import WbtAct

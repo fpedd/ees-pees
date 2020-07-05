@@ -1,4 +1,4 @@
-from env.spaces import Box
+from gym.spaces import Box
 import numpy as np
 
 from webotsgym.action import WbtAct

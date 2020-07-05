@@ -1,4 +1,4 @@
-from env import spaces
+from gym import spaces
 import numpy as np
 
 from webotsgym.env.webot import WbtObs

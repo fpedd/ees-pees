@@ -1,4 +1,4 @@
-from env.spaces import Discrete
+from gym.spaces import Discrete
 from webotsgym.env.webot import WbtAction
 
 

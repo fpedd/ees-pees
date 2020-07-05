@@ -1,5 +1,5 @@
 import numpy as np
-from env import spaces
+from gym import spaces
 
 
 class WbtObs():
