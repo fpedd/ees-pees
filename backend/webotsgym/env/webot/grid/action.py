@@ -1,8 +1,8 @@
 from gym.spaces import Discrete
-from webotsgym.env.webot import WbtAction
+from webotsgym.env.action import WbtAct
 
 
-class WbtActionGrid(WbtAction):
+class WbtActGrid(WbtAct):
     """Map proposed fake environment moves to webots.
 
     0: Right -> Up    (1)

@@ -1,3 +1,3 @@
-# from webotsgym.env import WbtGymFake, WbtGymGrid, WbtGymContinuous, WbtReward
-# from webotsgym.config import WbtConfig
-import webotsgym.env
+from webotsgym.env import WbtGymFake
+from webotsgym.env.webot.grid import WbtGymGrid
+from webotsgym.config import WbtConfig

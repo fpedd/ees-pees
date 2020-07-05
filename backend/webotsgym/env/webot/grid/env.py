@@ -1,14 +1,15 @@
 import numpy as np
 
 from webotsgym.env.webot import WbtGym
-from webotsgym.env.webot.grid import WbtActGrid, WbtObsGrid
+from webotsgym.env.webot.grid.action import WbtActGrid
+from webotsgym.env.webot.grid.observation import WbtObsGrid
 from webotsgym.config import WbtConfig
-
+from webotsgym.env.reward import WbtReward
 
 
 class WbtGymGrid(WbtGym):
     def __init__(self, seed=None, gps_target=(1, 1),
-                 train=False, evaluate_class=Evaluate,
+                 train=False, evaluate_class=WbtReward,
                  config: WbtConfig = WbtConfig()):
         config.world_scaling = 0.5
         super(WbtGymGrid, self).__init__(seed=seed,
