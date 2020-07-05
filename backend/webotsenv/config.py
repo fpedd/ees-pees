@@ -1,11 +1,26 @@
 from enum import IntEnum
 
+
 class SimSpeedMode(IntEnum):
     NORMAL = 0
-    RUN    = 1
-    FAST   = 2
+    RUN = 1
+    FAST = 2
 
-class WebotConfig(object):
+
+class DirectionType(IntEnum):
+    STEERING = 0  # PID-Controller is off
+    HEADING = 1  # PID-Controller is on
+
+
+class DiscreteMove(IntEnum):
+    NONE = 0
+    UP = 1
+    LEFT = 2
+    DOWN = 3
+    RIGHT = 4
+
+
+class WbtConfig(object):
 
     def __init__(self):
         # -------------------------- General Settings  ------------------------
