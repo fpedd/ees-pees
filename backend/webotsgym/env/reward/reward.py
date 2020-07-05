@@ -5,8 +5,8 @@ from webotsgym.env.reward.steppenalty import step_penalty_04, step_penalty_tanh
 
 class WbtReward():
     def __init__(self, env, config: WbtConfig = WbtConfig()):
-        super(WbtReward, self).__init__(env, config)
-        # self.reward_range = (-2000, 2000)
+        self.env = env
+        self.config = config
 
     def calc_reward(self):
         if self.env.get_target_distance() < 0.1:

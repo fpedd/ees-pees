@@ -38,7 +38,7 @@ class WbtGym(gym.Env):
         # init action, reward, observation
         self.action_class = action_class
         self.evaluate_class = evaluate_class
-        self.obscomervation_class = observation_class
+        self.observation_class = observation_class
         self._init_act_rew_obs(self)
 
         # comunication and supervisor
@@ -113,7 +113,6 @@ class WbtGym(gym.Env):
         self.action_space = self.action_class.action_space
         self.config.direction_type = self.action_class.direction_type
         self.observation_space = self.observation_class.observation_space
-        self.reward_range = self.evaluate_class.reward_range
 
     @property
     def observation(self):
