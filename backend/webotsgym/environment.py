@@ -342,4 +342,3 @@ class WebotsStep(WebotsEnv):
                                          evaluate_class=evaluate_class,
                                          observation_class=StepObservation,
                                          config=config)
-        self.seed(seed)

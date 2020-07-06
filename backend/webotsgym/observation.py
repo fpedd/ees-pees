@@ -51,11 +51,11 @@ class StepObservation(Observation):
         Rewrite lidar to grap lowest distance out of 30 sensors.
         """
         dists = self.env.state.get_grid_distances(12)
-        dists = np.flip(dists)
-        roll = int(len(dists) / 4)
-        dists = np.roll(dists, roll)
+        # dists = np.flip(dists)
+        # roll = int(len(dists) / 4)
+        # dists = np.roll(dists, roll)
         print(dists)
-        return np.round(dists)
+        return dists  # np.round(dists)
 
     def get(self):
         """Get step observation.
@@ -93,6 +93,7 @@ class GridObservation(Observation):
     @property
     def lidar(self):
         dists = self.env.state.get_grid_distances(4)
+        print(dists)
         dists = np.flip(dists)
         roll = int(len(dists) / 4)
         dists = np.roll(dists, roll)
