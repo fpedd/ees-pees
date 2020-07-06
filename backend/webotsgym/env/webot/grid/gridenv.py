@@ -4,12 +4,12 @@ from webotsgym.env.webot import WbtGym
 from webotsgym.env.webot.grid.action import WbtActGrid
 from webotsgym.env.webot.grid.observation import WbtObsGrid
 from webotsgym.config import WbtConfig
-from webotsgym.env.reward import WbtReward
+from webotsgym.env.reward import WbtRewardGrid
 
 
 class WbtGymGrid(WbtGym):
     def __init__(self, seed=None, gps_target=(1, 1),
-                 train=False, evaluate_class=WbtReward,
+                 train=False, evaluate_class=WbtRewardGrid,
                  config: WbtConfig = WbtConfig()):
         config.world_scaling = 0.5
         super(WbtGymGrid, self).__init__(seed=seed,
@@ -31,9 +31,9 @@ class WbtGymGrid(WbtGym):
         if self.action_class.type != "grid":
             raise TypeError("WebotsGrid need grid action class.")
 
-        self.state._action_denied = 0
-        if self.observation_class.lidar[action] < 1:
-            self.state._action_denied = 1
+        self.state.action_denied = 0
+        if self.observation_class.lidar[action] < 1:  # safety :D
+            self.state.action_denied = 1
         else:
             action = self.action_class.map(action)
             self.com.send_discrete_move(action)

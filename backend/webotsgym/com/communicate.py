@@ -11,7 +11,7 @@ class Communication():
         self.msg_cnt = 0
         self.latency = None
         self.state = WbtState(config)
-        self.packet = PacketIn(config)
+        self.packet = None
         self.history = []
         self._set_sock()
 
@@ -32,8 +32,9 @@ class Communication():
     # -------------------------------  RECV -----------------------------------
     def recv(self):
         """Receive packet from external controller, increment message count."""
-        self.packet.buffer, addr = self.sock.recvfrom(self.config.PACKET_SIZE)
-        self.state.fill_from_buffer(self.packet.buffer)
+        buffer, addr = self.sock.recvfrom(self.config.PACKET_SIZE)
+        self.packet = PacketIn(self.config, buffer)
+        self.state = WbtState(self.config, self.packet)
 
         if self.packet.count != self.msg_cnt:
             print("ERROR: recv msg count, is ", self.packet.count, " should ",
@@ -75,11 +76,11 @@ class Communication():
         pack_out = PacketOut(self.msg_cnt, PacketType.COM, move, 0)
         self.send(pack_out)
 
-    def _wait_for_discrete_done(self, wait_time=0.1):
+    def _wait_for_discrete_done(self, wait_time=0.01):
         # give controller some time to update internal data
         time.sleep(wait_time)
         self.send_data_request()
-        while self.state._discrete_action_done != 1:
+        while self.state.discrete_action_done != 1:
             self.send_data_request()
             time.sleep(wait_time)
 

@@ -23,26 +23,38 @@ class PacketType(IntEnum):
 
 
 class PacketIn():
-    # TODO: should be filled by buffer -> state gets package as input ....
-    def __init__(self, config: WbtConfig = WbtConfig()):
+    def __init__(self, config, buffer=None):
         self.config = config
-        self.time_in = None
+        self.buffer = buffer
         self.error = PacketError.UNITILIZED
+        if buffer is not None and self.transmission_success:
+            self.error = PacketError.NO_ERROR
+            self.count = struct.unpack('Q', buffer[0:8])[0]
+            self.time_in = struct.unpack('d', buffer[8:16])[0]
+            self.sim_time = struct.unpack('f', buffer[16:20])[0]
+            self.speed = struct.unpack('f', buffer[20:24])[0]
+            self.gps_actual = struct.unpack('2f', buffer[24:32])
+            self.heading = struct.unpack('f', buffer[32:36])[0]
+            self.steering = struct.unpack('f', buffer[36:40])[0]
+            self._touching = struct.unpack("I", buffer[40:44])[0]
+            self.action_denied = struct.unpack("I", buffer[44:48])[0]
+            self.discrete_action_done = struct.unpack("I", buffer[48:52])[0]
+            self._unpack_distance(buffer, start=52)
+
+    def _unpack_distance(self, buffer, start=40):
+        """Get distance data from buffer, roll to have at heading first."""
+        to = start + self.config.DIST_VECS * 4
+        N = self.config.DIST_VECS
+        self.distance = np.array(struct.unpack("{}f".format(N),
+                                               buffer[start: to]))
+        self.distance = np.roll(self.distance, 180)
 
     @property
-    def count(self):
-        return struct.unpack('Q', self.buffer[0:8])[0]
-
-    @property
-    def time(self):
-        return struct.unpack('d', self.buffer[8:16])[0]
-
-    @property
-    def success(self):
-        if self.error == PacketError.UNITILIZED:
-            return None
-        elif self.error == PacketError.NO_ERROR:
+    def transmission_success(self):
+        self
+        if len(self.buffer) == self.config.PACKET_SIZE:
             return True
+        self.error = PacketError.SIZE
         return False
 
 

@@ -201,11 +201,6 @@ class WbtGym(gym.Env):
         self.com.send_comand_and_data_request(action)
         self._update_history()
 
-    def recv(self):
-        """Receive state via Com class."""
-        self.com.recv()
-        self._update_history()
-
     def _time_for_requests(self, requests=1000):
         t0 = time.time()
         for _ in range(requests):

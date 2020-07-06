@@ -1,51 +1,18 @@
-import struct
 import numpy as np
 
 from webotsgym.config import WbtConfig
 
 
 class WbtState():
-    def __init__(self, config: WbtConfig = WbtConfig()):
-        # meta
+    def __init__(self, config: WbtConfig = WbtConfig(), packet_in=None):
         self.config = config
-        self.buffer = None
-
-        # state
-        self.sim_time = None
-        self.speed = None
-        self.gps_actual = None
-        self.heading = None
-        self.steering = None
-        self.distance = None
-        self._touching = None
-        self._action_denied = 0
-        self._discrete_action_done = None
-
-    def fill_from_buffer(self, buffer):
-        """Set state from buffer information in packet from external controller.
-
-        Fills state information of transmission was success.
-        """
-
-        self.buffer = buffer
-        if self.transmission_success:
-            self.sim_time = struct.unpack('f', buffer[16:20])[0]
-            self.speed = struct.unpack('f', buffer[20:24])[0]
-            self.gps_actual = struct.unpack('2f', buffer[24:32])
-            self.heading = struct.unpack('f', buffer[32:36])[0]
-            self.steering = struct.unpack('f', buffer[36:40])[0]
-            self._touching = struct.unpack("I", buffer[40:44])[0]
-            self._action_denied = struct.unpack("I", buffer[44:48])[0]
-            self._discrete_action_done = struct.unpack("I", buffer[48:52])[0]
-            self._unpack_distance(buffer, start=52)
-
-    def _unpack_distance(self, buffer, start=40):
-        """Get distance data from buffer, roll to have at heading first."""
-        to = start + self.num_lidar * 4
-        N = self.num_lidar
-        self.distance = np.array(struct.unpack("{}f".format(N),
-                                               buffer[start: to]))
-        self.distance = np.roll(self.distance, 180)
+        self.valid = False
+        self.packet = packet_in
+        if packet_in is not None and packet_in.error.value == 0:
+            # get all attributes of packet
+            for attr_k, attr_v in packet_in.__dict__.items():
+                setattr(self, attr_k, attr_v)
+            self.valid = True
 
     def get_pre_action(self, direction_type="heading"):
         if direction_type == "heading":
@@ -81,29 +48,7 @@ class WbtState():
         return int(idx - 1)
 
     @property
-    def num_lidar(self):
-        return self.config.DIST_VECS
-
-    @property
-    def transmission_success(self):
-        if len(self.buffer) == self.config.PACKET_SIZE:
-            return True
-        return False
-
-    @property
     def crash(self) -> bool:
         if int(self.touching) == 1:
             return True
         return False
-
-    @property
-    def gps_size(self):
-        if self.gps_actual is None:
-            return None
-        return len(self.gps_actual)
-
-    @property
-    def heading_size(self):
-        if self.heading is None:
-            return None
-        return len(self.heading)

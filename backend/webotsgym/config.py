@@ -23,6 +23,8 @@ class DiscreteMove(IntEnum):
 class WbtConfig():
 
     def __init__(self):
+        self.time_time_wait = 150  # ms
+
         # -------------------------- General Settings  ------------------------
         self.direction_type = "heading"  # vs. "steering", todo: enums ...
         self.reset_env_after = 1 * 10**4  # in sec
@@ -50,7 +52,7 @@ class WbtConfig():
         self.sim_mode = SimSpeedMode.NORMAL
         self.num_obstacles = 10
         self.world_size = 8
-        self._world_scaling = 0.25  # meters: 20*0.25 -> 5m x 5m
+        self._world_scaling = 0.5  # meters: 20*0.25 -> 5m x 5m
 
         # (received) world metadata
         self.gps_target = None

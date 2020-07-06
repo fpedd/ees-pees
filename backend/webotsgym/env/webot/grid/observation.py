@@ -35,6 +35,6 @@ class WbtObsGrid(WbtObs):
         arr = np.hstack((arr, self.gps_actual))
         arr = np.hstack((arr, self.gps_target))
         arr = np.hstack((arr, self.lidar))
-        arr = np.hstack((arr, np.array(self.env.state._action_denied)))
+        arr = np.hstack((arr, np.array(self.env.state.action_denied)))
         arr = np.hstack((arr, np.array(self.env.gps_visited_count)))
         return arr
