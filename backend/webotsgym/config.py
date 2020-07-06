@@ -24,7 +24,7 @@ class WbtConfig():
 
     def __init__(self):
         # -------------------------- General Settings  ------------------------
-        self.direction_type = "heading"  # vs. "steering"
+        self.direction_type = "heading"  # vs. "steering", todo: enums ...
         self.reset_env_after = 1 * 10**4  # in sec
         self.DIST_VECS = 360
         self.wait_env_creation = 4  # in sec

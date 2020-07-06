@@ -9,6 +9,10 @@ def euklidian_distance(source, target):
     return np.sqrt(dx**2 + dy**2)
 
 
+def exponential_decay(x, N0=1, lambda_=5):
+    return N0 * np.exp(-lambda_ * x)
+
+
 def add_tuples(t1, t2):
     arr1 = np.array(t1)
     arr2 = np.array(t2)
