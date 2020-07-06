@@ -7,7 +7,7 @@ import webotsgym.automate as automate
 from webotsgym.config import WebotConfig
 from webotsgym.action import DiscreteAction, GridAction
 from webotsgym.evaluate import Evaluate
-from webotsgym.observation import Observation, GridObservation
+from webotsgym.observation import Observation, GridObservation, StepObservation
 from webotsgym.communicate import Com
 
 
@@ -326,66 +326,20 @@ class WebotsGrid(WebotsEnv):
 
 
 class WebotsStep(WebotsEnv):
-    """Create env for continuos action space with steps.
-
-    TODO:
-    Add other action and observation space.
-    Rewrite step and reward function.
-    Double check all copied functions.
-    """
-    def __init__(self, seed=None, gps_target=(1, 1),
-                 train=False, evaluate_class=Evaluate,
+    def __init__(self,
+                 seed=None,
+                 gps_target=(1, 1),
+                 train=False,
+                 action_class=DiscreteAction,
+                 request_start_data=True,
+                 evaluate_class=Evaluate,
+                 observation_class=StepObservation,
                  config: WebotConfig = WebotConfig()):
         super(WebotsStep, self).__init__(seed=seed,
                                          gps_target=gps_target,
                                          train=train,
-                                         action_class=GridAction,
+                                         action_class=DiscreteAction,
                                          evaluate_class=evaluate_class,
-                                         observation_class=GridObservation,
+                                         observation_class=StepObservation,
                                          config=config)
-        len = int(config.world_size * config.world_scaling) * 2 + 1
-        self.visited_count = np.zeros((len, len))
-        self.time_steps = 0
-
-    def step(self, action):
-        """Perform action on environment.
-
-        Handled inside com class.
-        """
-        if self.action_class.type != "grid":
-            raise TypeError("WebotsGrid need grid action class.")
-
-        self.state._action_denied = 0
-        if self.observation_class.lidar[action] < 1:
-            self.state._action_denied = 1
-        else:
-            action = self.action_class.map(action)
-            self.com.send_discrete_move(action)
-            self.com._wait_for_discrete_done()
-
-        self.visited_count[self.gps_actual_scaled] += 1
-        reward = self.calc_reward()
-        self.rewards.append(reward)
-        done = self.check_done()
-
-        # logging, printing
-        self.rewards.append(reward)
-        self.distances.append(self.get_target_distance())
-        self.time_steps += 1
-        return self.observation, reward, done, {}
-
-    def reset(self, seed=None):
-        super().reset(seed)
-        self.time_steps = 0
-
-        len = int(self.config.world_size * self.config.world_scaling) * 2 + 1
-        self.visited_count = np.zeros((len, len))
-        return self.observation
-
-    @property
-    def gps_visited_count(self):
-        return self.visited_count[self.gps_actual_scaled]
-
-    @property
-    def gps_actual_scaled(self):
-        return tuple(np.round(0.5 + np.array(self.gps_actual) * 2).astype(int))
+        self.seed(seed)
