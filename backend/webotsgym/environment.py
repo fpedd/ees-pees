@@ -159,12 +159,13 @@ class WebotsEnv(gym.Env):
         """Check done."""
         return self.evaluate_class.check_done()
 
-    def reset(self):
+    def reset(self, seed=None):
         """Reset environment to random."""
         if self.supervisor_connected is True:
             self.reset_history.append(time.time())
 
-            seed = utils.set_random_seed(apply=False)
+            if seed is None:
+                seed = utils.set_random_seed(apply=False)
             self.seed(seed)
             # print("resetting with seed: ", seed)
             # self.supervisor.reset_environment(self.main_seed)
@@ -273,9 +274,12 @@ class WebotsGrid(WebotsEnv):
                                          gps_target=gps_target,
                                          train=train,
                                          action_class=GridAction,
-                                         evaluate_class=Evaluate,
+                                         evaluate_class=evaluate_class,
                                          observation_class=GridObservation,
                                          config=config)
+        len = int(config.world_size * config.world_scaling) * 2 + 1
+        self.visited_count = np.zeros((len, len))
+        self.time_steps = 0
 
     def step(self, action):
         """Perform action on environment.
@@ -293,10 +297,29 @@ class WebotsGrid(WebotsEnv):
             self.com.send_discrete_move(action)
             self.com._wait_for_discrete_done()
 
+        self.visited_count[self.gps_actual_scaled] += 1
         reward = self.calc_reward()
+        self.rewards.append(reward)
         done = self.check_done()
 
         # logging, printing
         self.rewards.append(reward)
         self.distances.append(self.get_target_distance())
+        self.time_steps += 1
         return self.observation, reward, done, {}
+
+    def reset(self, seed=None):
+        super().reset(seed)
+        self.time_steps = 0
+
+        len = int(self.config.world_size * self.config.world_scaling) * 2 + 1
+        self.visited_count = np.zeros((len, len))
+        return self.observation
+
+    @property
+    def gps_visited_count(self):
+        return self.visited_count[self.gps_actual_scaled]
+
+    @property
+    def gps_actual_scaled(self):
+        return tuple(np.round(0.5 + np.array(self.gps_actual) * 2).astype(int))

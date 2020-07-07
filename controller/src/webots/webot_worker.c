@@ -92,7 +92,7 @@ void *webot_worker(void *ptr) {
 		}
 
 		/***** 5) Do safety checks *****/
-		action_denied = safety_check(init_data, data_from_wb, &cmd_to_wb);
+		// action_denied = safety_check(init_data, data_from_wb, &cmd_to_wb);
 
 		/***** 6) Send command to robot *****/
 		wb_send(cmd_to_wb);

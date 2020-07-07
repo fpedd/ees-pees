@@ -119,8 +119,8 @@ class Com(object):
         else:
             self.dir_type = DirectionType.HEADING
 
-        if not (self.config.sim_mode is SimSpeedMode.NORMAL):
-            print("USE FAST MODE")
+        # if not (self.config.sim_mode is SimSpeedMode.NORMAL):
+            # print("USE FAST MODE")
 
     # ------------------------------  SETUPS  ---------------------------------
     def _set_sock(self):
