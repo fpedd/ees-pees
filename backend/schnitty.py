@@ -62,7 +62,7 @@ class Schnitty():
             self.env.com.send_discrete_move(move)
         else:
             self.act.print()
-            self.env.send_command(self.act)
+            self.env.com.send_command(self.act)
 
     def on_release(self, key):
         if key == keyboard.Key.esc:
