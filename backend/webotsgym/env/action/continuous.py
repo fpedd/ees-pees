@@ -7,7 +7,7 @@ from webotsgym.com import ActionOut
 
 
 class WbtActContinuous(WbtAct):
-    def __init__(self, direction_type="heading", relative=False):
+    def __init__(self, direction_type="steering", relative=False):
         self.action_space = Box(-1, 1, shape=(2,), dtype=np.float32)
         self.direction_type = direction_type
         self.relative = relative

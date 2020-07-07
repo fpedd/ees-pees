@@ -6,7 +6,7 @@ import webotsgym.utils as utils
 from webotsgym.config import WbtConfig
 
 from webotsgym.env.action import WbtActContinuous
-from webotsgym.env.webot.observation import WbtObs
+from webotsgym.env.observation import WbtObs
 from webotsgym.env.reward import WbtReward
 from webotsgym.com import WbtCtrl, Communication
 

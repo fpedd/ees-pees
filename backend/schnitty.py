@@ -7,7 +7,8 @@ class Schnitty():
     def __init__(self, direction_type="heading"):
         self.dheading = 0.05
         self.dspeed = 0.05
-        action_class = wg.WbtActContinuous(direction_type=direction_type, relative=False)
+        action_class = wg.WbtActContinuous(direction_type=direction_type,
+                                           relative=False)
         self.env = wg.WbtGym(action_class=action_class)
         self._init_action()
         self.grid = False

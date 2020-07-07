@@ -78,7 +78,7 @@ class Communication():
     # ------------------------------- GRID MOVES ------------------------------
     def send_discrete_move(self, move):
         # TODO: incorporate wait for execution -> PacketType.COM_REQ
-        pack_out = PacketOut(self.msg_cnt, PacketType.COM, move, 0)
+        pack_out = PacketOut(self.msg_cnt, 0, PacketType.COM, move, 0)
         self.send(pack_out)
 
     def _wait_for_discrete_done(self, wait_time=0.01):

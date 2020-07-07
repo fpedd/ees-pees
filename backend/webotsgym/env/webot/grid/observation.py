@@ -1,7 +1,7 @@
 from gym import spaces
 import numpy as np
 
-from webotsgym.env.webot import WbtObs
+from webotsgym.env.observation import WbtObs
 
 
 class WbtObsGrid(WbtObs):

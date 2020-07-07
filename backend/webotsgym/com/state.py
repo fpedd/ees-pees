@@ -24,6 +24,30 @@ class WbtState():
         every = int(360 / num)
         return self.lidar_absolute[0:-1:every]
 
+    def mean_lidar(self, bins=12, relative=False):
+        """Get mean lidar data.
+
+        Parameters
+        ----------
+        bins : int
+            Number of bins for lidar data to calculate mean.
+        relative : bool
+            Bin relative or absolute lidar data.
+
+        Returns
+        -------
+        lidar_binned
+            Binned mean lidar data.
+
+        """
+        every = int(360 / bins)
+        if relative is True:
+            x = self.lidar_relative
+        else:
+            x = self.lidar_absolute
+        x = x.reshape((-1, every))
+        return np.mean(x, axis=1)
+
     @property
     def touching(self):
         if self._touching != 0:
