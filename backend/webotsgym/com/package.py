@@ -3,8 +3,6 @@ import time
 import numpy as np
 import struct
 
-from webotsgym.config import WbtConfig
-
 
 class PacketError(IntEnum):
     UNITILIZED = -1
@@ -27,8 +25,8 @@ class PacketIn():
         self.config = config
         self.buffer = buffer
         self.error = PacketError.UNITILIZED
-        if buffer is not None and self.transmission_success:
-            self.error = PacketError.NO_ERROR
+        self._check_success()
+        if self.error == PacketError.NO_ERROR:
             self.count = struct.unpack('Q', buffer[0:8])[0]
             self.time_in = struct.unpack('d', buffer[8:16])[0]
             self.sim_time = struct.unpack('f', buffer[16:20])[0]
@@ -41,6 +39,21 @@ class PacketIn():
             self.discrete_action_done = struct.unpack("I", buffer[48:52])[0]
             self._unpack_distance(buffer, start=52)
 
+    def _check_success(self):
+        self.error = PacketError.NO_ERROR
+        if len(self.buffer) == self.config.PACKET_SIZE:
+            self.error = PacketError.SIZE
+        # if IP != addr[0]:
+        #     print("ERROR: recv did from wrong address", addr)
+        #     return
+        #
+        # if self.packet.count != self.packet.msg_cnt_in:
+        #     print("ERROR: recv wrong msg count, is ", self.packet.count, " should ",
+        #           self.packet.msg_cnt_in)
+        #     self.packet.msg_cnt_in = self.packet.count
+        #     return
+        #
+
     def _unpack_distance(self, buffer, start=40):
         """Get distance data from buffer, roll to have at heading first."""
         to = start + self.config.DIST_VECS * 4
@@ -48,14 +61,6 @@ class PacketIn():
         self.distance = np.array(struct.unpack("{}f".format(N),
                                                buffer[start: to]))
         self.distance = np.roll(self.distance, 180)
-
-    @property
-    def transmission_success(self):
-        self
-        if len(self.buffer) == self.config.PACKET_SIZE:
-            return True
-        self.error = PacketError.SIZE
-        return False
 
 
 class ActionOut():

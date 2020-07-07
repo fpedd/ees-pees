@@ -109,18 +109,3 @@ class Communication():
         if not (self.config.sim_mode is SimSpeedMode.NORMAL):
             divider = 3
         return self.config.send_recv_wait_time / 1000 / divider
-
-# if PACKET_SIZE < len(self.packet.buffer):
-#     print("ERROR: recv did not get full packet", len(self.packet.buffer))
-#     return
-#
-# if IP != addr[0]:
-#     print("ERROR: recv did from wrong address", addr)
-#     return
-#
-# if self.packet.count != self.packet.msg_cnt_in:
-#     print("ERROR: recv wrong msg count, is ", self.packet.count, " should ",
-#           self.packet.msg_cnt_in)
-#     self.packet.msg_cnt_in = self.packet.count
-#     return
-#
