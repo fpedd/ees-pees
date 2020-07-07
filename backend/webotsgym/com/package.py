@@ -41,7 +41,7 @@ class PacketIn():
 
     def _check_success(self):
         self.error = PacketError.NO_ERROR
-        if len(self.buffer) == self.config.PACKET_SIZE:
+        if len(self.buffer) != self.config.PACKET_SIZE:
             self.error = PacketError.SIZE
         # if IP != addr[0]:
         #     print("ERROR: recv did from wrong address", addr)
@@ -106,18 +106,20 @@ class ActionOut():
 
 
 class PacketOut():
-    def __init__(self, msg_cnt, packet_type, discrete_move, direction_type,
-                 action: ActionOut = ActionOut(action=(0, 0))):
+    def __init__(self, msg_cnt, every_x, packet_type, discrete_move,
+                 direction_type, action: ActionOut = ActionOut(action=(0, 0))):
         self.msg_cnt = msg_cnt
+        self.every_x = every_x
         self.packet_type = int(packet_type)
         self.discrete_move = int(discrete_move)
         self.direction_type = int(direction_type)
         self.action = action
 
     def pack(self):
-        data = struct.pack('Qdiiiff',
+        data = struct.pack('Qdiiiiff',
                            self.msg_cnt,
                            time.time(),
+                           self.every_x,
                            self.packet_type,
                            int(self.discrete_move),
                            int(self.direction_type),

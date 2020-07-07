@@ -42,24 +42,6 @@ class Communication():
         self.msg_cnt += 1
         self.state = WbtState(self.config, self.packet)
 
-    # def recv(self):
-    #     self._recv()
-    #     if hasattr(self, "last_sim_time") is False:
-    #         self.last_sim_time = self.packet.sim_time
-    #     cnt = 0
-    #     while True:
-    #         time_diff = (self.packet.sim_time - self.last_sim_time) * 1
-    #         if time_diff >= self.config.sim_time_wait / 1000:
-    #             break
-    #         self.send_data_request()
-    #         self._recv()
-    #         cnt += 1
-    #     print("took     ", cnt)
-    #     print("time_diff", time_diff)
-    #     self.last_sim_time = self.packet.sim_time
-    #
-    #     self.state = WbtState(self.config, self.packet)
-
     # -------------------------------  SEND -----------------------------------
     def send(self, pack_out):
         """Send packet to external controller, increment message count."""
@@ -73,7 +55,8 @@ class Communication():
         self.msg_cnt += 1
 
     def send_data_request(self):
-        pack_out = PacketOut(self.msg_cnt, PacketType.REQ, DiscreteMove.NONE, self.dir_type)
+        pack_out = PacketOut(self.msg_cnt, 0, PacketType.REQ,
+                             DiscreteMove.NONE, self.dir_type)
         self.send(pack_out)
 
     def get_data(self):
@@ -81,15 +64,18 @@ class Communication():
         self.recv()
 
     def send_command(self, action):
-        pack_out = PacketOut(self.msg_cnt, PacketType.COM, DiscreteMove.NONE, self.dir_type, action)
+        pack_out = PacketOut(self.msg_cnt, 0, PacketType.COM,
+                             DiscreteMove.NONE, self.dir_type, action)
         self.send(pack_out)
 
     def send_command_and_data_request(self, action):
-        pack_out = PacketOut(self.msg_cnt, PacketType.COM_REQ, DiscreteMove.NONE, self.dir_type, action)
+        pack_out = PacketOut(self.msg_cnt, self.config.sim_step_every_x,
+                             PacketType.COM_REQ, DiscreteMove.NONE,
+                             self.dir_type, action)
         self.send(pack_out)
-        # time.sleep(self.wait_time)
         self.recv()
 
+    # ------------------------------- GRID MOVES ------------------------------
     def send_discrete_move(self, move):
         # TODO: incorporate wait for execution -> PacketType.COM_REQ
         pack_out = PacketOut(self.msg_cnt, PacketType.COM, move, 0)
@@ -102,10 +88,3 @@ class Communication():
         while self.state.discrete_action_done != 1:
             self.get_data()
             time.sleep(wait_time)
-
-    @property
-    def wait_time(self):
-        divider = 1
-        if not (self.config.sim_mode is SimSpeedMode.NORMAL):
-            divider = 3
-        return self.config.send_recv_wait_time / 1000 / divider

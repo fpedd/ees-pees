@@ -57,21 +57,21 @@ class WbtCtrl():
         self.close_program()
         # clean both controllers in webots
         subprocess.call(["make", "clean"], cwd=os.path.join(get_repo_dir(),
-            "webots/controllers/supervisor"))
+                        "webots/controllers/supervisor"))
         subprocess.call(["make", "clean"], cwd=os.path.join(get_repo_dir(),
-            "webots/controllers/internal"))
+                        "webots/controllers/internal"))
         # compile both controllers in webots
         subprocess.call(["make", "all"], cwd=os.path.join(get_repo_dir(),
-            "webots/controllers/supervisor"))
+                        "webots/controllers/supervisor"))
         subprocess.call(["make", "all"], cwd=os.path.join(get_repo_dir(),
-            "webots/controllers/internal"))
+                        "webots/controllers/internal"))
 
     def start_program(self):
         """Open webots."""
         if self.is_program_started() is False:
             # start webots with the path of the world as argument
             subprocess.Popen(["webots", os.path.join(get_repo_dir(),
-                "webots/worlds/training_env.wbt")])
+                             "webots/worlds/training_env.wbt")])
 
     def close_program(self):
         """Kill webots process."""
@@ -108,7 +108,6 @@ class WbtCtrl():
                            self.config.world_scaling)
         print("sending: start env", int(self.config.sim_mode))
         self.client_sock.send(data)
-        time.sleep(waiting_time)
         self.get_metadata()
 
         time.sleep(self.config.wait_env_creation)
@@ -126,10 +125,15 @@ class WbtCtrl():
         if seed is None:
             seed = utils.set_random_seed()
         # environment sollte sein wie beim start der simulation
-        data = struct.pack('iiiiif', FunctionCode.RESET, seed, 0, 0, 0, 0.0)
+        data = struct.pack('iiiiif',
+                           FunctionCode.RESET,
+                           seed,
+                           0,
+                           0,
+                           0,
+                           0.0)
         print("sending: reset")
         self.client_sock.send(data)
-        time.sleep(waiting_time)
         self.get_metadata()
 
         time.sleep(self.config.wait_env_reset)

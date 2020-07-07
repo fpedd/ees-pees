@@ -7,8 +7,7 @@ enum response_request {
 	UNDEF = 0,                  // Invalid Packet
 	COMMAND_ONLY = 1,           // Only new instructions for Robot, dont send next packet
 	REQUEST_ONLY = 2,           // Only request for new packet
-	COMMAND_REQUEST = 3,        // New instructions for robot AND request for new packet
-	EVERY_X = 4                 // Receive cmd and send new data after defined number of timetseps
+	COMMAND_REQUEST = 3         // New instructions for robot AND request for new packet
 };
 extern const char* response_request_str[];
 

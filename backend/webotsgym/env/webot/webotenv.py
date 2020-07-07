@@ -137,8 +137,8 @@ class WbtGym(gym.Env):
         # logging, printing
         self.rewards.append(reward)
         self.distances.append(self.get_target_distance())
-        if len(self.history) % 500 == 0:
-            print("Reward (", len(self.history), ")\t", reward)
+        # if len(self.history) % 500 == 0:
+        #     print("Reward (", len(self.history), ")\t", reward)
 
         return self.observation, reward, done, {}
 
@@ -157,7 +157,8 @@ class WbtGym(gym.Env):
                 seed = utils.set_random_seed(apply=False)
             self.seed(seed)
 
-            self.supervisor.start_env(self.main_seed)
+            self.supervisor.reset_environment(self.main_seed)
+            # self.supervisor.start_env(self.main_seed)
             self.rewards = []
             self.distances = []
             self._init_com()
@@ -193,9 +194,6 @@ class WbtGym(gym.Env):
     def get_data(self):
         self.com.get_data()
         self._update_history()
-
-    def send_command(self, action):
-        self.com.send_command(action)
 
     def send_command_and_data_request(self, action):
         self.com.send_command_and_data_request(action)
