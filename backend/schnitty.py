@@ -1,21 +1,19 @@
 from pynput import keyboard
 
-import webotsgym.environment as environment
-from webotsgym.action import ContinuousAction
-from webotsgym.webot import WebotAction
+import webotsgym as wg
 
 
 class Schnitty():
     def __init__(self, direction_type="heading"):
         self.dheading = 0.05
         self.dspeed = 0.05
-        action_class = ContinuousAction(direction_type=direction_type)
-        self.env = environment.webotsgym(action_class=action_class)
+        action_class = wg.WbtActContinuous(direction_type=direction_type)
+        self.env = wg.WbtGym(action_class=action_class)
         self._init_action()
         self.grid = False
 
     def _init_action(self):
-        self.act = WebotAction()
+        self.act = wg.com.ActionOut()
         self.act.speed = 0
         self.act.heading = 0
 

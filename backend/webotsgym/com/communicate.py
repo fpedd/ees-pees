@@ -1,5 +1,6 @@
 import socket
 import time
+import numpy as np
 
 from webotsgym.config import WbtConfig, SimSpeedMode, DiscreteMove, DirectionType
 from webotsgym.com import PacketIn, PacketOut, WbtState, PacketType  # noqa E501
@@ -31,17 +32,33 @@ class Communication():
 
     # -------------------------------  RECV -----------------------------------
     def recv(self):
-        """Receive packet from external controller, increment message count."""
         buffer, addr = self.sock.recvfrom(self.config.PACKET_SIZE)
         self.packet = PacketIn(self.config, buffer)
-        self.state = WbtState(self.config, self.packet)
-
         if self.packet.count != self.msg_cnt:
             print("ERROR: recv msg count, is ", self.packet.count, " should ",
                   self.msg_cnt)
             self.msg_cnt = self.packet.count
 
         self.msg_cnt += 1
+        self.state = WbtState(self.config, self.packet)
+
+    # def recv(self):
+    #     self._recv()
+    #     if hasattr(self, "last_sim_time") is False:
+    #         self.last_sim_time = self.packet.sim_time
+    #     cnt = 0
+    #     while True:
+    #         time_diff = (self.packet.sim_time - self.last_sim_time) * 1
+    #         if time_diff >= self.config.sim_time_wait / 1000:
+    #             break
+    #         self.send_data_request()
+    #         self._recv()
+    #         cnt += 1
+    #     print("took     ", cnt)
+    #     print("time_diff", time_diff)
+    #     self.last_sim_time = self.packet.sim_time
+    #
+    #     self.state = WbtState(self.config, self.packet)
 
     # -------------------------------  SEND -----------------------------------
     def send(self, pack_out):
@@ -58,17 +75,19 @@ class Communication():
     def send_data_request(self):
         pack_out = PacketOut(self.msg_cnt, PacketType.REQ, DiscreteMove.NONE, self.dir_type)
         self.send(pack_out)
-        time.sleep(self.wait_time)
+
+    def get_data(self):
+        self.send_data_request()
         self.recv()
 
-    def send_comand(self, action):
+    def send_command(self, action):
         pack_out = PacketOut(self.msg_cnt, PacketType.COM, DiscreteMove.NONE, self.dir_type, action)
         self.send(pack_out)
 
-    def send_comand_and_data_request(self, action):
+    def send_command_and_data_request(self, action):
         pack_out = PacketOut(self.msg_cnt, PacketType.COM_REQ, DiscreteMove.NONE, self.dir_type, action)
         self.send(pack_out)
-        time.sleep(self.wait_time)
+        # time.sleep(self.wait_time)
         self.recv()
 
     def send_discrete_move(self, move):
@@ -79,9 +98,9 @@ class Communication():
     def _wait_for_discrete_done(self, wait_time=0.01):
         # give controller some time to update internal data
         time.sleep(wait_time)
-        self.send_data_request()
+        self.get_data()
         while self.state.discrete_action_done != 1:
-            self.send_data_request()
+            self.get_data()
             time.sleep(wait_time)
 
     @property

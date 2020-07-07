@@ -44,7 +44,7 @@ class WbtGym(gym.Env):
         self._init_com()
 
         if request_start_data is True:
-            self.send_data_request()
+            self.get_data()
 
     # =========================================================================
     # ====================       IMPORTANT PROPERTIES       ===================
@@ -129,7 +129,7 @@ class WbtGym(gym.Env):
 
         pre_action = self.state.get_pre_action()
         action = self.action_class.map(action, pre_action)
-        self.send_comand_and_data_request(action)
+        self.send_command_and_data_request(action)
 
         reward = self.calc_reward()
         done = self.check_done()
@@ -161,7 +161,7 @@ class WbtGym(gym.Env):
             self.rewards = []
             self.distances = []
             self._init_com()
-            self.send_data_request()
+            self.get_data()
 
             if self.get_target_distance(False) < 0.05:
                 self.reset()
@@ -190,21 +190,21 @@ class WbtGym(gym.Env):
     # =========================================================================
     # ========================   HELPER / PROPERTIES   ========================
     # =========================================================================
-    def send_data_request(self):
-        self.com.send_data_request()
+    def get_data(self):
+        self.com.get_data()
         self._update_history()
 
-    def send_comand(self, action):
-        self.com.send_comand(action)
+    def send_command(self, action):
+        self.com.send_command(action)
 
-    def send_comand_and_data_request(self, action):
-        self.com.send_comand_and_data_request(action)
+    def send_command_and_data_request(self, action):
+        self.com.send_command_and_data_request(action)
         self._update_history()
 
     def _time_for_requests(self, requests=1000):
         t0 = time.time()
         for _ in range(requests):
-            self.send_data_request()
+            self.get_data()
         return time.time() - t0
 
     def _time_for_actions(self, actions=1000):

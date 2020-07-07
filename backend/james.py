@@ -1,19 +1,18 @@
 from pynput import keyboard
-import time
-import webotsgym.environment as environment
-from webotsgym.action import ContinuousAction
-from webotsgym.webot import WebotAction
+
+import webotsgym as wg
 
 
-class Keyboard():
-    def __init__(self, callback):
-        self.callback = callback
+class James():
+    def __init__(self, direction_type="heading"):
+        action_class = wg.WbtActContinuous(direction_type=direction_type)
+        self.env = wg.WbtGym(action_class=action_class)
         self.dheading = 0.05
         self.dspeed = 0.05
         self._init_action()
 
     def _init_action(self):
-        self.act = WebotAction()
+        self.act = wg.com.ActionOut()
         self.act.speed = 0
         self.act.heading = 0
 
@@ -34,27 +33,14 @@ class Keyboard():
         else:
             return
         self.act.print()
-        self.callback(self.act)
+        self.env.send_command(self.act)
 
     def on_release(self, key):
         if key == keyboard.Key.esc:
             return False
-        else:
-            time.sleep(0.1)
-            return False
-
-
-class James():
-    def __init__(self, direction_type="heading"):
-        action_class = ContinuousAction(direction_type=direction_type)
-        self.env = environment.webotsgym(action_class=action_class)
-        kb = Keyboard(self.callback)
-        kb.action()
-
-    def callback(self, action):
-        self.env.send_command_and_data_request(action)
 
 
 if __name__ == "__main__":
     print("================== Hi, my name is James ==================")
     james = James(direction_type="heading")
+    james.action()

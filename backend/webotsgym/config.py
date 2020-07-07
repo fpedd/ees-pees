@@ -23,7 +23,7 @@ class DiscreteMove(IntEnum):
 class WbtConfig():
 
     def __init__(self):
-        self.time_time_wait = 150  # ms
+        self.sim_time_wait = 150  # ms
 
         # -------------------------- General Settings  ------------------------
         self.direction_type = "heading"  # vs. "steering", todo: enums ...

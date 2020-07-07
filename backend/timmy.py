@@ -1,13 +1,14 @@
 from pynput import keyboard
 import time
-import webotsgym.communicate as communicate
+
+import webotsgym as wg
 
 
 class Timmy():
     def __init__(self, direction_type="heading"):
         self.dheading = 0.05
         self.dspeed = 0.05
-        self.com = communicate.Com()
+        self.com = wg.com.Communication()
 
     def action(self):
         with keyboard.Listener(on_press=self.on_press,
