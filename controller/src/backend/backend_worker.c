@@ -104,7 +104,7 @@ void *backend_worker(void *ptr) {
 			com_send(data_to_bcknd);
 			break;
 
-
+			case UNDEF:
 			default:
 				printf("BACKEND_WORKER: Invalid Request from Backend\n");
 				break;
