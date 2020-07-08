@@ -3,6 +3,8 @@ import time
 import numpy as np
 import struct
 
+from webotsgym.env.action import ActionOut
+
 
 class PacketError(IntEnum):
     UNITILIZED = -1
@@ -33,11 +35,10 @@ class PacketIn():
             self.speed = struct.unpack('f', buffer[20:24])[0]
             self.gps_actual = struct.unpack('2f', buffer[24:32])
             self.heading = struct.unpack('f', buffer[32:36])[0]
-            self.steering = struct.unpack('f', buffer[36:40])[0]
-            self._touching = struct.unpack("I", buffer[40:44])[0]
-            self.action_denied = struct.unpack("I", buffer[44:48])[0]
-            self.discrete_action_done = struct.unpack("I", buffer[48:52])[0]
-            self._unpack_distance(buffer, start=52)
+            self._touching = struct.unpack("I", buffer[36:40])[0]
+            self.action_denied = struct.unpack("I", buffer[40:44])[0]
+            self.discrete_action_done = struct.unpack("I", buffer[44:48])[0]
+            self._unpack_distance(buffer, start=48)
 
     def _check_success(self):
         self.error = PacketError.NO_ERROR
@@ -63,48 +64,6 @@ class PacketIn():
         self.distance = np.roll(self.distance, 180)
 
 
-class ActionOut():
-    def __init__(self, action=None, direction_type="heading"):
-        self.direction_type = direction_type
-        self._heading = None
-        self._speed = None
-        if isinstance(action, (np.ndarray, list, tuple)):
-            self.heading = action[0]
-            self.speed = action[1]
-
-    def print(self):
-        print("heading: ", self.heading)
-        print("speed:   ", self.speed)
-
-    def _init_randomly(self):
-        self.heading = np.random.random() * 2 - 1
-        self.speed = np.random.random() * 2 - 1
-
-    @property
-    def heading(self):
-        return self._heading
-
-    @heading.setter
-    def heading(self, value):
-        if value < -1:
-            value = 2 + value
-        elif value > 1:
-            value = -2 + value
-        self._heading = value
-
-    @property
-    def speed(self):
-        return self._speed
-
-    @speed.setter
-    def speed(self, value):
-        if value < -1:
-            value = -1
-        if value > 1:
-            value = 1
-        self._speed = value
-
-
 class PacketOut():
     def __init__(self, msg_cnt, every_x, packet_type, discrete_move,
                  direction_type, action: ActionOut = ActionOut(action=(0, 0))):
@@ -123,6 +82,6 @@ class PacketOut():
                            self.packet_type,
                            int(self.discrete_move),
                            int(self.direction_type),
-                           self.action.heading,
+                           self.action.dir,
                            self.action.speed)
         return data

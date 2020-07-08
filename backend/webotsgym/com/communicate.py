@@ -1,8 +1,7 @@
 import socket
 import time
-import numpy as np
 
-from webotsgym.config import WbtConfig, SimSpeedMode, DiscreteMove, DirectionType
+from webotsgym.config import WbtConfig, DiscreteMove
 from webotsgym.com import PacketIn, PacketOut, WbtState, PacketType  # noqa E501
 
 
@@ -11,15 +10,9 @@ class Communication():
         self.config = config
         self.msg_cnt = 0
         self.latency = None
-        self.state = WbtState(config)
         self.packet = None
         self.history = []
         self._set_sock()
-
-        if config.direction_type == "steering":
-            self.dir_type = DirectionType.STEERING
-        else:
-            self.dir_type = DirectionType.HEADING
 
     # ------------------------------  SETUPS  ---------------------------------
     def _set_sock(self):
@@ -56,7 +49,7 @@ class Communication():
 
     def send_data_request(self):
         pack_out = PacketOut(self.msg_cnt, 0, PacketType.REQ,
-                             DiscreteMove.NONE, self.dir_type)
+                             DiscreteMove.NONE, self.config.direction_type)
         self.send(pack_out)
 
     def get_data(self):
@@ -65,19 +58,19 @@ class Communication():
 
     def send_command(self, action):
         pack_out = PacketOut(self.msg_cnt, 0, PacketType.COM,
-                             DiscreteMove.NONE, self.dir_type, action)
+                             DiscreteMove.NONE, self.config.direction_type,
+                             action)
         self.send(pack_out)
 
     def send_command_and_data_request(self, action):
         pack_out = PacketOut(self.msg_cnt, self.config.sim_step_every_x,
                              PacketType.COM_REQ, DiscreteMove.NONE,
-                             self.dir_type, action)
+                             self.config.direction_type, action)
         self.send(pack_out)
         self.recv()
 
     # ------------------------------- GRID MOVES ------------------------------
     def send_discrete_move(self, move):
-        # TODO: incorporate wait for execution -> PacketType.COM_REQ
         pack_out = PacketOut(self.msg_cnt, 0, PacketType.COM, move, 0)
         self.send(pack_out)
 

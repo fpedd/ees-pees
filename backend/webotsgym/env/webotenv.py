@@ -1,6 +1,7 @@
 import numpy as np
 import gym
 import time
+import warnings
 
 import webotsgym.utils as utils
 from webotsgym.config import WbtConfig
@@ -8,14 +9,14 @@ from webotsgym.config import WbtConfig
 from webotsgym.env.action import WbtActContinuous
 from webotsgym.env.observation import WbtObs
 from webotsgym.env.reward import WbtReward
-from webotsgym.com import WbtCtrl, Communication
+from webotsgym.com import WbtCtrl, Communication, ActionOut
 
 
 class WbtGym(gym.Env):
     def __init__(self,
                  seed=None,
                  gps_target=(1, 1),
-                 train=False,
+                 train=True,
                  action_class=WbtActContinuous,
                  request_start_data=False,
                  evaluate_class=WbtReward,
@@ -31,6 +32,7 @@ class WbtGym(gym.Env):
         self.config = config
         self.distances = []
         self.rewards = []
+        self.pre_action = ActionOut(config, (0, 0))
 
         # init action, reward, observation
         self.action_class = action_class
@@ -45,6 +47,8 @@ class WbtGym(gym.Env):
 
         if request_start_data is True:
             self.get_data()
+
+
 
     # =========================================================================
     # ====================       IMPORTANT PROPERTIES       ===================
@@ -102,14 +106,19 @@ class WbtGym(gym.Env):
     def _init_act_rew_obs(self, env):
         # type to instance
         if type(self.action_class) == type:
-            self.action_class = (self.action_class)()
+            self.action_class = (self.action_class)(self.config)
+        # overwriting relative action behaviour if action class is a type
+        if self.config.relative_action is not None:
+            warnings.warn("Relative property of action class is overwritten by config.relative_action.")
+            self.action_class.relative = self.config.relative_action
+
         if type(self.observation_class) == type:
             self.observation_class = (self.observation_class)(env)
+
         if type(self.evaluate_class) == type:
             self.evaluate_class = (self.evaluate_class)(env, self.config)
 
         self.action_space = self.action_class.action_space
-        self.config.direction_type = self.action_class.direction_type
         self.observation_space = self.observation_class.observation_space
 
     @property
@@ -125,11 +134,11 @@ class WbtGym(gym.Env):
         Handled inside com class.
         """
         if self.action_class.type == "grid":
-            raise TypeError("Grid action class must be used in WebotsGrid.")
+            raise TypeError("Grid action class must be used with WbtGymGrid.")
 
-        pre_action = self.state.get_pre_action()
-        action = self.action_class.map(action, pre_action)
+        action = self.action_class.map(action, self.pre_action)
         self.send_command_and_data_request(action)
+        self.pre_action = action
 
         reward = self.calc_reward()
         done = self.check_done()
@@ -137,8 +146,6 @@ class WbtGym(gym.Env):
         # logging, printing
         self.rewards.append(reward)
         self.distances.append(self.get_target_distance())
-        # if len(self.history) % 500 == 0:
-        #     print("Reward (", len(self.history), ")\t", reward)
 
         return self.observation, reward, done, {}
 
@@ -198,20 +205,6 @@ class WbtGym(gym.Env):
     def send_command_and_data_request(self, action):
         self.com.send_command_and_data_request(action)
         self._update_history()
-
-    def _time_for_requests(self, requests=1000):
-        t0 = time.time()
-        for _ in range(requests):
-            self.get_data()
-        return time.time() - t0
-
-    def _time_for_actions(self, actions=1000):
-        t0 = time.time()
-        for _ in range(actions):
-            h = np.random.random() * 2 - 1
-            s = np.random.random() * 2 - 1
-            self.step((h, s))
-        return time.time() - t0
 
     def _update_history(self):
         """Add current state of Com to history."""

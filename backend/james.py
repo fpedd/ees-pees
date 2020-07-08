@@ -14,7 +14,7 @@ class James():
     def _init_action(self):
         self.act = wg.com.ActionOut()
         self.act.speed = 0
-        self.act.heading = 0
+        self.act.dir = 0
 
     def action(self):
         with keyboard.Listener(on_press=self.on_press,
@@ -27,9 +27,9 @@ class James():
         elif key == keyboard.Key.down:
             self.act.speed -= self.dspeed
         elif key == keyboard.Key.left:
-            self.act.heading -= self.dheading
+            self.act.dir -= self.dheading
         elif key == keyboard.Key.right:
-            self.act.heading += self.dheading
+            self.act.dir += self.dheading
         else:
             return
         self.act.print()

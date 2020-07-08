@@ -85,7 +85,10 @@ class WbtCtrl():
             self.sock.close()
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.sock.bind((self.config.IP_S, self.config.PORT_S))
+        try:
+            self.sock.bind((self.config.IP_S, self.config.PORT_S))
+        except OSError:
+            raise Exception("Port blocked due to non correct closing of connection. Use command 'sudo lsof -t -i tcp:10201 | xargs kill -9'")
         self.sock.listen(5)
         print("Accepting on Port: ", self.config.PORT_S)
         (self.client_sock, self.address) = self.sock.accept()
@@ -106,7 +109,6 @@ class WbtCtrl():
                            self.config.num_obstacles,
                            self.config.world_size,
                            self.config.world_scaling)
-        print("sending: start env", int(self.config.sim_mode))
         self.client_sock.send(data)
         self.get_metadata()
 
@@ -132,7 +134,6 @@ class WbtCtrl():
                            0,
                            0,
                            0.0)
-        print("sending: reset")
         self.client_sock.send(data)
         self.get_metadata()
 

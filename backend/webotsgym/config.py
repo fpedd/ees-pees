@@ -24,21 +24,19 @@ class WbtConfig():
 
     def __init__(self):
         # -------------------------- General Settings  ------------------------
-        self.direction_type = "heading"  # vs. "steering", todo: enums ...
+        self._direction_type = DirectionType.STEERING
+        self.relative_action = None  # if set overwrites action class setting
         self.DIST_VECS = 360
         self.wait_env_creation = 0.5  # in sec
         self.wait_env_reset = 0.5  # in sec
-        self.send_recv_wait_time = 32  # in ms
-        self.step_wait_time = 0  # in sec
+        self.sim_step_every_x = 1  # number of timesteps until next msg is send
 
         # ------------------------ External Controller ------------------------
         self.IP = "127.0.0.1"
         self.CONTROL_PORT = 6969
         self.BACKEND_PORT = 6970
-        self.PACKET_SIZE = 1492
+        self.PACKET_SIZE = 1488
         self.TIME_OFFSET_ALLOWED = 1.0
-
-        self.sim_step_every_x = 1  # number of timesteps until next msg is send
 
         # ------------------------ Supervisor ------------------------
         # network settings
@@ -75,6 +73,20 @@ class WbtConfig():
             self._sim_mode = SimSpeedMode.RUN
         elif value == 2:
             self._sim_mode = SimSpeedMode.FAST
+        print(self._sim_mode)
+
+    @property
+    def direction_type(self):
+        return self._direction_type
+
+    @direction_type.setter
+    def direction_type(self, value):
+        if type(value) == SimSpeedMode:
+            self._direction_type = value
+        elif value == 0:
+            self._direction_type = DirectionType.STEERING
+        elif value == 1:
+            self._direction_type = DirectionType.HEADING
 
     @property
     def world_scaling(self):

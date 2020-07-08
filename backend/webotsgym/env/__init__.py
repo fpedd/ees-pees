@@ -1,4 +1,5 @@
-from webotsgym.env.webot import WbtGymGrid, WbtGym
+from webotsgym.env.webotenv import WbtGym
+from webotsgym.env.grid import WbtGymGrid
 from webotsgym.env.action import WbtActContinuous, WbtActDiscrete
 from webotsgym.env.fake import WbtGymFake
 from webotsgym.env.reward import WbtReward

@@ -2,7 +2,6 @@ from gym.spaces import Discrete, Tuple
 import numpy as np
 
 from webotsgym.env.action import WbtAct
-from webotsgym.utils import add_tuples
 from webotsgym.com import ActionOut
 
 
@@ -31,18 +30,18 @@ class WbtActDiscrete(WbtAct):
         -1: bottom right
     """
 
-    def __init__(self, directions=3, speeds=3, dspeed=0.2, dhead=0.2,
-                 mode="flatten", direction_type="heading", relative=False):
+    def __init__(self, config, dirs=3, speeds=3, dspeed=0.1, ddir=0.1,
+                 mode="flatten", relative=False):
+        self.config = config
         self.type = "normal"
         self.mode = mode
-        self.direction_type = direction_type
         self.relative = relative
 
-        self.directions = directions
+        self.dirs = dirs
         self.speeds = speeds
-        self.dhead = dhead
+        self.ddir = ddir
         self.dspeed = dspeed
-        self.action_tuple = (directions, speeds)
+        self.action_tuple = (dirs, speeds)
         self._set_action_space()
         self._set_mapping_space()
 
@@ -62,11 +61,11 @@ class WbtActDiscrete(WbtAct):
                                        Discrete(self.action_tuple[1])))
 
     def _set_mapping_space(self):
-        each_dir = (self.directions - 1) / 2
+        each_dir = (self.dirs - 1) / 2
         each_speed = (self.speeds - 1) / 2
-        self.dirspace = np.linspace(-self.dhead * each_dir,
-                                    self.dhead * each_dir,
-                                    self.directions)
+        self.dirspace = np.linspace(-self.ddir * each_dir,
+                                    self.ddir * each_dir,
+                                    self.dirs)
         self.speedspace = np.linspace(-self.dspeed * each_speed,
                                       self.dspeed * each_speed,
                                       self.speeds)
@@ -80,7 +79,10 @@ class WbtActDiscrete(WbtAct):
             speed_idx = action[1]
 
         action = (self.dirspace[dir_idx], self.speedspace[speed_idx])
+        dir, speed = action
         if self.relative is True:
-            action = add_tuples(pre_action, action)
-        action = ActionOut(action, direction_type=self.direction_type)
+            dir_pre, speed_pre = pre_action.dir, pre_action.speed
+            dir += dir_pre
+            speed += speed_pre
+        action = ActionOut(self.config, (dir, speed))
         return action
