@@ -34,7 +34,7 @@ typedef struct {
 	float speed;                   // current speed of robot in webots [-1, 1]
 	float actual_gps[2];           // coordiantes where the robot is
 	float heading;                 // direction the front of the robot points in [-1, 1]
-	float steering;                // current angle the of the steering apparatus [-1, 1]
+	// float steering;                // current angle the of the steering apparatus [-1, 1]
 	unsigned int touching;         // is the robot touching something?
 	unsigned int action_denied;    // did we have to take over control for saftey reasons
 	unsigned int discr_act_done;   // did the robot complete its discrete action
