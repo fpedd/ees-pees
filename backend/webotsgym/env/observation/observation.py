@@ -8,7 +8,7 @@ class WbtObs():
 
     @property
     def observation_space(self):
-        return spaces.Box(-np.inf, np.inf, shape=(20,), dtype=np.float32)
+        return spaces.Box(-np.inf, np.inf, shape=(21,), dtype=np.float32)
 
     def get(self):
         """Get standard observation.
@@ -19,9 +19,10 @@ class WbtObs():
         speed:      1
         heading:    1
         touching:   1
+        act_denied: 1
         lidar:     12
         -------------
-        total:     20
+        total:     21
         """
         arr = np.empty(0)
         arr = np.hstack((arr, np.array(self.env.state.sim_time)))
@@ -30,6 +31,7 @@ class WbtObs():
         arr = np.hstack((arr, np.array(self.env.state.speed)))        
         arr = np.hstack((arr, np.array(self.env.state.heading)))
         arr = np.hstack((arr, np.array(self.env.state.touching)))
+        arr = np.hstack((arr, np.array(self.env.state._action_denied)))
         mean_binned_lidar = self.env.state.mean_lidar(bins=12, relative=False)
         arr = np.hstack((arr, mean_binned_lidar))
         return arr
