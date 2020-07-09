@@ -117,7 +117,7 @@ class WebotCtrl():
                            self.config.world_scaling)
         print("sending: start env", int(self.config.sim_mode))
         self.client_sock.send(data)
-        time.sleep(waiting_time)
+        # time.sleep(waiting_time)
         self.get_metadata()
 
         time.sleep(self.config.wait_env_creation)
@@ -138,7 +138,7 @@ class WebotCtrl():
         data = struct.pack('iiiiif', FunctionCode.RESET, seed, 0, 0, 0, 0.0)
         print("sending: reset")
         self.client_sock.send(data)
-        time.sleep(waiting_time)
+        # time.sleep(waiting_time)
         self.get_metadata()
 
         time.sleep(self.config.wait_env_reset)
