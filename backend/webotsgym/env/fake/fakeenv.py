@@ -1,24 +1,30 @@
+from gym import spaces
 import numpy as np
 import matplotlib.pyplot as plt
 import copy
 import gym
-from gym import spaces
 from pathfinding.core.grid import Grid
 from pathfinding.finder.a_star import AStarFinder
 
-import fakegym.utils as utils
+from webotsgym.env.fake.state import FakeState
+from webotsgym.env.fake.action import FakeAction
+from webotsgym.env.fake.util import get_line
+import webotsgym.utils as utils
+
+WALLSIZE = 1
+VAL_WALL = 1
+VAL_OBSTACLE = 2
+VAL_ROBBIE = 4
+VAL_TARGET = 6
 
 
-class FakeGym(gym.Env):
-    def __init__(self, seed=None, N=10, num_of_sensors=4, obstacles_each=4,
-                 step_range=(1, 1), action_type="discrete",
-                 discrete_action_shaping="flatten", obs=Observation, obs_len=1):
-        super(FakeGym, self).__init__()
+class WbtGymFake(gym.Env):
+    def __init__(self, seed=None, N=10, num_of_sensors=4, obstacles_each=4, step_range=(1, 1), obs=FakeState, obs_len=1):
+        super(WbtGymFake, self).__init__()
 
         self.history = {}
 
-        self.action_mapper = DiscreteAction(4, step_range,
-                                            discrete_action_shaping)
+        self.action_mapper = FakeAction(4, step_range)
 
         self.seed(seed)
         self.reward_range = (-100, 100)
@@ -293,7 +299,7 @@ class FakeCom():
         Used to move the robot into specified direction.
         """
         pts = []
-        line = utils.get_line(self.pos_outer, anchor)
+        line = get_line(self.pos_outer, anchor)
         for i, p in enumerate(line):
             if (self.inner[0] <= p[0] <= self.inner[1]) and \
                (self.inner[0] <= p[1] <= self.inner[1]):

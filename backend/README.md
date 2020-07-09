@@ -11,8 +11,8 @@
 * `sudo lsof -t -i tcp:10201 | xargs kill -9`
 
 ### environment - webotsgym/environment.py
-* `from webotsgym.environment import WebotsEnv`
-* load environment by `env = WebotsEnv()`
+* `from webotsgym.environment import webotsgym`
+* load environment by `env = webotsgym()`
 * Main arguments:
     * `seed`, used to setup different Webot environments in *training* in combination with the supervisor mode
     * `action_class`, used to setup the `action_space` and the mapping of the actions to webots actions via `map()`. For example: `action_class=DiscreteAction(directions=3, speeds=3, mode="flatten")` will setup a discrete Action space of size 9. Possile actions to be calculated by an agent (e.g. openai model) are 0:8. *map()* is used to translate the action index to a webot action. Example 0: decrease speed, turn left. For more information of the mapping see *DiscreteAction* in **action.py**. Another possiblity is `action_class=ContinuousAction`, this will set the *action_space=[-1, 1]^2* with a direct mapping.

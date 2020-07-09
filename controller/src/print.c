@@ -43,7 +43,6 @@ void print_data_to_bcknd(data_to_bcknd_msg_t data_to_bcknd, int print_distance) 
 	printf("WEBOT_WORKER: actual_gps[0]:  %f\n", data_to_bcknd.actual_gps[0]);
 	printf("WEBOT_WORKER: actual_gps[1]:  %f\n", data_to_bcknd.actual_gps[1]);
 	printf("WEBOT_WORKER: heading:        %f\n", data_to_bcknd.heading);
-	printf("WEBOT_WORKER: steering:       %f\n", data_to_bcknd.steering);
 	printf("WEBOT_WORKER: touching:       %d\n", data_to_bcknd.touching);
 	printf("WEBOT_WORKER: action_denied:  %d\n", data_to_bcknd.action_denied);
 	printf("WEBOT_WORKER: discr_act_done: %d\n", data_to_bcknd.discr_act_done);

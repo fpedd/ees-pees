@@ -5,6 +5,8 @@
 
 #include "backend/backend_com.h"
 
+#define TIMESTEP 32.0
+
 void *backend_worker(void *ptr) {
 
 	arg_struct_t *arg_struct = (arg_struct_t*) ptr;
@@ -54,7 +56,7 @@ void *backend_worker(void *ptr) {
 				com_send(data_to_bcknd);
 				break;
 
-			case COMMAND_REQUEST:
+			case COMMAND_REQUEST:{
 				// printf("BACKEND_WORKER: COMMAND_REQUEST msg received\n");
 
 				// Move data to ITC struct for webot_worker to read
@@ -63,6 +65,10 @@ void *backend_worker(void *ptr) {
 				pthread_mutex_unlock(arg_struct->itc_cmd_lock);
 
 				// Get data from ITC struct for transmission to backend
+				float next_packet_time = data_to_bcknd.sim_time + TIMESTEP/1000.0 * cmd_from_bcknd.every_x;
+				while (arg_struct->itc_data->sim_time < next_packet_time - (TIMESTEP * 0.2)/1000) {
+					// wait for new data in rtc struct
+				}
 				pthread_mutex_lock(arg_struct->itc_data_lock);
 				memcpy(&data_to_bcknd, arg_struct->itc_data, sizeof(data_to_bcknd_msg_t));
 				arg_struct->itc_data->action_denied = 0;
@@ -72,7 +78,8 @@ void *backend_worker(void *ptr) {
 				// Transmit data to backend
 				com_send(data_to_bcknd);
 				break;
-
+			}
+			case UNDEF:
 			default:
 				printf("BACKEND_WORKER: Invalid Request from Backend\n");
 				break;

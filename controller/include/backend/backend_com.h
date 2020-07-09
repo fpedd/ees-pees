@@ -34,7 +34,7 @@ typedef struct {
 	float speed;                   // current speed of robot in webots [-1, 1]
 	float actual_gps[2];           // coordiantes where the robot is
 	float heading;                 // direction the front of the robot points in [-1, 1]
-	float steering;                // current angle the of the steering apparatus [-1, 1]
+	// float steering;                // current angle the of the steering apparatus [-1, 1]
 	unsigned int touching;         // is the robot touching something?
 	unsigned int action_denied;    // did we have to take over control for saftey reasons
 	unsigned int discr_act_done;   // did the robot complete its discrete action
@@ -45,6 +45,7 @@ typedef struct {
 typedef struct {
 	unsigned long long msg_cnt;    // total number of messages (odd) (internal)
 	double time_stmp;              // time the message got send (internal)
+	int every_x;                   // number of timesteps before new data is send
 	enum response_request request; // type of response the backend awaits to the packet
 	enum discrete_move move;       // ignore everything else and do a discrete_action
 	enum direction_type dir_type;  // heading or steering command from backend

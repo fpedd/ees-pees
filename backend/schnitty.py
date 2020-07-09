@@ -1,23 +1,22 @@
 from pynput import keyboard
 
-import webotsgym.environment as environment
-from webotsgym.action import ContinuousAction
-from webotsgym.webot import WebotAction
+import webotsgym as wg
 
 
 class Schnitty():
     def __init__(self, direction_type="heading"):
         self.dheading = 0.05
         self.dspeed = 0.05
-        action_class = ContinuousAction(direction_type=direction_type)
-        self.env = environment.WebotsEnv(action_class=action_class)
+        action_class = wg.WbtActContinuous(direction_type=direction_type,
+                                           relative=False)
+        self.env = wg.WbtGym(action_class=action_class)
         self._init_action()
         self.grid = False
 
     def _init_action(self):
-        self.act = WebotAction()
+        self.act = wg.com.ActionOut()
         self.act.speed = 0
-        self.act.heading = 0
+        self.act.dir = 0
 
     def action(self):
         with keyboard.Listener(on_press=self.on_press,
@@ -48,13 +47,13 @@ class Schnitty():
                 move = 2
                 print("Move Left")
             else:
-                self.act.heading -= self.dheading
+                self.act.dir -= self.dheading
         elif key == keyboard.Key.right:
             if self.grid is True:
                 move = 4
                 print("Move Right")
             else:
-                self.act.heading += self.dheading
+                self.act.dir += self.dheading
         else:
             return
 
@@ -63,7 +62,7 @@ class Schnitty():
             self.env.com.send_discrete_move(move)
         else:
             self.act.print()
-            self.env.send_command(self.act)
+            self.env.com.send_command(self.act)
 
     def on_release(self, key):
         if key == keyboard.Key.esc:
