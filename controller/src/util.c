@@ -28,6 +28,12 @@ double get_time() {
 }
 
 
+float round_with_factor(float number, float factor) {
+	return (((float) round((number - factor / 2.0) / factor))  * factor) + (factor / 2.0);
+}
+
+
+/*********** Functions below this point should not be here (in util) ***********/
 
 double heading_in_norm(double x, double y, double z) {
 
@@ -42,6 +48,32 @@ double heading_in_norm(double x, double y, double z) {
 	return heading;
 }
 
-float round_with_factor(float number, float factor) {
-	return (((float) round((number - factor / 2.0) / factor))  * factor) + (factor / 2.0);
+float speed_with_dir(data_from_wb_msg_t data_from_wb) {
+
+	static double prev_gps[2] = {data_from_wb.actual_gps[0], data_from_wb.actual_gps[2]};
+
+	// get normalized trajectory vector from gps
+	double len = sqrt(pow(data_from_wb.actual_gps[0], 2)
+	                + pow(data_from_wb.actual_gps[2], 2));
+	double traj[2];
+	traj[0] = (data_from_wb.actual_gps[0] - prev_gps[0]) / len;
+	traj[1] = (data_from_wb.actual_gps[2] - prev_gps[1]) / len;
+
+	// safe prev gps
+	prev_gps[0] = data_from_wb.actual_gps[0];
+	prev_gps[1] = data_from_wb.actual_gps[2];
+
+	// get heading from compass data (already normalized)
+	double comp[2];
+	comp[0] = data_from_wb.compass[2];
+	comp[1] = data_from_wb.compass[0];
+
+	// dot product
+	double dot =  0;
+	for (int i=0; i<2; i++) {
+		dot += traj[i] * comp[i];
+	}
+
+	// adjust speed direction accordingly and cast to float
+	return (float)(dot >= 0 ? data_from_wb.current_speed : -data_from_wb.current_speed);
 }

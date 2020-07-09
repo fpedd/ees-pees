@@ -12,10 +12,10 @@
 #define max(X, Y) (((X) > (Y)) ? (X) : (Y))
 
 typedef struct {
-	data_to_bcknd_msg_t *itc_data;
-	pthread_mutex_t    *itc_data_lock;
+	data_to_bcknd_msg_t  *itc_data;
+	pthread_mutex_t      *itc_data_lock;
 	cmd_from_bcknd_msg_t *itc_cmd;
-	pthread_mutex_t    *itc_cmd_lock;
+	pthread_mutex_t      *itc_cmd_lock;
 } arg_struct_t;
 
 int time_diff_start(double *time);
@@ -26,8 +26,10 @@ int delay(double s);
 
 double get_time();
 
+float round_with_factor(float number, float factor);
+
 double heading_in_norm(double x, double y, double z);
 
-float round_with_factor(float number, float factor);
+float speed_with_dir(data_from_wb_msg_t data_from_wb);
 
 #endif // UTIL_H
