@@ -66,32 +66,30 @@ jobs:
                --extension-pkg-whitelist=matplotlib || pylint-exit -efail $?
 
     
-  Pytest:
-    runs-on: ubuntu-18.04
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
-      # - name: install-unittest
-      #   run: pip install unittest
-      - name: install numpy
-        run: pip install numpy
-      - name: install pynput
-        run: pip install pynput
-      - name: install gym
-        run: pip install gym
-      - name: install psutil
-        run: pip install psutil
-      - name: install matplotlib
-        run: pip install matplotlib
-      - name: install pathfinding
-        run: pip install pathfinding
+  # Pytest:
+  #   runs-on: ubuntu-18.04
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - uses: actions/setup-python@v2
+  #     - name: install numpy
+  #       run: pip install numpy
+  #     - name: install pynput
+  #       run: pip install pynput
+  #     - name: install gym
+  #       run: pip install gym
+  #     - name: install psutil
+  #       run: pip install psutil
+  #     - name: install matplotlib
+  #       run: pip install matplotlib
+  #     - name: install pathfinding
+  #       run: pip install pathfinding
 
-      # - name: integration_test
-      #   working-directory: backend/test
-      #   run: python -q integration_test.py
-      - name: unittest_Fakeenv
-        working-directory: backend/test
-        run: python -q unittest_Fakeenv.py
+  #     # - name: integration_test
+  #     #   working-directory: backend/test
+  #     #   run: python -q integration_test.py
+  #     - name: unittest_Fakeenv
+  #       working-directory: backend/test
+  #       run: python -q unittest_Fakeenv.py
   
 
 
