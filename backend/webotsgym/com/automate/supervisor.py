@@ -88,7 +88,7 @@ class WbtCtrl():
         try:
             self.sock.bind((self.config.IP_S, self.config.PORT_S))
         except OSError:
-            raise Exception("Port blocked due to non correct closing of connection. Use command 'sudo lsof -t -i tcp:10201 | xargs kill -9'")
+            raise Exception("Port blocked due to incorrect closing of connection. Use command 'sudo lsof -t -i tcp:10201 | xargs kill -9'")
         self.sock.listen(5)
         print("Accepting on Port: ", self.config.PORT_S)
         (self.client_sock, self.address) = self.sock.accept()

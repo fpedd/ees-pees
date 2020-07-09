@@ -21,7 +21,7 @@ class Schnitty():
     def action(self):
         with keyboard.Listener(on_press=self.on_press,
                                on_release=self.on_release) as listener:
-            listener.join()
+             listener.join()
 
     def on_press(self, key):
         # TOGGLE with space
