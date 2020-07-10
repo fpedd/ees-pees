@@ -5,6 +5,7 @@ import time
 from enum import IntEnum
 import psutil
 import os
+import getpass
 
 from webotsgym.config import WbtConfig
 import webotsgym.utils as utils
@@ -88,7 +89,14 @@ class WbtCtrl():
         try:
             self.sock.bind((self.config.IP_S, self.config.PORT_S))
         except OSError:
-            raise Exception("Port blocked due to non correct closing of connection. Use command 'sudo lsof -t -i tcp:10201 | xargs kill -9'")
+            print("Port blocked due to incorrect closing of connection. Use "
+                  "'webotsgym.com.kill_spv_connection(password)' or command "
+                  "'sudo lsof -t -i tcp:10201 | xargs kill -9'. Both "
+                  "approaches will kill the current python process. Therefore "
+                  "the jupyter notebook must be rerun from the beginning.")
+            password = getpass.getpass("Enter password to kill process:")
+            kill_spv_connection(password)
+            del password
         self.sock.listen(5)
         print("Accepting on Port: ", self.config.PORT_S)
         (self.client_sock, self.address) = self.sock.accept()
@@ -152,3 +160,10 @@ class WbtCtrl():
         print("target", self.config.gps_target[0], self.config.gps_target[1])
         print("sim_time_step", self.config.sim_time_step)
         print("=====================")
+
+
+def kill_spv_connection(password):
+    command = 'lsof -t -i tcp:10201 | xargs kill -9'
+    p = os.system('echo %s|sudo -S %s' % (password, command))
+    del password
+    return p

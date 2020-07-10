@@ -26,7 +26,8 @@ class WbtGymGrid(WbtGym):
     def step(self, action):
         """Perform action on environment.
 
-        Handled inside com class.
+        Safety in grid world is handled by not allowing actions in a direction
+        where zero possible steps are possible.
         """
         if self.action_class.type != "grid":
             raise TypeError("WebotsGrid need grid action class.")
@@ -36,8 +37,8 @@ class WbtGymGrid(WbtGym):
             self.state.action_denied = 1
         else:
             action = self.action_class.map(action)
-            self.com.send_discrete_move(action)
-            self.com._wait_for_discrete_done()
+            self.com.send_grid_move(action)
+            self.com._wait_for_grid_done()
 
         self.visited_count[self.gps_actual_scaled] += 1
         reward = self.calc_reward()
@@ -51,6 +52,10 @@ class WbtGymGrid(WbtGym):
         return self.observation, reward, done, {}
 
     def reset(self, seed=None):
+        """Reset environment as in WbtGym.
+
+        Additionally reinitialize visited_count.
+        """
         super().reset(seed)
         self.time_steps = 0
 

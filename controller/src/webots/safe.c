@@ -254,7 +254,7 @@ int touching(data_from_wb_msg_t data_from_wb) {
 	for (int i=0; i<DIST_VECS; i++) {
 		if (data_from_wb.distance[i] < silhouette[i]) {
 			touching = 1;
-			printf("SAFE: !CRASH! !CRASH! !CRASH! !CRASH! !CRASH! \n");
+			// printf("SAFE: !CRASH! !CRASH! !CRASH! !CRASH! !CRASH! \n");
 		}
 	}
 

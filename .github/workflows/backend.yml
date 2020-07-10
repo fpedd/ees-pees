@@ -4,11 +4,11 @@ on:
   push:
     branches:
       - master
-      - backend
+      - backend_refactor
   pull_request:
     branches:
       - master
-      - backend
+      - backend_refactor
 
 jobs:
   Pylint:
@@ -30,30 +30,67 @@ jobs:
         run: pip install psutil
       - name: install matplotlib
         run: pip install matplotlib
+      - name: install pathfinding
+        run: pip install pathfinding
+      
+      
 
-#       - name: pylint automation_test
-#         working-directory: backend
-#         run: pylint automation_test.py --disable=missing-docstring --disable=C0103 || pylint-exit -efail $?
-      - name: pylint timmy
+      - name: pylint schnitty
         working-directory: backend
-        run: pylint timmy.py --disable=missing-docstring --disable=C0103 --extension-pkg-whitelist=numpy --extension-pkg-whitelist=pynput || pylint-exit -efail $?
+        run: pylint schnitty.py --disable=C0114,C0115,C0116,R0201,\
+          --disable=C0103\
+           --extension-pkg-whitelist=numpy\
+            --extension-pkg-whitelist=pynput || pylint-exit -efail $?
       - name: pylint james
         working-directory: backend
-        run: pylint james.py --disable=missing-docstring --disable=C0103 --extension-pkg-whitelist=numpy|| pylint-exit -efail $?
+        run: pylint james.py --disable=C0114,C0115,C0116,R0201,\
+         --disable=C0103\
+          --extension-pkg-whitelist=numpy|| pylint-exit -efail $?
+      - name: pylint fakegym
+        working-directory: backend
+        run: pylint fakegym --disable=C0103,C0301,C0114,C0115,C0116,R0201,R0902,R0913,W0612,W0613,E0401,\
+          --ignored-classes=numpy.random\
+           --extension-pkg-whitelist=psutil\
+            --extension-pkg-whitelist=gym\
+             --extension-pkg-whitelist=numpy\
+              --extension-pkg-whitelist=pynput\
+               --extension-pkg-whitelist=matplotlib || pylint-exit -efail $?
       - name: pylint webotsgym
         working-directory: backend
-        run: pylint webotsgym --ignored-classes=matplotlib.pyplot --ignored-classes=matplotlib.cm --ignored-classes=numpy.random --disable=missing-docstring --disable=C0103 --disable=E1101 --extension-pkg-whitelist=matplotlib --extension-pkg-whitelist=psutil --extension-pkg-whitelist=gym --extension-pkg-whitelist=numpy --extension-pkg-whitelist=pynput || pylint-exit -efail $?
+        run: pylint webotsgym --disable=C0103,C0301,C0114,C0115,C0116,R0201,R0902,R0913,W0612,W0613,\
+          --ignored-classes=numpy.random\
+           --extension-pkg-whitelist=psutil\
+            --extension-pkg-whitelist=gym\
+             --extension-pkg-whitelist=numpy\
+              --extension-pkg-whitelist=pynput\
+               --extension-pkg-whitelist=matplotlib || pylint-exit -efail $?
+
+    
+  # Pytest:
+  #   runs-on: ubuntu-18.04
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - uses: actions/setup-python@v2
+  #     - name: install numpy
+  #       run: pip install numpy
+  #     - name: install pynput
+  #       run: pip install pynput
+  #     - name: install gym
+  #       run: pip install gym
+  #     - name: install psutil
+  #       run: pip install psutil
+  #     - name: install matplotlib
+  #       run: pip install matplotlib
+  #     - name: install pathfinding
+  #       run: pip install pathfinding
+
+  #     # - name: integration_test
+  #     #   working-directory: backend/test
+  #     #   run: python -q integration_test.py
+  #     - name: unittest_Fakeenv
+  #       working-directory: backend/test
+  #       run: python -q unittest_Fakeenv.py
   
-  Pytest:
-    runs-on: ubuntu-18.04
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
-      - name: install-pytest
-        run: pip install pytest
-      - name: pytest_test
-        working-directory: backend/test
-        run: pytest -q test_test.py
-  
+
 
         

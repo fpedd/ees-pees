@@ -5,14 +5,17 @@ import webotsgym as wg
 
 class James():
     def __init__(self, direction_type="heading"):
-        action_class = wg.WbtActContinuous(direction_type=direction_type)
-        self.env = wg.WbtGym(action_class=action_class)
+        self.config = wg.WbtConfig()
+        self.config.direction_type = direction_type
+        self.com = wg.com.Communication(self.config)
+
         self.dheading = 0.05
         self.dspeed = 0.05
         self._init_action()
+        self.grid = False
 
     def _init_action(self):
-        self.act = wg.com.ActionOut()
+        self.act = wg.com.ActionOut(self.config)
         self.act.speed = 0
         self.act.dir = 0
 
@@ -22,18 +25,45 @@ class James():
             listener.join()
 
     def on_press(self, key):
-        if key == keyboard.Key.up:
-            self.act.speed += self.dspeed
+        # TOGGLE with space
+        if key == keyboard.Key.space:
+            self.grid = not self.grid
+            print("----------- TOGGLED TO GRID = ", self.grid, "-----------")
+            return
+        # Action by key
+        elif key == keyboard.Key.up:
+            if self.grid is True:
+                move = 1
+                print("Move Up")
+            else:
+                self.act.speed += self.dspeed
         elif key == keyboard.Key.down:
-            self.act.speed -= self.dspeed
+            if self.grid is True:
+                move = 3
+                print("Move Down")
+            else:
+                self.act.speed -= self.dspeed
         elif key == keyboard.Key.left:
-            self.act.dir -= self.dheading
+            if self.grid is True:
+                move = 2
+                print("Move Left")
+            else:
+                self.act.dir -= self.dheading
         elif key == keyboard.Key.right:
-            self.act.dir += self.dheading
+            if self.grid is True:
+                move = 4
+                print("Move Right")
+            else:
+                self.act.dir += self.dheading
         else:
             return
-        self.act.print()
-        self.env.send_command(self.act)
+
+        # Outpacket by grid value
+        if self.grid is True:
+            self.com.send_grid_move(move)
+        else:
+            self.act.print_action()
+            self.com.send_command(self.act)
 
     def on_release(self, key):
         if key == keyboard.Key.esc:
@@ -42,5 +72,5 @@ class James():
 
 if __name__ == "__main__":
     print("================== Hi, my name is James ==================")
-    james = James(direction_type="heading")
-    james.action()
+    schnitty = James(direction_type="heading")
+    schnitty.action()

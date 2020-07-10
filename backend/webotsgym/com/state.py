@@ -6,10 +6,22 @@ class WbtState():
         self.config = config
         self.valid = False
         self.packet = packet_in
+        self.count = None
+        self.time_in = None
+        self.sim_time = None
+        self.speed = None
+        self.gps_actual = None
+        self.heading = None
+        self._touching = None
+        self.action_denied = None
+        self.discrete_action_done = None
+        self.distance = None
+
         if packet_in.error.value == 0:
             # get all attributes of packet
             for attr_k, attr_v in packet_in.__dict__.items():
-                setattr(self, attr_k, attr_v)
+                if hasattr(self, attr_k):
+                    setattr(self, attr_k, attr_v)
             self.valid = True
 
     def get_grid_distances(self, num):
