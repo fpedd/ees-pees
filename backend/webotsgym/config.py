@@ -55,9 +55,9 @@ class WbtConfig():
         self.gps_target = None
         self.sim_time_step = 32  # ms
 
-    def print(self):
-        for (k, v) in self.__dict__.items():
-            print(str(k) + "\t" + str(v))
+    def print_config(self, len=20):
+        for (k, v) in sorted(self.__dict__.items()):
+            print(str(k).ljust(20) + str(v))
 
     @property
     def sim_mode(self):
