@@ -40,21 +40,6 @@ class PacketIn():
             self.discrete_action_done = struct.unpack("I", buffer[44:48])[0]
             self._unpack_distance(buffer, start=48)
 
-    def _check_success(self):
-        self.error = PacketError.NO_ERROR
-        if len(self.buffer) != self.config.PACKET_SIZE:
-            self.error = PacketError.SIZE
-        # if IP != addr[0]:
-        #     print("ERROR: recv did from wrong address", addr)
-        #     return
-        #
-        # if self.packet.count != self.packet.msg_cnt_in:
-        #     print("ERROR: recv wrong msg count, is ", self.packet.count, " should ",
-        #           self.packet.msg_cnt_in)
-        #     self.packet.msg_cnt_in = self.packet.count
-        #     return
-        #
-
     def _unpack_distance(self, buffer, start=40):
         """Get distance data from buffer, roll to have at heading first."""
         to = start + self.config.DIST_VECS * 4
@@ -62,6 +47,11 @@ class PacketIn():
         self.distance = np.array(struct.unpack("{}f".format(N),
                                                buffer[start: to]))
         self.distance = np.roll(self.distance, 180)
+
+    def _check_success(self):
+        self.error = PacketError.NO_ERROR
+        if len(self.buffer) != self.config.PACKET_SIZE:
+            self.error = PacketError.SIZE
 
 
 class PacketOut():

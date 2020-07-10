@@ -1,6 +1,5 @@
 import numpy as np
 import gym
-import time
 import warnings
 
 import webotsgym.utils as utils
@@ -34,7 +33,7 @@ class WbtGym(gym.Env):
         self.rewards = []
         self.pre_action = ActionOut(config, (0, 0))
 
-        # init action, reward, observation
+        # init action, reward, observation classes
         self.action_class = action_class
         self.evaluate_class = evaluate_class
         self.observation_class = observation_class
@@ -47,8 +46,6 @@ class WbtGym(gym.Env):
 
         if request_start_data is True:
             self.get_data()
-
-
 
     # =========================================================================
     # ====================       IMPORTANT PROPERTIES       ===================
@@ -109,7 +106,8 @@ class WbtGym(gym.Env):
             self.action_class = (self.action_class)(self.config)
         # overwriting relative action behaviour if action class is a type
         if self.config.relative_action is not None:
-            warnings.warn("Relative property of action class is overwritten by config.relative_action.")
+            warnings.warn("Relative property of action class is overwritten "
+                          "by config.relative_action.")
             self.action_class.relative = self.config.relative_action
 
         if type(self.observation_class) == type:
@@ -165,7 +163,6 @@ class WbtGym(gym.Env):
             self.seed(seed)
 
             self.supervisor.reset_environment(self.main_seed)
-            # self.supervisor.start_env(self.main_seed)
             self.rewards = []
             self.distances = []
             self._init_com()
@@ -211,7 +208,20 @@ class WbtGym(gym.Env):
         self.history.append(self.state)
 
     def get_target_distance(self, normalized=False):
-        """Calculate euklidian distance to target."""
+        """Calculate euklidian distance to target.
+
+        Parameters
+        ----------
+        normalized : bool
+            If True, get relative target distance. Normalized by maximal
+            distance in environment (sqrt(2) * length).
+
+        Returns
+        -------
+        float32
+            Distance of roboter to target.
+
+        """
         distance = utils.euklidian_distance(self.gps_actual, self.gps_target)
         if normalized is True:
             distance = distance / self.max_distance

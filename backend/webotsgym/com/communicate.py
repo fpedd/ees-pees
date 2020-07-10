@@ -2,7 +2,7 @@ import socket
 import time
 
 from webotsgym.config import WbtConfig, DiscreteMove
-from webotsgym.com import PacketIn, PacketOut, WbtState, PacketType  # noqa E501
+from webotsgym.com import PacketIn, PacketOut, WbtState, PacketType
 
 
 class Communication():
@@ -91,3 +91,14 @@ class Communication():
         while self.state.discrete_action_done != 1:
             self.get_data()
             time.sleep(wait_time)
+
+# if IP != addr[0]:
+#     print("ERROR: recv did from wrong address", addr)
+#     return
+#
+# if self.packet.count != self.packet.msg_cnt_in:
+#     print("ERROR: recv wrong msg count, is ", self.packet.count, " should ",
+#           self.packet.msg_cnt_in)
+#     self.packet.msg_cnt_in = self.packet.count
+#     return
+#

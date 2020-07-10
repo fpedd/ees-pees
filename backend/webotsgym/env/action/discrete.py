@@ -38,12 +38,15 @@ class WbtActDiscrete(WbtAct):
         self.relative = relative
 
         self.dirs = dirs
-        self.speeds = speeds
         self.ddir = ddir
+        self.dirspace = None
+        self.speeds = speeds
         self.dspeed = dspeed
+        self.speedspace = None
+        self._set_mapping_space()
+
         self.action_tuple = (dirs, speeds)
         self._set_action_space()
-        self._set_mapping_space()
 
     @property
     def number_of_actions(self):
@@ -70,7 +73,26 @@ class WbtActDiscrete(WbtAct):
                                       self.dspeed * each_speed,
                                       self.speeds)
 
-    def map(self, action, pre_action):
+    def map(self, action, pre_action=None):
+        """Map RL-agent action to webots action.
+
+        If 'relative' is True, the mapped values of 'action' will be added
+        to the 'pre-action', e.g. pre_action = (0.2, 0.3), action = (-0.1, 0.1)
+        will result in (0.1, 0.4).
+
+        Parameters
+        ----------
+        action : int, tuple
+            Action from RL-agent.
+        pre_action : ActionOut
+            Last action send to external controller.
+
+        Returns
+        -------
+        ActionOut
+            New action to be send to external controller.
+
+        """
         if self.mode == "flatten":
             dir_idx = action % len(self.dirspace)
             speed_idx = int((action - dir_idx) / len(self.dirspace))

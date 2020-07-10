@@ -26,7 +26,8 @@ class WbtGymGrid(WbtGym):
     def step(self, action):
         """Perform action on environment.
 
-        Safety in grid world is handled by not allowing actions
+        Safety in grid world is handled by not allowing actions in a direction
+        where zero possible steps are possible.
         """
         if self.action_class.type != "grid":
             raise TypeError("WebotsGrid need grid action class.")

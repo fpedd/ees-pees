@@ -28,7 +28,7 @@ class WbtObs():
         arr = np.hstack((arr, np.array(self.env.state.sim_time)))
         arr = np.hstack((arr, np.array(self.env.state.gps_actual)))
         arr = np.hstack((arr, np.array(self.env.gps_target)))
-        arr = np.hstack((arr, np.array(self.env.state.speed)))        
+        arr = np.hstack((arr, np.array(self.env.state.speed)))
         arr = np.hstack((arr, np.array(self.env.state.heading)))
         arr = np.hstack((arr, np.array(self.env.state.touching)))
         arr = np.hstack((arr, np.array(self.env.state.action_denied)))
