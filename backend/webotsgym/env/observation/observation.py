@@ -31,7 +31,7 @@ class WbtObs():
         arr = np.hstack((arr, np.array(self.env.state.speed)))        
         arr = np.hstack((arr, np.array(self.env.state.heading)))
         arr = np.hstack((arr, np.array(self.env.state.touching)))
-        arr = np.hstack((arr, np.array(self.env.state._action_denied)))
+        arr = np.hstack((arr, np.array(self.env.state.action_denied)))
         mean_binned_lidar = self.env.state.mean_lidar(bins=12, relative=False)
         arr = np.hstack((arr, mean_binned_lidar))
         return arr

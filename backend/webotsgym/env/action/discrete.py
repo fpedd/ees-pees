@@ -54,8 +54,8 @@ class WbtActDiscrete(WbtAct):
 
     def _set_action_space(self):
         if self.mode == "flatten":
-            self.action_space = Discrete(self.action_tuple[0] *
-                                         self.action_tuple[1])
+            self.action_space = Discrete(self.action_tuple[0]
+                                         * self.action_tuple[1])  # noqa W503
         elif self.mode == "tuple":
             self.action_space = Tuple((Discrete(self.action_tuple[0]),
                                        Discrete(self.action_tuple[1])))
