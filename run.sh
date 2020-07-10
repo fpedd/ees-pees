@@ -12,7 +12,9 @@ INT_CTRL=/webots/controllers/internal
 
 ### Path to Backend Script
 BCKND_SCRIPT=/backend/james.py    # <- continous and discrete action example
-                                       # (use space to switch between modes)
+                                  # (use space to switch between modes)
+# RIP Timmy :(
+# RIP Schnitty :(
 
 ### Terminal Emulator you want to use
 TERM_EM=gnome-terminal\ -x
