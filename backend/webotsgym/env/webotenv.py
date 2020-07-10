@@ -10,6 +10,8 @@ from webotsgym.env.observation import WbtObs
 from webotsgym.env.reward import WbtReward
 from webotsgym.com import WbtCtrl, Communication, ActionOut
 
+gym.logger.set_level(40)  # disable lowered precision warning
+
 
 class WbtGym(gym.Env):
     def __init__(self,
