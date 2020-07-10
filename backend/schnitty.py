@@ -5,23 +5,24 @@ import webotsgym as wg
 
 class Schnitty():
     def __init__(self, direction_type="heading"):
+        self.config = wg.WbtConfig()
+        self.config.direction_type = direction_type
+        self.com = wg.com.Communication(self.config)
+
         self.dheading = 0.05
         self.dspeed = 0.05
-        action_class = wg.WbtActContinuous(direction_type=direction_type,
-                                           relative=False)
-        self.env = wg.WbtGym(action_class=action_class)
         self._init_action()
         self.grid = False
 
     def _init_action(self):
-        self.act = wg.com.ActionOut()
+        self.act = wg.com.ActionOut(self.config)
         self.act.speed = 0
         self.act.dir = 0
 
     def action(self):
         with keyboard.Listener(on_press=self.on_press,
                                on_release=self.on_release) as listener:
-             listener.join()
+            listener.join()
 
     def on_press(self, key):
         # TOGGLE with space
@@ -59,10 +60,10 @@ class Schnitty():
 
         # Outpacket by grid value
         if self.grid is True:
-            self.env.com.send_discrete_move(move)
+            self.com.send_discrete_move(move)
         else:
-            self.act.print()
-            self.env.com.send_command(self.act)
+            self.act.print_action()
+            self.com.send_command(self.act)
 
     def on_release(self, key):
         if key == keyboard.Key.esc:
@@ -71,5 +72,5 @@ class Schnitty():
 
 if __name__ == "__main__":
     print("================== Hi, my name is Schnitty ==================")
-    schnitty = Schnitty(direction_type="heading")
+    schnitty = Schnitty(direction_type="steering")
     schnitty.action()
