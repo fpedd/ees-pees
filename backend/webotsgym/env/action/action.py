@@ -18,7 +18,7 @@ class ActionOut():
             self.dir = action[0]
             self.speed = action[1]
 
-    def print(self):
+    def print_action(self):
         print("dir: ", self.dir)
         print("speed:   ", self.speed)
 

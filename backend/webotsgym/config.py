@@ -67,13 +67,12 @@ class WbtConfig():
     def sim_mode(self, value):
         if type(value) == SimSpeedMode:
             self._sim_mode = value
-        elif value == 0:
+        elif value == "normal":
             self._sim_mode = SimSpeedMode.NORMAL
-        elif value == 1:
+        elif value == "run":
             self._sim_mode = SimSpeedMode.RUN
-        elif value == 2:
+        elif value == "fast":
             self._sim_mode = SimSpeedMode.FAST
-        print(self._sim_mode)
 
     @property
     def direction_type(self):
@@ -83,9 +82,9 @@ class WbtConfig():
     def direction_type(self, value):
         if type(value) == SimSpeedMode:
             self._direction_type = value
-        elif value == 0:
+        elif value == "steering":
             self._direction_type = DirectionType.STEERING
-        elif value == 1:
+        elif value == "heading":
             self._direction_type = DirectionType.HEADING
 
     @property
