@@ -107,7 +107,8 @@ class WbtCtrl():
 
     def start_env(self, seed=None, waiting_time=1):
         """Start environment with seed and config info."""
-        self.extr_ctrl.reset()
+        self.extr_ctrl.close()
+        self.extr_ctrl.start()
         if seed is None:
             seed = utils.set_random_seed()
         data = struct.pack('iiiiif',
@@ -131,7 +132,8 @@ class WbtCtrl():
 
     def reset_environment(self, seed=None, waiting_time=1):
         """Reset environment with seed."""
-        self.extr_ctrl.reset()
+        self.extr_ctrl.close()
+        self.extr_ctrl.start()
         if seed is None:
             seed = utils.set_random_seed()
         # environment sollte sein wie beim start der simulation
