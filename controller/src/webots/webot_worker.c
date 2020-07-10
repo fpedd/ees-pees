@@ -111,9 +111,7 @@ int webot_format_wb_to_bcknd(data_to_bcknd_msg_t* data_to_bcknd,
 
 	// cast sim time and robot speed to float
 	data_to_bcknd->sim_time = (float) data_from_wb.sim_time;
-	data_to_bcknd->speed = (float) data_from_wb.current_speed / init_data.maxspeed;
-
-	printf("data_to_bcknd->speed: %f , speed_with_dir: %f \n", data_to_bcknd->speed, speed_with_dir(data_from_wb));
+	data_to_bcknd->speed = (float) speed_with_dir(data_from_wb) / init_data.maxspeed;
 
 	// calculate projecions for 3D gps/compass data_to_bcknd to bcknd format
 	// (x, z coorinates represent horizontal plane in webots system)

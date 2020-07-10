@@ -71,6 +71,8 @@ int drive_automatic(cmd_to_wb_msg_t *cmd_to_wb, init_to_ext_msg_t init_data,
 
 	// TODO: fix controller when driving backwards
 	// this should be act_speed and not set speed
+	printf("DRIVE: set_speed: %f , act_speed: %f \n", set_speed, act_speed);
+	// if (act_speed < 0.0) {
 	if (set_speed < 0.0) {
 		pid_update(&heading_pid, 3.0, 0.0, 0.0);
 		com_heading *= -1.0;
