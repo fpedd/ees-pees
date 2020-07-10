@@ -36,8 +36,8 @@ class WbtGymGrid(WbtGym):
             self.state.action_denied = 1
         else:
             action = self.action_class.map(action)
-            self.com.send_discrete_move(action)
-            self.com._wait_for_discrete_done()
+            self.com.send_grid_move(action)
+            self.com._wait_for_grid_done()
 
         self.visited_count[self.gps_actual_scaled] += 1
         reward = self.calc_reward()
