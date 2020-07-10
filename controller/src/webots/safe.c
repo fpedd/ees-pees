@@ -113,7 +113,7 @@ int safety_check(init_to_ext_msg_t init_data, data_from_wb_msg_t data_from_wb, c
 		action_denied = 1;
 
 	} else if (min_steps <= STEPS_SLOW){
-		fprintf(stderr, "SAFE: Slowing down. MIN_STEPS: %f\n", min_steps);
+		// fprintf(stderr, "SAFE: Slowing down. MIN_STEPS: %f\n", min_steps);
 		cmd_to_wb->speed = 0;
 	}
 
@@ -183,12 +183,12 @@ int too_close(float *distance, double cmd_speed, int direction) {
 	// printf("SAFE: dist_in_direction %f \n", dist_in_direction);
 	if (direction == FORWARDS && cmd_speed < 0.0) {
 		if(front_left < CLOSEST_ALLOWED || front_right < CLOSEST_ALLOWED || front < CLOSEST_ALLOWED) {
-			fprintf(stderr, "SAFE: Obstacle in front, cant drive forwards\n");
+			// fprintf(stderr, "SAFE: Obstacle in front, cant drive forwards\n");
 			return 1; // deny action
 		}
 	} else if (direction == BACKWARDS && cmd_speed > 0.0) {
 		if(back_left < CLOSEST_ALLOWED || back_right < CLOSEST_ALLOWED || back < CLOSEST_ALLOWED) {
-			fprintf(stderr, "SAFE: Obstacle in back, cant drive backwards\n");
+			// fprintf(stderr, "SAFE: Obstacle in back, cant drive backwards\n");
 			return 1; // deny action
 		}
 	}
