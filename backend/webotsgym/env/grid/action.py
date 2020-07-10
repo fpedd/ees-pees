@@ -10,7 +10,7 @@ class WbtActGrid(WbtAct):
     2: Left  -> Down  (3)
     3: Up    -> Right (4)
     """
-    def __init__(self):
+    def __init__(self,env):
         self.action_space = Discrete(4)
         self.direction_type = "steering"  # just a dummy
         self.type = "grid"
