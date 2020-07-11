@@ -1,7 +1,7 @@
 from gym.spaces import Box
 import numpy as np
 
-from webotsgym.env.action import WbtAct, ActionOut
+from webotsgym.env.action.action import WbtAct, ActionOut
 
 
 class WbtActContinuous(WbtAct):

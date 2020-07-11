@@ -2,7 +2,8 @@ import socket
 import time
 
 from webotsgym.config import WbtConfig, DiscreteMove
-from webotsgym.com import PacketIn, PacketOut, WbtState, PacketType
+from webotsgym.com.package import PacketIn, PacketOut, PacketType
+from webotsgym.com.state import WbtState
 
 
 class Communication():

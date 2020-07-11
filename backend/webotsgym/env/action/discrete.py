@@ -1,7 +1,7 @@
 from gym.spaces import Discrete, Tuple
 import numpy as np
 
-from webotsgym.env.action import WbtAct, ActionOut
+from webotsgym.env.action.action import WbtAct, ActionOut
 
 
 class WbtActDiscrete(WbtAct):
@@ -45,7 +45,7 @@ class WbtActDiscrete(WbtAct):
     def number_of_actions(self):
         if self.mode == "flatten":
             return self.action_tuple[0] * self.action_tuple[1] + 1
-        elif self.mode == "tuple":
+        if self.mode == "tuple":
             return self.action_tuple[0] * (self.action_tuple[1] + 1)
         return None
 

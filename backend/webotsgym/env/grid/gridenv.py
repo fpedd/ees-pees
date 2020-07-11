@@ -1,6 +1,6 @@
 import numpy as np
 
-from webotsgym.env import WbtGym
+from webotsgym.env.webotsenv import WbtGym
 from webotsgym.env.grid.action import WbtActGrid
 from webotsgym.env.grid.observation import WbtObsGrid
 from webotsgym.config import WbtConfig

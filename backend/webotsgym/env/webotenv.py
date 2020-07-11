@@ -1,7 +1,7 @@
-import gym
 import warnings
 import numpy as np
 import pandas as pd
+import gym
 
 import webotsgym.utils as utils
 from webotsgym.config import WbtConfig
@@ -68,7 +68,8 @@ class WbtGym(gym.Env):
             return self.config.gps_target
         elif self._gps_target is not None:
             return self._gps_target
-        raise ValueError("Target GPS not defined.")
+        else:
+            raise ValueError("Target GPS not defined.")
 
     @property
     def state(self):

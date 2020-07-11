@@ -1,7 +1,7 @@
-from enum import IntEnum
-import time
-import numpy as np
 import struct
+import time
+from enum import IntEnum
+import numpy as np
 
 from webotsgym.env.action import ActionOut
 
