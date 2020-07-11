@@ -56,12 +56,14 @@ class WbtGym(gym.Env):
     # =========================================================================
     @property
     def supervisor_connected(self) -> bool:
+        """Check if supervisor is connected with the environment."""
         if self.supervisor is not None and self.supervisor.return_code == 0:
             return True
         return False
 
     @property
     def gps_target(self):
+        """Get gps data for the target."""
         if self.supervisor_connected:
             return self.config.gps_target
         elif self._gps_target is not None:
@@ -70,6 +72,14 @@ class WbtGym(gym.Env):
 
     @property
     def state(self):
+        """Get state object.
+
+        Returns
+        -------
+        WbtState
+            State object.
+
+        """
         return self.com.state
 
     # =========================================================================
@@ -126,6 +136,14 @@ class WbtGym(gym.Env):
 
     @property
     def observation(self):
+        """Get state of webots as array.
+
+        Returns
+        -------
+        np.ndarray
+            See observation_class of env for details.
+
+        """
         return self.observation_class.get()
 
     # =========================================================================
@@ -176,11 +194,11 @@ class WbtGym(gym.Env):
         return self.observation, reward, done, {}
 
     def calc_reward(self):
-        """Calc reward with evaluate class."""
+        """Calculate reward with evaluate_class."""
         return self.evaluate_class.calc_reward()
 
     def check_done(self):
-        """Check done."""
+        """Check done, handled with evaluate_class."""
         return self.evaluate_class.check_done()
 
     def reset(self, seed=None):
@@ -224,6 +242,14 @@ class WbtGym(gym.Env):
     # ==============================   PLOTTING   =============================
     # =========================================================================
     def plot_lidar(self, relative=False):
+        """Plot lidar data.
+
+        Parameters
+        ----------
+        relative : bool
+            True: plot by current heading.
+            False: plot with respect to absolute compass distances.
+        """
         if relative is True:
             data = self.state.lidar_relative
         else:
@@ -234,13 +260,16 @@ class WbtGym(gym.Env):
     # ========================   HELPER / PROPERTIES   ========================
     # =========================================================================
     def get_data(self):
+        """Get current data package from the external controller."""
         self.com.get_data()
 
     def send_stop_action(self):
+        """Send (0, 0) action to stop the robot."""
         act = ActionOut(action=(0, 0))
         self.send_command_and_data_request(act)
 
     def send_command_and_data_request(self, action):
+        """Send action to the external controller and request data."""
         self.com.send_command_and_data_request(action)
 
     def _update_history(self):
@@ -269,10 +298,12 @@ class WbtGym(gym.Env):
 
     @property
     def iterations(self):
+        """Get number of total timesteps of the current run."""
         return len(self.history)
 
     @property
     def total_reward(self):
+        """Get total reward of the current run."""
         return sum(self.rewards)
 
     @property
@@ -285,6 +316,7 @@ class WbtGym(gym.Env):
 
     @property
     def df_results(self):
+        """Get information about all runs as pandas.DataFrame."""
         res = self.results
         res = res[res[:, 0] > 0]
         df = pd.DataFrame(res)

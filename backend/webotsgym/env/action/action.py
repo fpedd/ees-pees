@@ -10,6 +10,10 @@ class WbtAct(object):
 
 
 class ActionOut():
+    """Class that is basis for action to be send to external controller.
+
+    Handles some cases to stay in the action limits [-1, 1] x [-1, 1].
+    """
     def __init__(self, config=WbtConfig(), action=None):
         self.config = config
         self._dir = None
