@@ -1,6 +1,6 @@
 import numpy as np
 
-from webotsgym.env.webotsenv import WbtGym
+from webotsgym.env.webotenv import WbtGym
 from webotsgym.env.grid.action import WbtActGrid
 from webotsgym.env.grid.observation import WbtObsGrid
 from webotsgym.config import WbtConfig
@@ -60,7 +60,7 @@ class WbtGymGrid(WbtGym):
         else:
             action = self.action_class.map(action)
             self.com.send_grid_move(action)
-            self.com._wait_for_grid_done()
+            self.com.wait_for_grid_action_done()
 
         self.visited_count[self.gps_actual_scaled] += 1
         reward = self.calc_reward()

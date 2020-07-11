@@ -25,6 +25,7 @@ class WbtActDiscrete(WbtAct):
 
     def __init__(self, config, dirs=3, speeds=3, dspeed=0.1, ddir=0.1,
                  mode="flatten", relative=False):
+        super(WbtActDiscrete, self).__init__()
         self.config = config
         self.type = "normal"
         self.mode = mode
@@ -95,10 +96,4 @@ class WbtActDiscrete(WbtAct):
             speed_idx = action[1]
 
         action = (self.dirspace[dir_idx], self.speedspace[speed_idx])
-        dir, speed = action
-        if self.relative is True:
-            dir_pre, speed_pre = pre_action.dir, pre_action.speed
-            dir += dir_pre
-            speed += speed_pre
-        action = ActionOut(self.config, (dir, speed))
-        return action
+        return super().map(action, pre_action)

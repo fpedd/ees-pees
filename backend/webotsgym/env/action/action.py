@@ -8,6 +8,34 @@ class WbtAct():
         self.type = "normal"
         self.relative = None
 
+    def map(self, action, pre_action=None):
+        """Map RL-agent action to webots action.
+
+        If 'relative' is True, the mapped values of 'action' will be added
+        to the 'pre-action', e.g. pre_action = (0.2, 0.3), action = (-0.1, 0.1)
+        will result in (0.1, 0.4).
+
+        Parameters
+        ----------
+        action : int, tuple
+            Action from RL-agent.
+        pre_action : ActionOut
+            Last action send to external controller.
+
+        Returns
+        -------
+        ActionOut
+            New action to be send to external controller.
+
+        """
+        dir, speed = action
+        if self.relative is True and pre_action is not None:
+            dir_pre, speed_pre = pre_action.dir, pre_action.speed
+            dir += dir_pre
+            speed += speed_pre
+        action = ActionOut(self.config, (dir, speed))
+        return action
+
 
 class ActionOut():
     """Class that is basis for action to be send to external controller.

@@ -83,7 +83,7 @@ class Communication():
         pack_out = PacketOut(self.msg_cnt, 0, PacketType.COM, move, 0)
         self.send(pack_out)
 
-    def _wait_for_grid_done(self, wait_time=0.01):
+    def wait_for_grid_action_done(self, wait_time=0.01):
         # give controller some time to update internal data
         time.sleep(wait_time)
         self.get_data()

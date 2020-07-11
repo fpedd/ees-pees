@@ -1,7 +1,7 @@
 from gym.spaces import Box
 import numpy as np
 
-from webotsgym.env.action.action import WbtAct, ActionOut
+from webotsgym.env.action.action import WbtAct
 
 
 class WbtActContinuous(WbtAct):
@@ -30,6 +30,7 @@ class WbtActContinuous(WbtAct):
 
     """
     def __init__(self, config, bounds=(1, 1), relative=False):
+        super(WbtActContinuous, self).__init__()
         self.config = config
         if relative is False:
             bounds = (1, 1)
@@ -38,12 +39,3 @@ class WbtActContinuous(WbtAct):
                                 high=np.array([bounds[0], bounds[1]]))
         self.relative = relative
         self.type = "normal"
-
-    def map(self, action, pre_action):
-        dir, speed = action
-        if self.relative is True:
-            dir_pre, speed_pre = pre_action.dir, pre_action.speed
-            dir += dir_pre
-            speed += speed_pre
-        action = ActionOut(self.config, (dir, speed))
-        return action
