@@ -8,6 +8,7 @@ from webotsgym.com import ActionOut
 class WbtActContinuous(WbtAct):
     def __init__(self, config, bound=1, relative=False):
         self.config = config
+        self.bound = bound
         if relative is False:
             bound = 1
         self.action_space = Box(-bound, bound, shape=(2,), dtype=np.float32)
