@@ -12,7 +12,7 @@ def plot_lidar(x):
                   bottom=0.0)
     ax.set_xticklabels([])
     ax.set_yticklabels([])
-    for r, bar in zip(x, bars):
-        bar.set_facecolor(plt.cm.winter(r / len(x)))
-        bar.set_alpha(0.5)
+    for r, bar_ in zip(x, bars):
+        bar_.set_facecolor(plt.cm.winter(r / len(x)))
+        bar_.set_alpha(0.5)
     plt.show()

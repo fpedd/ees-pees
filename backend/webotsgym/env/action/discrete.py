@@ -6,28 +6,22 @@ from webotsgym.com import ActionOut
 
 
 class WbtActDiscrete(WbtAct):
-    """
-    Steps, Directions must be of the form 2k + 1, k >= 1
-    ----------------------DIRECTIONS--------------------
-    -    [0]                 [1]               [2]
-    - [0] heading -= 0.2     ....              ....
-    -     speed -= 0.2
-    S
-    P [1] left 36°        DO NOTHING           ....
-    E     speed += 0
-    E
-    D [2] left 36°           ....              +36°
-    S     speed += 0.2                     speed += 0.2
-    -
-    -
+    """Discrete action class.
 
-    Tuple: shape = (DIRECTIONS, STEPS)
-    Flat: shape = DIRECTIONS * STEPS, Index to action:
-        move cols first
-        0: top left in above
-        1: top second to the left
-        ...
-        -1: bottom right
+    Generate matrix of possible actions. Rows are possible speeds, columns
+    possible directions. With dirs=5, ddir=0.15, speeds=3, dspeed=0.1:
+                            DIRECTIONS
+            +------+ +------+-------+---+------+-----+
+            |      | | -0.3 | -0.15 | 0 | 0.15 | 0.3 |
+        S   +------+ +------+-------+---+------+-----+
+        P   +------+ +------+-------+---+------+-----+
+        E   | -0.1 | | 0    | 1     | 2 | 3    | 4   |
+        E   +------+ +------+-------+---+------+-----+
+        D   | 0    | | 5    | ...   |   |      |     |
+        S   +------+ +------+-------+---+------+-----+
+            | 0.1  | |      |       |   |      |     |
+            +------+ +------+-------+---+------+-----+
+            Example: RL-agent action = 4 is mapped to (0.3, -0.1).
     """
 
     def __init__(self, config, dirs=3, speeds=3, dspeed=0.1, ddir=0.1,

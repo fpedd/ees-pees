@@ -10,4 +10,4 @@ def save_object(obj, path):
 def load_object(path):
     """Load object via pickle."""
     filehandler = open(path, 'rb')
-    return (pickle.load(filehandler))
+    return pickle.load(filehandler)
