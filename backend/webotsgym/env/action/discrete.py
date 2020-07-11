@@ -1,7 +1,7 @@
 from gym.spaces import Discrete, Tuple
 import numpy as np
 
-from webotsgym.env.action.action import WbtAct, ActionOut
+from webotsgym.env.action.action import WbtAct
 
 
 class WbtActDiscrete(WbtAct):

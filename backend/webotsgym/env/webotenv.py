@@ -66,10 +66,9 @@ class WbtGym(gym.Env):
         """Get gps data for the target."""
         if self.supervisor_connected:
             return self.config.gps_target
-        elif self._gps_target is not None:
+        if self._gps_target is not None:
             return self._gps_target
-        else:
-            raise ValueError("Target GPS not defined.")
+        raise ValueError("Target GPS not defined.")
 
     @property
     def state(self):

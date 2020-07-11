@@ -83,8 +83,8 @@ class WbtGymGrid(WbtGym):
         super().reset(seed)
         self.time_steps = 0
 
-        len = int(self.config.world_size * self.config.world_scaling) * 2 + 1
-        self.visited_count = np.zeros((len, len))
+        len_ = int(self.config.world_size * self.config.world_scaling) * 2 + 1
+        self.visited_count = np.zeros((len_, len_))
         return self.observation
 
     @property
