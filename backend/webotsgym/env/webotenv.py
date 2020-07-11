@@ -105,7 +105,7 @@ class WbtGym(gym.Env):
     def _init_act_rew_obs(self, env):
         # type to instance
         if type(self.action_class) == type:
-            self.action_class = (self.action_class)(self.config)
+            self.action_class = (self.action_class)(config=self.config)
         # overwriting relative action behaviour if action class is a type
         if self.config.relative_action is not None:
             warnings.warn("Relative property of action class is overwritten "
