@@ -1,5 +1,8 @@
 import numpy as np
 
+from webotsgym.env.action import ActionOut
+from webotsgym.config import DirectionType
+
 
 class WbtState():
     def __init__(self, config, packet_in):
@@ -12,6 +15,7 @@ class WbtState():
         self.speed = None
         self.gps_actual = None
         self.heading = None
+        self.steering = None
         self._touching = None
         self.action_denied = None
         self.discrete_action_done = None
@@ -27,6 +31,15 @@ class WbtState():
     def get_grid_distances(self, num):
         every = int(360 / num)
         return self.lidar_absolute[0:-1:every]
+
+    def get_pre_action(self):
+        act = ActionOut()
+        act.speed = self.speed
+        if self.config.direction_type == DirectionType.HEADING:
+            act.dir = self.heading
+        elif self.config.direction_type == DirectionType.STEERING:
+            act.dir = self.steering
+        return act
 
     def mean_lidar(self, bins=12, relative=False):
         """Get mean lidar data.
