@@ -38,7 +38,7 @@ class PacketIn():
             self.steering = struct.unpack('f', buffer[36:40])[0]
             self._touching = struct.unpack("I", buffer[40:44])[0]
             self.action_denied = struct.unpack("I", buffer[44:48])[0]
-            self.discrete_action_done = struct.unpack("I", buffer[18:52])[0]
+            self.discrete_action_done = struct.unpack("I", buffer[48:52])[0]
             self._unpack_distance(buffer, start=52)
 
     def _unpack_distance(self, buffer, start=40):
