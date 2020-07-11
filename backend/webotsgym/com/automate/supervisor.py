@@ -1,10 +1,10 @@
+import os
 import subprocess
 import socket
 import struct
 import time
 from enum import IntEnum
 import psutil
-import os
 import getpass
 
 from webotsgym.config import WbtConfig

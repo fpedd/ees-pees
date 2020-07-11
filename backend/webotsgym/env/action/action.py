@@ -3,7 +3,7 @@ import numpy as np
 from webotsgym.config import WbtConfig, DirectionType
 
 
-class WbtAct(object):
+class WbtAct():
     def __init__(self):
         self.type = "normal"
         self.relative = None

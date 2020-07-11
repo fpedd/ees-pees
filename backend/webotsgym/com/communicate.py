@@ -11,6 +11,7 @@ class Communication():
         self.msg_cnt = 0
         self.packet = None
         self.history = []
+        self.state = None
         self._set_sock()
 
     # ------------------------------  SETUPS  ---------------------------------
