@@ -1,16 +1,16 @@
+import os
 import subprocess
 import socket
 import struct
 import time
 from enum import IntEnum
-import psutil
-import os
 import getpass
+import psutil
 
 from webotsgym.config import WbtConfig
 import webotsgym.utils as utils
-from webotsgym.com.automate import get_repo_dir
-from webotsgym.com.automate import ExtCtrl
+from webotsgym.com.automate.util import get_repo_dir
+from webotsgym.com.automate.extcontroller import ExtCtrl
 
 
 class FunctionCode(IntEnum):

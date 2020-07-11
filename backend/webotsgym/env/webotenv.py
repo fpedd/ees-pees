@@ -1,6 +1,7 @@
-import numpy as np
-import gym
 import warnings
+import numpy as np
+import pandas as pd
+import gym
 
 import webotsgym.utils as utils
 from webotsgym.config import WbtConfig
@@ -33,6 +34,7 @@ class WbtGym(gym.Env):
         self.config = config
         self.distances = []
         self.rewards = []
+        self.results = np.empty((0, 3))
         self.pre_action = ActionOut(config, (0, 0))
 
         # init action, reward, observation classes
@@ -54,20 +56,30 @@ class WbtGym(gym.Env):
     # =========================================================================
     @property
     def supervisor_connected(self) -> bool:
+        """Check if supervisor is connected with the environment."""
         if self.supervisor is not None and self.supervisor.return_code == 0:
             return True
         return False
 
     @property
     def gps_target(self):
+        """Get gps data for the target."""
         if self.supervisor_connected:
             return self.config.gps_target
-        elif self._gps_target is not None:
+        if self._gps_target is not None:
             return self._gps_target
         raise ValueError("Target GPS not defined.")
 
     @property
     def state(self):
+        """Get state object.
+
+        Returns
+        -------
+        WbtState
+            State object.
+
+        """
         return self.com.state
 
     # =========================================================================
@@ -109,7 +121,8 @@ class WbtGym(gym.Env):
         # overwriting relative action behaviour if action class is a type
         if self.config.relative_action is not None:
             warnings.warn("Relative property of action class is overwritten "
-                          "by config.relative_action.")
+                          "by config.relative_action. This might interfere "
+                          "with bounds argument for WbtActContinuous.")
             self.action_class.relative = self.config.relative_action
 
         if type(self.observation_class) == type:
@@ -123,6 +136,14 @@ class WbtGym(gym.Env):
 
     @property
     def observation(self):
+        """Get state of webots as array.
+
+        Returns
+        -------
+        np.ndarray
+            See observation_class of env for details.
+
+        """
         return self.observation_class.get()
 
     # =========================================================================
@@ -155,31 +176,42 @@ class WbtGym(gym.Env):
         if self.action_class.type == "grid":
             raise TypeError("Grid action class must be used with WbtGymGrid.")
 
-        action = self.action_class.map(action, self.pre_action)
+        pre_action = self.state.get_pre_action()
+        action = self.action_class.map(action, pre_action)
         self.send_command_and_data_request(action)
-        self.pre_action = action
+        # self.pre_action = action
 
         reward = self.calc_reward()
+        self.rewards.append(reward)
         done = self.check_done()
 
         # logging, printing
-        self.rewards.append(reward)
         self.distances.append(self.get_target_distance())
         self._update_history()
+
+        self.send_stop_action()
 
         return self.observation, reward, done, {}
 
     def calc_reward(self):
-        """Calc reward with evaluate class."""
+        """Calculate reward with evaluate_class."""
         return self.evaluate_class.calc_reward()
 
     def check_done(self):
-        """Check done."""
+        """Check done, handled with evaluate_class."""
         return self.evaluate_class.check_done()
 
     def reset(self, seed=None):
         """Reset environment to random."""
         if self.supervisor_connected is True:
+            # logging trajectory results
+            if self.iterations > 0:
+                trajectory_result = np.array([self.iterations,
+                                              self.total_reward,
+                                              self.state.sim_time])
+                self.results = np.vstack((self.results, trajectory_result))
+
+            # resetting
             if seed is None:
                 seed = utils.set_random_seed(apply=False)
             self.seed(seed)
@@ -195,6 +227,7 @@ class WbtGym(gym.Env):
                 self.reset()
 
             return self.observation
+        return False
 
     def close(self):
         """Close connection to supervisor and external controller."""
@@ -209,6 +242,14 @@ class WbtGym(gym.Env):
     # ==============================   PLOTTING   =============================
     # =========================================================================
     def plot_lidar(self, relative=False):
+        """Plot lidar data.
+
+        Parameters
+        ----------
+        relative : bool
+            True: plot by current heading.
+            False: plot with respect to absolute compass distances.
+        """
         if relative is True:
             data = self.state.lidar_relative
         else:
@@ -219,9 +260,16 @@ class WbtGym(gym.Env):
     # ========================   HELPER / PROPERTIES   ========================
     # =========================================================================
     def get_data(self):
+        """Get current data package from the external controller."""
         self.com.get_data()
 
+    def send_stop_action(self):
+        """Send (0, 0) action to stop the robot."""
+        act = ActionOut(action=(0, 0))
+        self.send_command_and_data_request(act)
+
     def send_command_and_data_request(self, action):
+        """Send action to the external controller and request data."""
         self.com.send_command_and_data_request(action)
 
     def _update_history(self):
@@ -250,10 +298,12 @@ class WbtGym(gym.Env):
 
     @property
     def iterations(self):
+        """Get number of total timesteps of the current run."""
         return len(self.history)
 
     @property
     def total_reward(self):
+        """Get total reward of the current run."""
         return sum(self.rewards)
 
     @property
@@ -263,3 +313,12 @@ class WbtGym(gym.Env):
     @property
     def max_distance(self):
         return np.sqrt(2) * self.config.world_size
+
+    @property
+    def df_results(self):
+        """Get information about all runs as pandas.DataFrame."""
+        res = self.results
+        res = res[res[:, 0] > 0]
+        df = pd.DataFrame(res)
+        df.columns = ["steps", "total_reward", "sim_time"]
+        return df

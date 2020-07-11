@@ -2,7 +2,8 @@ import socket
 import time
 
 from webotsgym.config import WbtConfig, DiscreteMove
-from webotsgym.com import PacketIn, PacketOut, WbtState, PacketType
+from webotsgym.com.package import PacketIn, PacketOut, PacketType
+from webotsgym.com.state import WbtState
 
 
 class Communication():
@@ -11,6 +12,7 @@ class Communication():
         self.msg_cnt = 0
         self.packet = None
         self.history = []
+        self.state = None
         self._set_sock()
 
     # ------------------------------  SETUPS  ---------------------------------
@@ -18,9 +20,6 @@ class Communication():
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.sock.bind((self.config.IP, self.config.BACKEND_PORT))
-
-    def _update_history(self):
-        self.history.append([self.packet.time, self.packet])
 
     # -------------------------------  RECV -----------------------------------
     def recv(self):
@@ -84,7 +83,7 @@ class Communication():
         pack_out = PacketOut(self.msg_cnt, 0, PacketType.COM, move, 0)
         self.send(pack_out)
 
-    def _wait_for_grid_done(self, wait_time=0.01):
+    def wait_for_grid_action_done(self, wait_time=0.01):
         # give controller some time to update internal data
         time.sleep(wait_time)
         self.get_data()

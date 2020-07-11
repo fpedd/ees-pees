@@ -35,7 +35,7 @@ class WbtConfig():
         self.IP = "127.0.0.1"
         self.CONTROL_PORT = 6969
         self.BACKEND_PORT = 6970
-        self.PACKET_SIZE = 1488
+        self.PACKET_SIZE = 1492
         self.TIME_OFFSET_ALLOWED = 1.0
 
         # ------------------------ Supervisor ------------------------
@@ -65,7 +65,7 @@ class WbtConfig():
 
     @sim_mode.setter
     def sim_mode(self, value):
-        if type(value) == SimSpeedMode:
+        if isinstance(value, SimSpeedMode):
             self._sim_mode = value
         elif value == "normal":
             self._sim_mode = SimSpeedMode.NORMAL
@@ -80,7 +80,7 @@ class WbtConfig():
 
     @direction_type.setter
     def direction_type(self, value):
-        if type(value) == SimSpeedMode:
+        if isinstance(value, DirectionType):
             self._direction_type = value
         elif value == "steering":
             self._direction_type = DirectionType.STEERING
