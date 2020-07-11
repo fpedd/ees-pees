@@ -49,6 +49,8 @@ class WbtGymGrid(WbtGym):
         self.rewards.append(reward)
         self.distances.append(self.get_target_distance())
         self.time_steps += 1
+        self._update_history()
+        
         return self.observation, reward, done, {}
 
     def reset(self, seed=None):
