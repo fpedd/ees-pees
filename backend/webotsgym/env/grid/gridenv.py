@@ -19,8 +19,8 @@ class WbtGymGrid(WbtGym):
                                          evaluate_class=evaluate_class,
                                          observation_class=WbtObsGrid,
                                          config=config)
-        len = int(config.world_size * config.world_scaling) * 2 + 1
-        self.visited_count = np.zeros((len, len))
+        len_ = int(config.world_size * config.world_scaling) * 2 + 1
+        self.visited_count = np.zeros((len_, len_))
         self.time_steps = 0
 
     def step(self, action):

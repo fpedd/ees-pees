@@ -4,7 +4,8 @@ from webotsgym.config import WbtConfig, DirectionType
 
 
 class WbtAct():
-    def __init__(self):
+    def __init__(self, config=None):
+        self.config = config
         self.type = "normal"
         self.relative = None
 
