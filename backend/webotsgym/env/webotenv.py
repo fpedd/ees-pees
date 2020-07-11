@@ -109,7 +109,8 @@ class WbtGym(gym.Env):
         # overwriting relative action behaviour if action class is a type
         if self.config.relative_action is not None:
             warnings.warn("Relative property of action class is overwritten "
-                          "by config.relative_action.")
+                          "by config.relative_action. This might interfere "
+                          "with bounds argument for WbtActContinuous.")
             self.action_class.relative = self.config.relative_action
 
         if type(self.observation_class) == type:
