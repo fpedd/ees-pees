@@ -35,9 +35,6 @@ jobs:
       - name: install pandas
         run: pip install pandas
 
-      # - name: pylint schnitty
-      #   working-directory: backend
-      #   run: pylint schnitty.py --disable=C0114,C0115,C0116,R0201,C0103, --extension-pkg-whitelist=numpy --extension-pkg-whitelist=pynput || pylint-exit -efail $?
       - name: pylint james
         working-directory: backend
         run: pylint james.py --disable=C0114,C0115,C0116,R0201,C0103, --extension-pkg-whitelist=numpy|| pylint-exit -efail $?
