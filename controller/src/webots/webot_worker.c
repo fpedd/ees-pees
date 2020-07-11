@@ -120,6 +120,7 @@ int webot_format_wb_to_bcknd(data_to_bcknd_msg_t* data_to_bcknd,
 
 	double heading = heading_in_norm(data_from_wb.compass[0], data_from_wb.compass[1], data_from_wb.compass[2]);
 	data_to_bcknd->heading = (float) heading;
+	data_to_bcknd->steer_angle = (float) data_from_wb.steer_angle;
 
 	if (check_for_tipover(data_from_wb) != 0) {
 		data_to_bcknd->touching = -1;
