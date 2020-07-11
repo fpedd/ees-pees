@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 import gym
 import warnings
 
@@ -33,6 +34,7 @@ class WbtGym(gym.Env):
         self.config = config
         self.distances = []
         self.rewards = []
+        self.results = np.empty((0, 3))
         self.pre_action = ActionOut(config, (0, 0))
 
         # init action, reward, observation classes
@@ -161,12 +163,14 @@ class WbtGym(gym.Env):
         self.pre_action = action
 
         reward = self.calc_reward()
+        self.rewards.append(reward)
         done = self.check_done()
 
         # logging, printing
-        self.rewards.append(reward)
         self.distances.append(self.get_target_distance())
         self._update_history()
+
+        self.send_stop_action()
 
         return self.observation, reward, done, {}
 
@@ -181,11 +185,20 @@ class WbtGym(gym.Env):
     def reset(self, seed=None):
         """Reset environment to random."""
         if self.supervisor_connected is True:
+            # logging trajectory results
+            if self.iterations > 0:
+                trajectory_result = np.array([self.iterations,
+                                              self.total_reward,
+                                              self.state.sim_time])
+                self.results = np.vstack((self.results, trajectory_result))
+
+            # resetting
             if seed is None:
                 seed = utils.set_random_seed(apply=False)
             self.seed(seed)
 
             self.supervisor.reset_environment(self.main_seed)
+            self.history = []
             self.rewards = []
             self.distances = []
             self._init_com()
@@ -195,6 +208,7 @@ class WbtGym(gym.Env):
                 self.reset()
 
             return self.observation
+        return False
 
     def close(self):
         """Close connection to supervisor and external controller."""
@@ -220,6 +234,10 @@ class WbtGym(gym.Env):
     # =========================================================================
     def get_data(self):
         self.com.get_data()
+
+    def send_stop_action(self):
+        act = ActionOut(action=(0, 0))
+        self.send_command_and_data_request(act)
 
     def send_command_and_data_request(self, action):
         self.com.send_command_and_data_request(action)
@@ -263,3 +281,11 @@ class WbtGym(gym.Env):
     @property
     def max_distance(self):
         return np.sqrt(2) * self.config.world_size
+
+    @property
+    def df_results(self):
+        res = self.results
+        res = res[res[:, 0] > 0]
+        df = pd.DataFrame(res)
+        df.columns = ["steps", "total_reward", "sim_time"]
+        return df
