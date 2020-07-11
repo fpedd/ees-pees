@@ -21,6 +21,7 @@
 #include <webots/lidar.h>
 #include <webots/gps.h>
 #include <webots/compass.h>
+#include <webots/position_sensor.h>
 
 #include <math.h>
 #include <stdio.h>
@@ -39,11 +40,12 @@ int main(int argc, char **argv) {
 
 	const int timestep = (int)wb_robot_get_basic_time_step();
 
-	printf("This C controller is a WIP playground for basic setup\n\n");
+	printf("This C controller is an TCP interface to Webots\n\n");
 
-	WbDeviceTag motor, steer, lidar, gps, compass;
+	WbDeviceTag motor, steer, angle, lidar, gps, compass;
 	motor   = wb_robot_get_device("motor");
 	steer   = wb_robot_get_device("pivot");
+	angle   = wb_robot_get_device("pivot sensor");
 	lidar   = wb_robot_get_device("lidar");
 	gps     = wb_robot_get_device("gps");
 	compass = wb_robot_get_device("compass");
@@ -55,6 +57,7 @@ int main(int argc, char **argv) {
 	wb_lidar_disable_point_cloud(lidar);
 	wb_gps_enable(gps, timestep);
 	wb_compass_enable(compass, timestep);
+	wb_position_sensor_enable(angle, timestep);
 
 	/*
 	// Print lidar properties
@@ -103,6 +106,7 @@ int main(int argc, char **argv) {
 		// read values from devices
 		robot_data.sim_time = wb_robot_get_time();
 		robot_data.current_speed = wb_gps_get_speed(gps);
+		robot_data.steer_angle = wb_position_sensor_get_value(angle);
 		memcpy (&robot_data.actual_gps, wb_gps_get_values(gps), sizeof(double) * 3);
 		memcpy (&robot_data.compass, wb_compass_get_values(compass), sizeof(double) * 3);
 		memcpy (&robot_data.distance, wb_lidar_get_range_image(lidar), sizeof(float) * DIST_VECS);
