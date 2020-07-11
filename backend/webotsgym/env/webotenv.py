@@ -166,6 +166,7 @@ class WbtGym(gym.Env):
             self.seed(seed)
 
             self.supervisor.reset_environment(self.main_seed)
+            self.history = []
             self.rewards = []
             self.distances = []
             self._init_com()
