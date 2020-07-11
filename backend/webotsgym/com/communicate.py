@@ -19,9 +19,6 @@ class Communication():
         self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.sock.bind((self.config.IP, self.config.BACKEND_PORT))
 
-    def _update_history(self):
-        self.history.append([self.packet.time, self.packet])
-
     # -------------------------------  RECV -----------------------------------
     def recv(self):
         """Receive package (blocking) from external controller."""
