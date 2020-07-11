@@ -69,6 +69,7 @@ class WbtGym(gym.Env):
         elif self._gps_target is not None:
             return self._gps_target
         raise ValueError("Target GPS not defined.")
+        return None
 
     @property
     def state(self):

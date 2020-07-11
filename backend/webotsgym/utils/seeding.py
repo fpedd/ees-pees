@@ -1,5 +1,5 @@
-import numpy as np
 import time
+import numpy as np
 
 
 def set_random_seed(apply=False):
@@ -8,8 +8,7 @@ def set_random_seed(apply=False):
     seed = int(t) % 2**16
     if apply is True:
         np.random.seed(seed)
-    else:
-        return seed
+    return seed
 
 
 def seed_list(seed, n=100, low=0, high=10**6):
