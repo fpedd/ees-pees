@@ -63,7 +63,7 @@ A detailed document of Stable-Baselines can be found [here](https://stable-basel
 ## Usage Example
 
 See the `UseMe` directory.
-* Run `  ` to train a model in fake environment
+* Run ` ` to train a model in fake environment
 * Run `UseMe/model_training_grid_world.ipynb` to train a model in Webots grid environment
 * Run `UseMe/model_training_continuous_world.ipynb` to train a model in Webots continuous environment
 * Run `UseMe/model_application_grid_world.ipynb` to applicate a model in Webots grid environment
@@ -82,7 +82,7 @@ You can create your own reward function, these following variables and methods a
 
 The model trained in fake environment can be transferred to apply in Webots grid environment.
 #### Webots grid environment
-Before training in Webots grid environment you can setup these parameters:
+Run `UseMe/model_training_grid_world.ipynb` to train a model in Webots grid environment. Before training in Webots grid environment you can setup these parameters:
 * `config.world_size` , setup the size of Webots environments for training. For example: `config.world_size = 8` will setup a square map of size 8x8 in Webots.
 * `config.num_obstacles`, setup the number of obstacles. Each obstacle is a block of size 1x1.
 * `config.sim_mode`, used to setup the speed of the simulation of Webots. 
@@ -104,7 +104,7 @@ You can create your own reward function, these following variables and methods a
 
 
 #### Webots continuous environment
-The setup is similar with the training in Webots grid environment. You can follow the guide in Webots grid environment except:
+Run `UseMe/model_training_continuous_world.ipynb` to train a model in Webots continuous environment. The setup is similar with the training in Webots grid environment. You can follow the guide in Webots grid environment except:
 * `time_steps`, setup the total number of samples to train on. It is recommended that you set this parameter to greater than ???, then you will get a relatively stable model.
 * `model_name`, name the model for saving. The model will be saved in `UseMe/model/continuous` directory after training complete.
 
@@ -113,7 +113,7 @@ And for rewards there are also some difference:
 ### Model Appilication
 After training your own model, you can apply it to Webots environment. Besides, you can use our trained model in `UseMe/mode` directory. The model can only be used in the corresponding environment.
 #### Webots grid environment
-Before application in Webots grid environment you need to setup these parameters:
+Run `UseMe/model_application_grid_world.ipynb` to applicate a model in Webots grid environment. Before application in Webots grid environment you need to setup these parameters:
 * `config.world_size` , setup the size of Webots environments for training. For example: `config.world_size = 8` will setup a square map of size 8x8 in Webots.
 * `config.num_obstacles`, setup the number of obstacles. Each obstacle is a block of size 1x1.
 * `config.sim_mode`, used to setup the speed of the simulation of Webots. 
@@ -141,7 +141,7 @@ names = ["Model1Name","Model2Name"]
 This is a sample of figure when comparing serveral models.
 [figure]
 #### Webots continuous environment
-The setup is similar with the application in Webots grid environment. You can follow the guide in Webots grid environment except:
+Run `UseMe/model_application_continuous_world.ipynb` to applicate a model in Webots continuous environment. The setup is similar with the application in Webots grid environment. You can follow the guide in Webots grid environment except:
 * `config.sim_step_every_x`, balabalabala
 * `config.relative_action`
 * `config.direction_type`
