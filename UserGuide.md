@@ -23,16 +23,9 @@ Ubuntu 18.04
 ### Webots
 A tutorial on how to install webots can be found [here](https://cyberbotics.com/doc/guide/installation-procedure).
 
-In order for our software (compiler, python, etc.) to know where your webots
-installation is located at, you will need to set an environment variable. The
-name of the environment variable you need to set is: `WEBOTS_HOME`. It should
-point to your webots installation. If you installed webots the "normal" way (see below),
-setting the variable will look like this:
-`export WEBOTS_HOME=/usr/local/webots`
-In order to not always have to type and execute that in your terminal,
-you can add this command to the bottom of your `.bashrc` file. You can find this
-file in your home directory. The contents of the `.bashrc` get executed every time
-you open a new terminal.
+In order for our software (compiler, python, etc.) to know where your webots installation is located at, you will need to set an environment variable. The name of the environment variable you need to set is: `WEBOTS_HOME`. It should point to your webots installation. If you installed webots the "normal" way (see below), setting the variable will look like this: `export WEBOTS_HOME=/usr/local/webots`.
+
+In order to not always have to type and execute that in your terminal, you can add this command to the bottom of your `.bashrc` file. You can find this file in your home directory. The contents of the `.bashrc` get executed every time you open a new terminal.
 
 The bottom of your `.bashrc` should look something like this.
 ```
@@ -118,6 +111,38 @@ The setup is similar with the training in Webots grid environment. You can follo
 And for rewards there are also some difference:
 * `...`
 ### Model Appilication
-After training your own model, you can apply it to Webots environment. Besides, you can use our trained model in `UseMe/mode` directory. The model can only be used in the corresponding environment
+After training your own model, you can apply it to Webots environment. Besides, you can use our trained model in `UseMe/mode` directory. The model can only be used in the corresponding environment.
 #### Webots grid environment
+Before application in Webots grid environment you need to setup these parameters:
+* `config.world_size` , setup the size of Webots environments for training. For example: `config.world_size = 8` will setup a square map of size 8x8 in Webots.
+* `config.num_obstacles`, setup the number of obstacles. Each obstacle is a block of size 1x1.
+* `config.sim_mode`, used to setup the speed of the simulation of Webots. 
+`config.sim_mode = wg.config.SimSpeedMode.NORMAL`, run the simulation in the Real-Time mode.
+`config.sim_mode = wg.config.SimSpeedMode.RUN`, run the simulation as fast as possible using all the available CPU power. 
+`config.sim_mode = wg.config.SimSpeedMode.FAST`, run the simulation as fast as possible without the graphics rendering, hence the 3d window is black.
+* `model_name`, name of the model you use. The model will be loaded from `UseMe/model/grid` directory.
+* ` num_of_steps`, setup the step limit for one environment. For example, `num_of_steps = 100` means the agent must reach the target area within 100 steps. Otherwise, this environment will be judged as unsolved.
+* ` num_of_envs`, setup the number of environments for model application. 
+
+result figure discription balabalabala
+[figure]
+[figure]
+
+You can also compare several models with changing the model loading part like this:
+```python
+model1_name = "Model1Name"
+model2_name = "Model2Name"
+model1 = PPO1.load("model/grid/{}".format(model1_name))
+model2 = PPO1.load("model/grid/{}".format(model2_name))
+models = [model1, model2]
+names = ["Model1Name","Model2Name"]
+```
+
+This is a sample of figure when comparing serveral models.
+[figure]
 #### Webots continuous environment
+The setup is similar with the application in Webots grid environment. You can follow the guide in Webots grid environment except:
+* `config.sim_step_every_x`, balabalabala
+* `config.relative_action`
+* `config.direction_type`
+* `num_of_steps`
