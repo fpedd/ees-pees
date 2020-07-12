@@ -43,6 +43,7 @@ void *webot_worker(void *ptr) {
 		memset(&data_from_wb, 0, sizeof(data_from_wb_msg_t));
 		wb_recv(&data_from_wb);
 
+
 		// print_data_from_wb(data_from_wb, 0);
 
 		/***** 2) Push message to backend worker *****/
@@ -97,6 +98,8 @@ void *webot_worker(void *ptr) {
 		/***** 6) Send command to robot *****/
 		wb_send(cmd_to_wb);
 
+
+
 	}
 
 	return NULL;
@@ -109,9 +112,10 @@ int webot_format_wb_to_bcknd(data_to_bcknd_msg_t* data_to_bcknd,
                              int action_denied,
                              unsigned int discrete_action_done) {
 
+
 	// cast sim time and robot speed to float
 	data_to_bcknd->sim_time = (float) data_from_wb.sim_time;
-	data_to_bcknd->speed = (float) speed_with_dir(data_from_wb) / 0.03;
+	data_to_bcknd->speed = (float) speed_with_dir(data_from_wb) / 0.29;
 
 	// calculate projecions for 3D gps/compass data_to_bcknd to bcknd format
 	// (x, z coorinates represent horizontal plane in webots system)
@@ -134,6 +138,7 @@ int webot_format_wb_to_bcknd(data_to_bcknd_msg_t* data_to_bcknd,
 
 	// copy lidar data_to_bcknd
 	memcpy(&data_to_bcknd->distance, data_from_wb.distance, sizeof(float) * DIST_VECS);
+
 
 	return 0;
 
