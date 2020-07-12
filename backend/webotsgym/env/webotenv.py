@@ -177,6 +177,7 @@ class WbtGym(gym.Env):
             raise TypeError("Grid action class must be used with WbtGymGrid.")
 
         pre_action = self.state.get_pre_action()
+        pre_action.print_action()
         action = self.action_class.map(action, pre_action)
         self.send_command_and_data_request(action)
         # self.pre_action = action
@@ -184,12 +185,12 @@ class WbtGym(gym.Env):
         reward = self.calc_reward()
         self.rewards.append(reward)
         done = self.check_done()
+        if done is True:
+            self.send_stop_action()
 
         # logging, printing
         self.distances.append(self.get_target_distance())
         self._update_history()
-
-        self.send_stop_action()
 
         return self.observation, reward, done, {}
 
@@ -275,6 +276,10 @@ class WbtGym(gym.Env):
     def _update_history(self):
         """Add current state of Com to history."""
         self.history.append(self.state)
+
+    def _get_from_history(self, item):
+        if len(self.history) > 0 and hasattr(self.state, item):
+            return [getattr(s, item) for s in self.history]
 
     def get_target_distance(self, normalized=False):
         """Calculate euklidian distance to target.
