@@ -63,7 +63,7 @@ A detailed document of Stable-Baselines can be found [here](https://stable-basel
 ## Usage Example
 
 See the `UseMe` directory.
-* Run `` to train a model in fake environment
+* Run `  ` to train a model in fake environment
 * Run `UseMe/model_training_grid_world.ipynb` to train a model in Webots grid environment
 * Run `UseMe/model_training_continuous_world.ipynb` to train a model in Webots continuous environment
 * Run `UseMe/model_application_grid_world.ipynb` to applicate a model in Webots grid environment
