@@ -2,16 +2,28 @@ import unittest
 import os
 import sys
 import time
+sys.path.insert(0,'../../backend')
 
 import gym
-import webotsgym as wg
+import webotsgym
 import numpy as np
 
-from webotsgym.config import WebotConfig
+
+import webotsgym.utils as utils
+from webotsgym.config import WbtConfig
+
+from webotsgym.env.action.discrete import WbtActDiscrete
+from webotsgym.env.observation import WbtObs
+from webotsgym.env.reward import WbtReward
+from webotsgym.com import WbtCtrl, Communication, ActionOut
+import webotsgym as wg
+
+"""
 from webotsgym.environment import WebotsEnv, WebotsGrid
 from webotsgym.evaluate import Evaluate, EvaluateMats, EvaluatePJ0
 from webotsgym.action import DiscreteAction, ContinuousAction
 from webotsgym.observation import Observation
+"""
 
 
 class TestEnvironment(unittest.TestCase):
@@ -20,15 +32,13 @@ class TestEnvironment(unittest.TestCase):
     def setUp(self):
         """Open webotsEnv ."""
         self.setup_done = True
-        self.config = WebotConfig()
+        self.config = WbtConfig()
         self.config.num_obstacles = 0
         self.config.fast_simulation = False
         self.config.world_size = 8
         self.config.world_scaling = 0.5
-        self.env = WebotsGrid(seed=1,
-                              train=True,
-                              gps_target=(1, 1),
-                              config=self.config)
+        self.env = wg.WbtGymGrid(train=True,
+                                 config=self.config)
 
     def tearDown(self):
         """Create final message and close webots."""
@@ -39,21 +49,22 @@ class TestEnvironment(unittest.TestCase):
 
     def test_steps(self):
         """Test num_steps and reset on discrete action env."""
-        num_steps = 4
+        num_steps = 1
         num_loops = 3
         for num in range(0, num_loops):
-            if num != 0:
-                self.env.reset()
+            self.env.reset()
             gps_checker, gps_state, step_checker = self.apply_steps(num_steps)
-            self.assertEqual(gps_checker, gps_state)
+            self.assertEqual(tuple(gps_checker), tuple(gps_state))
             self.assertEqual(step_checker, num_steps)
 
     def apply_steps(self, num_steps):
         """Apply num_steps on the discrete environment."""
-        gps_checker = np.round(0.5 + np.array(self.env.gps_actual) * 2)
+        gps_checker = np.round(0.5 +
+                               np.array(self.env.com.state.gps_actual) * 2)
         step_checker = 0
         for num in range(0, num_steps):
-            gps_state = np.round(0.5 + np.array(self.env.gps_actual) * 2)
+            gps_state = np.round(0.5 +
+                                 np.array(self.env.com.state.gps_actual) * 2)
             if num % 2 == 0:
                 if gps_state[0] < 2:
                     action = 1  # increase x
@@ -76,8 +87,8 @@ class TestEnvironment(unittest.TestCase):
                     self.env.step(action)
                     gps_checker[1] = gps_checker[1] - 1
                     step_checker += 1
-        gps_state = np.round(0.5 + np.array(self.env.gps_actual) * 2)
-        return tuple(gps_checker), tuple(gps_state), step_checker
+        gps_state = np.round(0.5 + np.array(self.env.com.state.gps_actual) * 2)
+        return gps_checker, gps_state, step_checker
 
 
 if __name__ == '__main__':
