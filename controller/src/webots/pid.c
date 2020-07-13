@@ -11,7 +11,7 @@ int pid_init(pid_ctrl_t *pid, float k_p, float k_i, float k_d,
 	pid->k_d = k_d;
 
 	if (out_min >= out_max) {
-		fprintf(stderr, "ERROR: pid init out_min has to smaller than out_max\n");
+		fprintf(stderr, "ERROR: pid init out_min has to be smaller than out_max\n");
 		return -1;
 	}
 

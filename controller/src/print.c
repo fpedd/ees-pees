@@ -7,7 +7,6 @@
 #include "silhouette.h"
 
 void print_diff_distance(data_from_wb_msg_t data_from_wb, data_to_bcknd_msg_t data_to_bcknd) {
-
 	for (int i = 0; i < DIST_VECS; i++){
 		if (data_from_wb.distance[i] != data_to_bcknd.distance[i]){
 			printf("WEBOT_WORKER: data_from_wb.distance[%d] = %f  data_to_bcknd.distance[%d] = %f\n", i, data_from_wb.distance[i], i, data_to_bcknd.distance[i]);
@@ -97,7 +96,6 @@ void print_silhouette() {
 	printf("PRINT: sil_max[%d] = %f\n", max_i, max);
 	printf("PRINT: ==================================================\n");
 }
-
 
 void print_dist_to_python(float *dist){
 	printf("[");
