@@ -94,7 +94,6 @@ void print_silhouette() {
 	printf("WEBOT_WORKER: =================== silhouette ===================\n");
 	for (int i = 0; i < DIST_VECS; i++) {
 		printf("WEBOT_WORKER: sil[%d] = %f\n", i, silhouette[i]);
-		}
 	}
 	printf("WEBOT_WORKER: ==================================================\n");
 }
