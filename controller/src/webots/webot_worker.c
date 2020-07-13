@@ -95,6 +95,8 @@ void *webot_worker(void *ptr) {
 		/***** 6) Send command to robot *****/
 		wb_send(cmd_to_wb);
 	}
+
+	wb_close();
 	return NULL;
 }
 
