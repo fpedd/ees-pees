@@ -66,6 +66,7 @@ class WbtCtrl():
         #                 "webots/controllers/supervisor"))
         # subprocess.call(["make", "all"], cwd=os.path.join(get_repo_dir(),
         #                 "webots/controllers/internal"))
+        print("DAS HIER: ", get_repo_dir())
         subprocess.call(["make"], cwd=os.path.join(get_repo_dir(),
                         "webots/controllers/supervisor"))
         subprocess.call(["make"], cwd=os.path.join(get_repo_dir(),
