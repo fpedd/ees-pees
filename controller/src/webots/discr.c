@@ -65,13 +65,12 @@ int discr_step(cmd_to_wb_msg_t *cmd_to_wb, cmd_from_bcknd_msg_t cmd_from_bcknd,
 			break;
 		}
 
-
 		last_msg_cnt = cmd_from_bcknd.msg_cnt;
 
 	}
 
-	//print_cood(data_to_bcknd.actual_gps, target);
-
+	// print_cood(data_to_bcknd.actual_gps, target);
+	(void) action_denied;
 	// revert to former target
 	// TODO: the action denied is too strict, we need to fix this
 	// if (action_denied != 0) {

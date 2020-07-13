@@ -28,8 +28,4 @@ double get_time();
 
 float round_with_factor(float number, float factor);
 
-double heading_in_norm(double x, double y, double z);
-
-float speed_with_dir(data_from_wb_msg_t data_from_wb);
-
 #endif // UTIL_H
