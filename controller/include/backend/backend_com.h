@@ -26,7 +26,9 @@ enum direction_type {
 };
 extern const char* direction_type_str[];
 
-// external controller --> backend
+
+// DATA TO BACKEND
+// Packet that contains data that is send to the backend
 typedef struct {
 	unsigned long long msg_cnt;    // total number of messages (even) (internal)
 	double time_stmp;              // time the message got send (internal)
@@ -41,7 +43,8 @@ typedef struct {
 	float distance[DIST_VECS];     // distance to the next object from robot prespective
 } __attribute__((packed)) data_to_bcknd_msg_t;
 
-// external controller <-- backend
+// COMMAND FROM BACKEND
+// Packet that contains command and command type from backend
 typedef struct {
 	unsigned long long msg_cnt;    // total number of messages (odd) (internal)
 	double time_stmp;              // time the message got send (internal)
@@ -52,6 +55,7 @@ typedef struct {
 	float heading;                 // the direction the robot should move in next [-1, 1]
 	float speed;                   // the speed the robot should drive at [-1, 1]
 } __attribute__((packed)) cmd_from_bcknd_msg_t;
+
 
 int com_init();
 
