@@ -32,15 +32,14 @@ typedef struct {
 }__attribute__((packed)) init_to_ext_msg_t;
 
 
-void wb_init_com();
+int wb_init_com();
+
+int wb_close();
 
 int wb_send(cmd_to_wb_msg_t data);
 
 int wb_recv_init(init_to_ext_msg_t *data);
 
 int wb_recv(data_from_wb_msg_t *data);
-
-void wb_test_com();
-
 
 #endif // WB_COM_H
