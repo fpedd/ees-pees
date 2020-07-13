@@ -3,6 +3,9 @@
 # Created by https://www.gitignore.io/api/c,ros,c++,linux,macos,clion,python,pycharm,windows,eclipse,jupyternotebooks
 # Edit at https://www.gitignore.io/?templates=c,ros,c++,linux,macos,clion,python,pycharm,windows,eclipse,jupyternotebooks
 
+### Personal editor config files
+.vscode
+
 ### Webots
 *.wbproj
 webots/controllers/internal/internal
@@ -16,7 +19,6 @@ backend/notebooks/local
 ### C ###
 # Prerequisites
 *.d
-
 
 # Object files
 *.o
