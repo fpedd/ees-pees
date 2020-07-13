@@ -27,18 +27,18 @@ TERM_EM=gnome-terminal\ -x
 # GIT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 echo "Clean and compile the External Controller"
-make clean -C .${EXT_CTRL}
-make all -C .${EXT_CTRL}
+make clean -C ..${EXT_CTRL}
+make all -C ..${EXT_CTRL}
 
 echo "Clean and compile the Internal Controller"
-make clean -C .${INT_CTRL}
-make all -C .${INT_CTRL}
+make clean -C ..${INT_CTRL}
+make all -C ..${INT_CTRL}
 
 echo "Start the External Controller"
-${TERM_EM} .${EXT_CTRL}/build/controller ${DETACH}
+${TERM_EM} ..${EXT_CTRL}/build/controller ${DETACH}
 
 echo "Start Webots and the Internal Controller"
-${TERM_EM} webots .${WORLD_FILE} ${DETACH}
+${TERM_EM} webots ..${WORLD_FILE} ${DETACH}
 
 echo "Start the Backend"
-${TERM_EM} python3 .${BCKND_SCRIPT} ${DETACH}
+${TERM_EM} python3 ..${BCKND_SCRIPT} ${DETACH}
