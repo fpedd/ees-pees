@@ -26,6 +26,14 @@ jobs:
       run: pip install pynput
     - name: install gym
       run: pip install gym
+    - name: install psutil
+      run: pip install psutil
+    - name: install matplotlib
+      run: pip install matplotlib
+    - name: install pathfinding
+      run: pip install pathfinding
+    - name: install pandas
+      run: pip install pandas
     - name: install-webots
       shell: bash
       run: sudo snap install webots
