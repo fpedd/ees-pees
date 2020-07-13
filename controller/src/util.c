@@ -27,7 +27,6 @@ double get_time() {
 	return (double)time_raw.tv_sec + ((double)time_raw.tv_nsec / (double)1000000000);
 }
 
-
 float round_with_factor(float number, float factor) {
 	return (((float) round((number - factor / 2.0) / factor))  * factor) + (factor / 2.0);
 }

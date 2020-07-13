@@ -14,7 +14,6 @@ void wb_init_com(){
 
 }
 
-
 int wb_send(cmd_to_wb_msg_t data) {
 
 	int len = tcp_send((char *) &data, sizeof(cmd_to_wb_msg_t));
@@ -38,7 +37,6 @@ int wb_recv_init(init_to_ext_msg_t *data){
 
 	return 0;
 }
-
 
 int wb_recv(data_from_wb_msg_t *data) {
 
@@ -69,7 +67,6 @@ void wb_test_com(){
 		printf("===========RECEIVED=========\n");
 		printf("actual_gps: x=%f, y=%f, z=%f\n", test_buf.actual_gps[0], test_buf.actual_gps[1], test_buf.actual_gps[2]);
 		printf("============================\n");
-
 
 		cmd_to_wb_msg_t test_msg;
 		memset(&test_msg, 0, sizeof(cmd_to_wb_msg_t));
