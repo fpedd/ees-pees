@@ -5,7 +5,7 @@
 
 echo "Killing webots"
 pkill -15 webots        # kill it nicely with SIGTERM
-pkill -9 webots         # if webots is a bitch, kill it hard with SIGKILL
+pkill -9 webots         # if webots is not nice, kill it hard with SIGKILL
 
 echo "Killing backend"
 pkill -15 python3       # kill it nicely with SIGTERM
