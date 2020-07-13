@@ -124,6 +124,7 @@ int safety_check(init_to_ext_msg_t init_data, data_from_wb_msg_t data_from_wb, c
 		cmd_to_wb->speed = 0;
 	}
 
+
 	/***** Stop robot if very close to obstacle *****/
 	// Stop robot from moving very slowly towards very close obstacles
 	if (too_close_to_obstacle(distance, cmd_to_wb->speed, direction) == 1) {
