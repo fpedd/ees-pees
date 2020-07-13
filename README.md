@@ -1,8 +1,9 @@
 # EES-PEES Robot Project
 
-![backend](https://github.com/fabianpedd/ees-pees/workflows/backend/badge.svg)  
-![controller](https://github.com/fabianpedd/ees-pees/workflows/controller/badge.svg)  
-![webots](https://github.com/fabianpedd/ees-pees/workflows/webots/badge.svg)  
+![backend](https://github.com/fabianpedd/ees-pees/workflows/backend/badge.svg)
+![controller](https://github.com/fabianpedd/ees-pees/workflows/controller/badge.svg)
+![webots](https://github.com/fabianpedd/ees-pees/workflows/webots/badge.svg)
+![integration](https://github.com/fabianpedd/ees-pees/workflows/integration/badge.svg)
 
 ## Setup
 In order for our software (compiler, python, etc.) to know where your webots
@@ -24,7 +25,7 @@ The bottom of your `.bashrc` should look something like this.
 export WEBOTS_HOME=/usr/local/webots
 ```
 
-A tutorial on how to install webots can be found [here](https://cyberbotics.com/doc/guide/installation-procedure). Please open webots once and do the setup before continuing. 
+A tutorial on how to install webots can be found [here](https://cyberbotics.com/doc/guide/installation-procedure). Please open webots once and do the setup before continuing.
 
 You will probably need to install a bunch of python packages, use `pip` for that. Maybe some ubuntu / linux packages as well.  
 
@@ -82,7 +83,7 @@ copy or merge your changes into one of the corresponding three branches.
 
 #### Whitespace
 * Indent with tabs, not spaces. This way we will not stay consistent with
-  Python and Webots, but who cares :D 
+  Python and Webots, but who cares :D
 * End file with a new line (as requested per C99 standard).
 * Use empty line to divide code into logical chunks.
 * Put spaces around binary operators : `x <= 2 && y > 10` is way easier to read than `x<=2&&y>10`.
