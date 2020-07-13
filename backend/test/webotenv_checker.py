@@ -39,6 +39,6 @@ def check_webotenv(env: gym.Env):
     if isinstance(action_space, spaces.Box):
         assert np.any(np.abs(action_space.low) != np.abs(action_space.high))
         assert np.any(np.abs(action_space.low) > 1) 
-        assert np.any(np.abs(action_space.high) > 1))
+        assert np.any(np.abs(action_space.high) > 1)
     
     check_reset_step(env, observation_space, action_space)
