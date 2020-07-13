@@ -1,0 +1,28 @@
+name: integration
+
+on:
+  push:
+    branches:
+      - master
+      - webots
+      - controller
+      - backend
+  pull_request:
+    branches:
+      - master
+      - webots
+      - controller
+      - backend
+
+jobs:
+  integration-test:
+    runs-on: ubuntu-18.04
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-python@v2
+    - name: install-webots
+      shell: bash
+      run: sudo snap install webots
+    - name: set-path
+      shell: bash
+      run: echo "::set-env name=WEBOTS_HOME::/snap/webots/current/usr/share/webots"
