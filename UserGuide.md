@@ -37,14 +37,10 @@ export WEBOTS_HOME=/usr/local/webots
 Please open webots once and do the setup before continuing. 
 
 ### Python Packages
-To use our software, you'll need to install the following python packages, please use `pip` for that. 
+To use our software, you'll need to install several python packages. Please use `requirements.txt` like this:
 ```
-pip install pynput==1.6.8
-pip install psutil==5.6.7
-pip install matplotlib==3.1.3
-pip install numpy==1.18.1
-pip install pathfinding
-pip install gym
+pip freeze > requirements.txt
+pip install -r requirements.txt
 ```
 ### Stable-Baselines
 Our reinforcement learning agent is based on Stable-Baselines. It requires python3 (>=3.5) with the development headers. You’ll also need system packages CMake, OpenMPI and zlib. 
