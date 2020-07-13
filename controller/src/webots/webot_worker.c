@@ -88,13 +88,16 @@ void *webot_worker(void *ptr) {
 		if (cmd_from_backend_worker.move == NONE) {
 			drive(&cmd_to_wb, cmd_from_backend_worker, data_to_backend_worker, init_data);
 			start = 1;
+
+			/***** 5) Do safety checks if we arent using grid moves*****/
+			// in grid moves safety is handled by the backend we dont want to interfere
+			action_denied = safety_check(init_data, data_from_wb, &cmd_to_wb);
+
 		} else {
 			discrete_action_done = discr_step(&cmd_to_wb, cmd_from_backend_worker, data_to_backend_worker, init_data, start, action_denied);
 			start = 0;
 		}
 
-		/***** 5) Do safety checks *****/
-		action_denied = safety_check(init_data, data_from_wb, &cmd_to_wb);
 
 		/***** 6) Send command to robot *****/
 		wb_send(cmd_to_wb);
