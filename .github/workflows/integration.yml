@@ -20,6 +20,12 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-python@v2
+    - name: install numpy
+      run: pip install numpy
+    - name: install pynput
+      run: pip install pynput
+    - name: install gym
+      run: pip install gym
     - name: install-webots
       shell: bash
       run: sudo snap install webots
