@@ -5,6 +5,25 @@ from webotsgym.config import DirectionType
 
 
 class WbtState():
+    """Current state of Webots robot.
+
+    Attributes
+    ----------
+    valid
+    packet
+    count
+    time_in
+    sim_time
+    speed
+    gps_actual
+    heading
+    steering
+    _touching
+    action_denied
+    discrete_action_done
+    distance
+
+    """
     def __init__(self, config, packet_in):
         self.config = config
         self.valid = False
@@ -33,6 +52,14 @@ class WbtState():
         return self.lidar_absolute[0:-1:every]
 
     def get_pre_action(self):
+        """Get previous value for direction and speed
+
+        Returns
+        -------
+        ActionOut
+            Previous (direction, speed) tuple for relative actions.
+
+        """
         act = ActionOut()
         act.speed = self.speed
         if self.config.direction_type == DirectionType.HEADING:

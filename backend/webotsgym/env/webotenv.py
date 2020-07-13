@@ -177,7 +177,6 @@ class WbtGym(gym.Env):
             raise TypeError("Grid action class must be used with WbtGymGrid.")
 
         pre_action = self.state.get_pre_action()
-        #pre_action.print_action()
         action = self.action_class.map(action, pre_action)
         self.send_command_and_data_request(action)
         # self.pre_action = action
