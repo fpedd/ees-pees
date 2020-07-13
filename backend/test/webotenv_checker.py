@@ -26,8 +26,6 @@ def check_reset_step(env: gym.Env, observation_space: spaces.Space, action_space
     _check_obs(obs, observation_space, 'step')
     assert (obs_next != obs).all()
 
-    
-
 
 def check_webotenv(env: gym.Env):
     assert isinstance(env, gym.Env)
@@ -38,7 +36,7 @@ def check_webotenv(env: gym.Env):
     assert isinstance(observation_space, spaces.Box)
     if isinstance(action_space, spaces.Box):
         assert np.any(np.abs(action_space.low) != np.abs(action_space.high))
-        assert np.any(np.abs(action_space.low) > 1) 
+        assert np.any(np.abs(action_space.low) > 1)
         assert np.any(np.abs(action_space.high) > 1)
-    
+
     check_reset_step(env, observation_space, action_space)

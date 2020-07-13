@@ -26,3 +26,7 @@ jobs:
     - name: set-path
       shell: bash
       run: echo "::set-env name=WEBOTS_HOME::/snap/webots/current/usr/share/webots"
+    - name: integration-test
+      shell: bash
+      working-directory: backend/test
+      run: python3 -m unittest integration_test.py
