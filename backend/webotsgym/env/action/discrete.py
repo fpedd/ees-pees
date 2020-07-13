@@ -24,7 +24,7 @@ class WbtActDiscrete(WbtAct):
     """
 
     def __init__(self, config, dirs=3, speeds=3, dspeed=0.1, ddir=0.1,
-                 mode="flatten", relative=False):
+                 mode="flatten", relative=True):
         super(WbtActDiscrete, self).__init__()
         self.config = config
         self.type = "normal"
