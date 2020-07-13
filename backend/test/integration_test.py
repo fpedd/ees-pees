@@ -2,13 +2,10 @@ import unittest
 import os
 import sys
 import time
-sys.path.insert(0, '..')
 
 import gym
 import webotsgym as wg
 import numpy as np
-
-
 
 from webotsgym.config import WebotConfig
 from webotsgym.environment import WebotsEnv, WebotsGrid
