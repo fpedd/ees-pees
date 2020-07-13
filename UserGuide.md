@@ -57,6 +57,7 @@ A detailed document of Stable-Baselines can be found [here](https://stable-basel
 
 
 ## Usage Example
+[discription for run.sh and kill.sh,balabalabalaba]
 
 See the `UseMe` directory.
 * Run ` ` to train a model in fake environment
