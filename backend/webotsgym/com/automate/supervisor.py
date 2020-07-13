@@ -57,10 +57,10 @@ class WbtCtrl():
         """Complile controllers."""
         self.close_program()
         # clean both controllers in webots
-        subprocess.call(["make", "clean"], cwd=os.path.join(get_repo_dir(),
-                        "webots/controllers/supervisor"))
-        subprocess.call(["make", "clean"], cwd=os.path.join(get_repo_dir(),
-                        "webots/controllers/internal"))
+        # subprocess.call(["make", "clean"], cwd=os.path.join(get_repo_dir(),
+        #                 "webots/controllers/supervisor"))
+        # subprocess.call(["make", "clean"], cwd=os.path.join(get_repo_dir(),
+        #                 "webots/controllers/internal"))
         # compile both controllers in webots
         subprocess.call(["make", "all"], cwd=os.path.join(get_repo_dir(),
                         "webots/controllers/supervisor"))
