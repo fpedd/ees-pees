@@ -10,5 +10,3 @@ def get_repo_dir():
     repo_dir = os.path.join(home_dir, "ees-pees")
     print("REPO_DIR: ", repo_dir)
     return repo_dir
-
-ees-pees
