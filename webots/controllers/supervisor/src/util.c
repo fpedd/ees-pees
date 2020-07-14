@@ -1,35 +1,19 @@
-#include "../include/util.h"
-
-#include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-
-
-int time_diff_start(double *time) {
-    get_time(time);
-    return 0;
-}
-
-int time_diff_stop(double *time) {
-    double time_stop;
-    get_time(&time_stop);
-    *time = time_stop - *time;
-    return 0;
-}
-
-int delay(double sec) {
-    double start_time = get_time();
-    while (get_time() < (start_time + sec));
-    return 0;
-}
-
-double get_time() {
-    struct timespec time_raw;
-    clock_gettime(CLOCK_REALTIME, &time_raw);
-    return (double)time_raw.tv_sec + ((double)time_raw.tv_nsec / (double)1000000000);
-}
+#include "sv_com.h"
 
 int rand_int(int max) {
 	return rand() % max;
+}
+
+void print_recvd_packet(bcknd_to_sv_msg_t *packet) {
+	printf("=========== received packet ===========\n");
+	printf("function_code: %d\n", packet->function_code);
+	printf("seed: %d\n", packet->seed);
+	printf("mode: %d\n", packet->mode);
+	printf("num_obstacles: %d\n", packet->num_obstacles);
+	printf("world_size: %d\n", packet->world_size);
+	printf("scale: %f\n", packet->scale);
+	printf("=========================================\n");
 }
