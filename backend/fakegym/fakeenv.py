@@ -34,6 +34,10 @@ class WbtGymFake(gym.Env):
         self.num_of_sensors = num_of_sensors
         self.obs_len = obs_len
         self.obstacles_each = obstacles_each
+        if type(obs) == type:
+            self.obs = (obs)(self)
+        else:
+            self.obs = obs
         self._init(self.N, self.obstacles_each, self.obs_len)
         self.time_steps = 0
         self.plotpadding = 0
@@ -45,10 +49,6 @@ class WbtGymFake(gym.Env):
         self.action_mapper = FakeAction(4, step_range)
         self.action_mapping = self.action_mapper.action_map
         self.action_space = self.action_mapper.action_space
-        if type(obs) == type:
-            self.obs = (obs)(self)
-        else:
-            self.obs = obs
         self.observation_space = spaces.Box(0, np.inf, shape=self.obs.shape(),
                                             dtype=np.float32)
 
