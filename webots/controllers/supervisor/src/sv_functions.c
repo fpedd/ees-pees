@@ -146,7 +146,7 @@ void sv_world_init(sv_world_def *world, int world_size, double scale, int num_ob
 	sv_simulation_update(world); //to register changes made
 	wb_supervisor_world_save("../../worlds/tmp.wbt");
 
-	 // (Maybe TODO: adjust camera position to new arena)
+	 // (Idea: adjust camera position to new arena)
 }
 
 
