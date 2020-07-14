@@ -181,15 +181,16 @@ class WbtGym(gym.Env):
         self.send_command_and_data_request(action)
         # self.pre_action = action
 
+        # logging, printing
+        self.distances.append(self.get_target_distance())
+        self._update_history()
+
         reward = self.calc_reward()
         self.rewards.append(reward)
         done = self.check_done()
         if done is True:
             self.send_stop_action()
 
-        # logging, printing
-        self.distances.append(self.get_target_distance())
-        self._update_history()
 
         return self.observation, reward, done, {}
 
