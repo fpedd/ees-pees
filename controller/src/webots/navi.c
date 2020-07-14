@@ -60,6 +60,7 @@ int navigate(cmd_to_wb_msg_t *cmd_to_wb, data_to_bcknd_msg_t data_to_bcknd,
 	                data_to_bcknd.speed, data_to_bcknd.heading,
 	                data_to_bcknd.sim_time);
 
+	// TODO: rename active
 	return active;
 }
 

@@ -15,6 +15,7 @@
 // The step size we want to in the webots world [in meter]
 #define STEP_SIZE 0.5
 
+// TODO: why not static?
 // The current target destination the drive function will drive us to.
 // It will a 2d vector on our "virtual" grid inside the webots world. So its a
 // multiple of STEP_SIZE.
@@ -90,6 +91,7 @@ int discr_step(cmd_to_wb_msg_t *cmd_to_wb, cmd_from_bcknd_msg_t cmd_from_bcknd,
 	return navigate(cmd_to_wb, data_to_bcknd, init_data, target);
 }
 
+// TODO: move to print
 // Function that helps with printing
 void print_cood(float actual[2], float target[2]) {
 	printf("actual: %f %f \n", actual[0], actual[1]);
