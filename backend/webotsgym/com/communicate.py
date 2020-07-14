@@ -7,6 +7,17 @@ from webotsgym.com.state import WbtState
 
 
 class Communication():
+    """Communication handler between backend and external controller.
+
+    Attributes
+    ----------
+    packet : PacketIn
+        Last received package.
+    history : [PacketIn]
+    state : WbtState
+        Last received webot state.
+
+    """
     def __init__(self, config: WbtConfig = WbtConfig()):
         self.config = config
         self.msg_cnt = 0

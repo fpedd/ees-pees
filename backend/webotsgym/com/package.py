@@ -23,6 +23,24 @@ class PacketType(IntEnum):
 
 
 class PacketIn():
+    """Packet received from the external controller.
+
+    Attributes
+    ----------
+    error
+    count
+    time_in
+    sim_time
+    speed
+    gps_actual
+    heading
+    steering
+    _touching
+    action_denied
+    discrete_action_done
+    distance
+
+    """
     def __init__(self, config, buffer=None):
         self.config = config
         self.buffer = buffer
@@ -56,6 +74,19 @@ class PacketIn():
 
 
 class PacketOut():
+    """Packet send to external controller.
+
+    Parameters
+    ----------
+    msg_cnt : int
+    every_x : int
+        Receive state data after every_x webots timesteps.
+    packet_type : (int, PacketType)
+    discrete_move : (int, DiscreteMove)
+    direction_type : (int, DirectionType)
+    action : ActionOut
+
+    """
     def __init__(self, msg_cnt, every_x, packet_type, discrete_move,
                  direction_type, action: ActionOut = ActionOut(action=(0, 0))):
         self.msg_cnt = msg_cnt
