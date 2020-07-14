@@ -4,12 +4,13 @@ import copy
 import gym
 from gym import spaces
 
-import fakegym.utils.utils as utils
 from fakegym.action import FakeAction
 from fakegym.state import FakeState
-from fakegym.utils.pathfinding import Pathfinding
+from fakegym.utils.path_finding import finder_path
 from fakegym.utils.getline import get_line
 from fakegym.utils.sensor import Sensors
+from fakegym.utils.seeding import np_random_seed
+from fakegym.utils.misc import euklidian_distance
 
 #Values for different things in the field
 WALLSIZE = 1
@@ -49,7 +50,6 @@ class WbtGymFake(gym.Env):
         self.time_steps = 0
         self.plotpadding = 0
         self.visited_count = np.zeros(self.field.shape)
-        self.pathfinding = Pathfinding(self.field, self.gps_actual, self.gps_target)
 
 
     # =========================================================================
@@ -113,7 +113,7 @@ class WbtGymFake(gym.Env):
         self.anchors, self.obs.distance = self.Sensors.distance_sensor()
 
         # reset seed to something random
-        utils.np_random_seed()
+        np_random_seed()
 
     def _setup_fields(self):
         """Initialize the field of fake environment."""
@@ -207,7 +207,7 @@ class WbtGymFake(gym.Env):
             dist (float): 
                 Distance to target.
         """
-        dist = utils.euklidian_distance(self.gps_actual, self.gps_target)
+        dist = euklidian_distance(self.gps_actual, self.gps_target)
         if normalized is True:
             dist = dist / self.max_distance
         return dist
@@ -241,15 +241,14 @@ class WbtGymFake(gym.Env):
         """Reset fake environment to random."""
         self.total_reward = 0
         if seed is None:
-            seed = utils.np_random_seed(set=False)
+            seed = np_random_seed(set=False)
         self.seed(seed)
         self.next_seed_idx = 1
         self._init(self.N, self.obstacles_each, self.obs_len)
         self.time_steps = 0
         self.visited_count = np.zeros(self.field.shape)
-        self.pathfinding = Pathfinding(self.field, self.gps_actual, self.gps_target)
-        if hard is True and len(self.pathfinding.finder_path()) < min_complexity:
-            seed = utils.np_random_seed(set=False)
+        if hard is True and len(finder_path(self.field, self.gps_actual, self.gps_target)) < min_complexity:
+            seed = np_random_seed(set=False)
             # print("No path available or too simple, reset with seed: ", seed)
             self.reset(seed)
         return self.state
@@ -292,7 +291,7 @@ class WbtGymFake(gym.Env):
         safept = self.obs.gps_actual
         for i, pt in enumerate(pts_on_line):
             # too far away
-            if utils.euklidian_distance(self.obs.gps_actual, pt) > action_length:
+            if euklidian_distance(self.obs.gps_actual, pt) > action_length:
                 break
             # crash
             elif self.field[pt[0], pt[1]] > 0:
