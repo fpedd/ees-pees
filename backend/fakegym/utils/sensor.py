@@ -1,6 +1,6 @@
 import numpy as np
 from .getline import get_line
-from .utils import  euklidian_distance
+from .misc import  euklidian_distance
 
 
 class Sensors():
