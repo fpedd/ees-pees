@@ -2,7 +2,7 @@ import socket
 import time
 
 from webotsgym.config import WbtConfig, DiscreteMove
-from webotsgym.com.package import PacketIn, PacketOut, PacketType
+from webotsgym.com.package import PacketIn, PacketOut, PacketType, SafetyType
 from webotsgym.com.state import WbtState
 
 
@@ -59,7 +59,7 @@ class Communication():
 
     def send_data_request(self):
         """Send request for current webots data to external controller."""
-        pack_out = PacketOut(self.msg_cnt, 0, PacketType.REQ,
+        pack_out = PacketOut(self.msg_cnt, 0, SafetyType.ON, PacketType.REQ,
                              DiscreteMove.NONE, self.config.direction_type)
         self.send(pack_out)
 
@@ -70,7 +70,7 @@ class Communication():
 
     def send_command(self, action):
         """Send command only to external controller."""
-        pack_out = PacketOut(self.msg_cnt, 0, PacketType.COM,
+        pack_out = PacketOut(self.msg_cnt, 0, SafetyType.ON, PacketType.COM,
                              DiscreteMove.NONE, self.config.direction_type,
                              action)
         self.send(pack_out)
@@ -81,17 +81,23 @@ class Communication():
         Main communication method. External controller will respond with new
         data after (sim_step_every_x * 32) webots-ms."""
         pack_out = PacketOut(self.msg_cnt, self.config.sim_step_every_x,
-                             PacketType.COM_REQ, DiscreteMove.NONE,
-                             self.config.direction_type, action)
+                             SafetyType.ON, PacketType.COM_REQ,
+                             DiscreteMove.NONE, self.config.direction_type,
+                             action)
         self.send(pack_out)
         self.recv()
 
     # ------------------------------- GRID MOVES ------------------------------
-    def send_grid_move(self, move):
+    def send_grid_move(self, move, safety=False):
         """Send grid move to external controller.
 
         Used for grid communication and WbtGymGrid."""
-        pack_out = PacketOut(self.msg_cnt, 0, PacketType.COM, move, 0)
+        if safety is False:
+            safety_flag = SafetyType.OFF
+        else:
+            safety_flag = SafetyType.ON
+        pack_out = PacketOut(self.msg_cnt, 1, safety_flag,
+                             PacketType.COM, move, 0)
         self.send(pack_out)
 
     def wait_for_grid_action_done(self, wait_time=0.01):

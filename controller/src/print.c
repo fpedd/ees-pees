@@ -63,6 +63,7 @@ void print_cmd_from_bcknd(cmd_from_bcknd_msg_t cmd_from_bcknd) {
 	printf("WEBOT_WORKER: msg_cnt:        %llu\n", cmd_from_bcknd.msg_cnt);
 	printf("WEBOT_WORKER: time_stmp:      %f \n", cmd_from_bcknd.time_stmp);
 	printf("WEBOT_WORKER: every_x:        %d \n", cmd_from_bcknd.every_x);
+	printf("WEBOT_WORKER: disable_safety: %d \n", cmd_from_bcknd.disable_safety);
 	printf("WEBOT_WORKER: request:        %s \n", response_request_str[cmd_from_bcknd.request]);
 	printf("WEBOT_WORKER: discrete_move:  %s \n", discrete_move_str[cmd_from_bcknd.move]);
 	printf("WEBOT_WORKER: dir_type:       %s \n", direction_type_str[cmd_from_bcknd.dir_type]);

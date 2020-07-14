@@ -45,7 +45,7 @@ jobs:
         run: pylint webotsgym --ignored-classes=numpy.random,matplotlib.cm,pandas --disable=C0103,C0123,C0301,C0114,C0115,C0116,C0330,R0904,R0201,R0902,R0913,R0903,W0221,W0612,W0613, --extension-pkg-whitelist=psutil --extension-pkg-whitelist=gym --extension-pkg-whitelist=numpy --extension-pkg-whitelist=pynput --extension-pkg-whitelist=matplotlib || pylint-exit -efail $?
       - name: pylint fakegym
         working-directory: backend
-        run: pylint fakegym --ignored-classes=numpy.random,matplotlib.cm --disable=C0103,C0301,C0114,C0115,C0116,R0201,R0902,R0913,W0612,W0613,E0401, --extension-pkg-whitelist=psutil --extension-pkg-whitelist=gym --extension-pkg-whitelist=numpy --extension-pkg-whitelist=pynput --extension-pkg-whitelist=matplotlib || pylint-exit -efail $?
+        run: pylint fakegym --ignored-classes=numpy.random,matplotlib.cm --disable=C0103,C0301,C0114,C0115,C0116,R0201,R0902,R0913,W0612,W0613, --extension-pkg-whitelist=psutil --extension-pkg-whitelist=gym --extension-pkg-whitelist=numpy --extension-pkg-whitelist=pynput --extension-pkg-whitelist=matplotlib || pylint-exit -efail $?
 
   unittest:
     runs-on: ubuntu-18.04

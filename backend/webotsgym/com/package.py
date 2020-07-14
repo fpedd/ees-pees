@@ -22,6 +22,11 @@ class PacketType(IntEnum):
     COM_REQ = 3
 
 
+class SafetyType(IntEnum):
+    ON = 0
+    OFF = 1
+
+
 class PacketIn():
     """Packet received from the external controller.
 
@@ -81,27 +86,30 @@ class PacketOut():
     msg_cnt : int
     every_x : int
         Receive state data after every_x webots timesteps.
+    disable_safety: (int, SafetyType)
     packet_type : (int, PacketType)
     discrete_move : (int, DiscreteMove)
     direction_type : (int, DirectionType)
     action : ActionOut
 
     """
-    def __init__(self, msg_cnt, every_x, packet_type, discrete_move,
+    def __init__(self, msg_cnt, every_x, disable_safety, packet_type, discrete_move,
                  direction_type, action: ActionOut = ActionOut(action=(0, 0))):
         self.msg_cnt = msg_cnt
         self.every_x = every_x
+        self.disable_safety = int(disable_safety)
         self.packet_type = int(packet_type)
         self.discrete_move = int(discrete_move)
         self.direction_type = int(direction_type)
         self.action = action
 
     def pack(self):
-        data = struct.pack('Qdiiiiff',
+        data = struct.pack('Qdiiiiiff',
                            self.msg_cnt,
                            time.time(),
                            self.every_x,
-                           self.packet_type,
+                           int(self.disable_safety),
+                           int(self.packet_type),
                            int(self.discrete_move),
                            int(self.direction_type),
                            self.action.dir,

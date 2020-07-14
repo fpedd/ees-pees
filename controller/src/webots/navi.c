@@ -44,7 +44,7 @@ int navigate(cmd_to_wb_msg_t *cmd_to_wb, data_to_bcknd_msg_t data_to_bcknd,
 
 	// run the pid controller for speed control
 	float com_speed = 0;
-	int active = pid_run(&pos_pid, data_to_bcknd.sim_time - last_time, 0, act_distance, &com_speed);
+	int done = pid_run(&pos_pid, data_to_bcknd.sim_time - last_time, 0, act_distance, &com_speed);
 
 	// should we drive backwards of forwards?
 	if (navi_check_back(data_to_bcknd.heading, com_heading)) {
@@ -60,8 +60,7 @@ int navigate(cmd_to_wb_msg_t *cmd_to_wb, data_to_bcknd_msg_t data_to_bcknd,
 	                data_to_bcknd.speed, data_to_bcknd.heading,
 	                data_to_bcknd.sim_time);
 
-	// TODO: rename active
-	return active;
+	return done;
 }
 
 int navi_check_back(float start_heading, float dest_heading) {

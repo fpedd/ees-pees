@@ -49,6 +49,7 @@ typedef struct {
 	unsigned long long msg_cnt;    // total number of messages (odd) (internal)
 	double time_stmp;              // time the message got send (internal)
 	int every_x;                   // number of timesteps before new data is send
+	int disable_safety;            // do not use safety in the external controller 
 	enum response_request request; // type of response the backend awaits to the packet
 	enum discrete_move move;       // ignore everything else and do a discrete_action
 	enum direction_type dir_type;  // heading or steering command from backend
