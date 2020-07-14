@@ -97,3 +97,9 @@ void print_silhouette() {
 	}
 	printf("WEBOT_WORKER: ==================================================\n");
 }
+
+// Print two sets of 2D coordinates
+void print_cood(float actual[2], float target[2]) {
+	printf("actual: %f %f \n", actual[0], actual[1]);
+	printf("target: %f %f \n", target[0], target[1]);
+}

@@ -89,10 +89,3 @@ int discr_step(cmd_to_wb_msg_t *cmd_to_wb, cmd_from_bcknd_msg_t cmd_from_bcknd,
 
 	return navigate(cmd_to_wb, data_to_bcknd, init_data, target);
 }
-
-// TODO: move to print
-// Function that helps with printing
-void print_cood(float actual[2], float target[2]) {
-	printf("actual: %f %f \n", actual[0], actual[1]);
-	printf("target: %f %f \n", target[0], target[1]);
-}

@@ -18,4 +18,6 @@ void print_init_data(init_to_ext_msg_t init_data);
 
 void print_silhouette();
 
+void print_cood(float actual[2], float target[2]);
+
 #endif // PRINT_H
