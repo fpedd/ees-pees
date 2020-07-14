@@ -1,7 +1,10 @@
 import subprocess
 import os
+import pathlib
 
-from webotsgym.com.automate.util import get_repo_dir
+
+FILE_PATH = pathlib.Path(__file__).parent.absolute()
+HOME_PATH = str(pathlib.Path(FILE_PATH).parents[3])
 
 
 class ExtCtrl():
@@ -17,14 +20,14 @@ class ExtCtrl():
     def compile(self):
         """Compile external controller."""
         self.close()
-        subprocess.call(["make", "clean"], cwd=os.path.join(get_repo_dir(),
+        subprocess.call(["make", "clean"], cwd=os.path.join(HOME_PATH,
                                                             "controller"))
-        subprocess.call(["make", "all"], cwd=os.path.join(get_repo_dir(),
+        subprocess.call(["make", "all"], cwd=os.path.join(HOME_PATH,
                                                           "controller"))
 
     def start(self):
         """Start external controller."""
-        subprocess.Popen([os.path.join(get_repo_dir(),
+        subprocess.Popen([os.path.join(HOME_PATH,
                                        "controller/build/controller")])
 
     def close(self):
