@@ -6,6 +6,7 @@
 #include "backend/backend_com.h"
 
 // TODO: replace this with data from init packet
+// TODO: Do we really want to create another itc-struct for this?
 #define TIMESTEP 32.0
 
 void *backend_worker(void *ptr) {
@@ -77,7 +78,7 @@ void *backend_worker(void *ptr) {
 
 			case UNDEF:
 			default:
-				printf("BACKEND_WORKER: Invalid Request from Backend\n");
+				fprintf(stderr, "BACKEND_WORKER: Invalid Request from Backend\n");
 				break;
 		}
 

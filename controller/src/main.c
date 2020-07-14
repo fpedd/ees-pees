@@ -15,6 +15,7 @@ int main(int argc, char **argv) {
 	(void) argc;
 	(void) argv;
 
+	// Initialize structs and locks for inter thread communication
 	data_to_bcknd_msg_t itc_data;
 	memset(&itc_data, 0, sizeof(data_to_bcknd_msg_t));
 
@@ -36,6 +37,7 @@ int main(int argc, char **argv) {
 	arg_struct.itc_cmd       = &itc_cmd;
 	arg_struct.itc_cmd_lock  = &itc_cmd_lock;
 
+	// Start threads that communicate with robot and backend
 	pthread_t webot_worker_thread, backend_worker_thread;
 
 	printf("MAIN: Starting threads from main \n");

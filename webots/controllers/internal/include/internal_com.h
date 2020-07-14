@@ -5,12 +5,12 @@
 
 // webot --> external controller
 typedef struct {
-	double sim_time;              // current simulation time [if requested]
-	double current_speed;         // current robot speed [if requested]
-	double steer_angle;           // current measured steering angle
-	double actual_gps[3];         // coordiantes where the robot is
-	double compass[3];            // direction the front of the robot points in
-	float distance[DIST_VECS];    // distance to the next object from robot prespective
+	double sim_time;              // current simulation time (in ms)
+	double current_speed;         // current absolute robot speed (in m/s)
+	double steer_angle;           // currently measured steering angle (in rad)
+	double actual_gps[3];         // coordinates where the robot is (in m)
+	double compass[3];            // direction the front of the robot points to
+	float distance[DIST_VECS];    // distance to the next object from robot perspective (in m)
 } __attribute__((packed)) wb_to_ext_msg_t;
 
 // webot <-- external controller
@@ -21,8 +21,8 @@ typedef struct {
 
 // init msg --> external controller
 typedef struct {
-	int timestep;             // timestep (in ms) of the simulation
-	double maxspeed;          // maximum speed of the Robot in m/s
+	int timestep;             // timestep of the simulation (in ms)
+	double maxspeed;          // maximum rotational speed of the robots drive axle
 	double lidar_min_range;   // minimum detection range of lidar. Obstacles closer will be shown at max range
 	double lidar_max_range;   // maximum detection range of lidar
 }__attribute__((packed)) init_to_ext_msg_t;

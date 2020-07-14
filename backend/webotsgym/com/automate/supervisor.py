@@ -3,14 +3,18 @@ import subprocess
 import socket
 import struct
 import time
+import pathlib
 from enum import IntEnum
 import getpass
 import psutil
 
 from webotsgym.config import WbtConfig
 import webotsgym.utils as utils
-from webotsgym.com.automate.util import get_repo_dir
 from webotsgym.com.automate.extcontroller import ExtCtrl
+
+
+FILE_PATH = pathlib.Path(__file__).parent.absolute()
+HOME_PATH = str(pathlib.Path(FILE_PATH).parents[3])
 
 
 class FunctionCode(IntEnum):
@@ -57,21 +61,21 @@ class WbtCtrl():
         """Complile controllers."""
         self.close_program()
         # clean both controllers in webots
-        subprocess.call(["make", "clean"], cwd=os.path.join(get_repo_dir(),
+        subprocess.call(["make", "clean"], cwd=os.path.join(HOME_PATH,
                         "webots/controllers/supervisor"))
-        subprocess.call(["make", "clean"], cwd=os.path.join(get_repo_dir(),
+        subprocess.call(["make", "clean"], cwd=os.path.join(HOME_PATH,
                         "webots/controllers/internal"))
         # compile both controllers in webots
-        subprocess.call(["make", "all"], cwd=os.path.join(get_repo_dir(),
+        subprocess.call(["make", "all"], cwd=os.path.join(HOME_PATH,
                         "webots/controllers/supervisor"))
-        subprocess.call(["make", "all"], cwd=os.path.join(get_repo_dir(),
+        subprocess.call(["make", "all"], cwd=os.path.join(HOME_PATH,
                         "webots/controllers/internal"))
 
     def start_program(self):
         """Open webots."""
         if self.is_program_started() is False:
             # start webots with the path of the world as argument
-            subprocess.Popen(["webots", os.path.join(get_repo_dir(),
+            subprocess.Popen(["webots", os.path.join(HOME_PATH,
                              "webots/worlds/training_env.wbt")])
 
     def close_program(self):

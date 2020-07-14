@@ -18,10 +18,10 @@
 // The current target destination the drive function will drive us to.
 // It will a 2d vector on our "virtual" grid inside the webots world. So its a
 // multiple of STEP_SIZE.
-float target[2];
+static float target[2];
 
 // The previous target. Needed to revert action in case of action denied.
-float last_target[2];
+static float last_target[2];
 
 int discr_init() {
 
@@ -88,10 +88,4 @@ int discr_step(cmd_to_wb_msg_t *cmd_to_wb, cmd_from_bcknd_msg_t cmd_from_bcknd,
 	// }
 
 	return navigate(cmd_to_wb, data_to_bcknd, init_data, target);
-}
-
-// Function that helps with printing
-void print_cood(float actual[2], float target[2]) {
-	printf("actual: %f %f \n", actual[0], actual[1]);
-	printf("target: %f %f \n", target[0], target[1]);
 }

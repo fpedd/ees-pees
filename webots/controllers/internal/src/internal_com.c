@@ -12,7 +12,6 @@
 #include <unistd.h> /* definition of close */
 
 #include "../include/tcp.h"
-#include "../include/util.h"
 
 int internal_connect(){
 	int ret_connect = tcp_connect();

@@ -181,15 +181,15 @@ class WbtGym(gym.Env):
         self.send_command_and_data_request(action)
         # self.pre_action = action
 
+        # logging, printing
+        self.distances.append(self.get_target_distance())
+        self._update_history()
+
         reward = self.calc_reward()
         self.rewards.append(reward)
         done = self.check_done()
         if done is True:
             self.send_stop_action()
-
-        # logging, printing
-        self.distances.append(self.get_target_distance())
-        self._update_history()
 
         return self.observation, reward, done, {}
 
@@ -205,8 +205,8 @@ class WbtGym(gym.Env):
         """Reset environment to random."""
         if self.supervisor_connected is True:
             # logging trajectory results
-            if self.iterations > 0:
-                trajectory_result = np.array([self.iterations,
+            if self.steps_in_run > 0:
+                trajectory_result = np.array([self.steps_in_run,
                                               self.total_reward,
                                               self.state.sim_time])
                 self.results = np.vstack((self.results, trajectory_result))
@@ -301,7 +301,7 @@ class WbtGym(gym.Env):
         return distance
 
     @property
-    def iterations(self):
+    def steps_in_run(self):
         """Get number of total timesteps of the current run."""
         return len(self.history)
 

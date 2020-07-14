@@ -53,7 +53,7 @@ The communication with the Webot uses a TCP connection. There are three differen
 ```
 typedef struct {
 	int timestep;             // timestep (in ms) of the simulation
-	double maxspeed;          // maximum speed of the Robot in m/s
+	double maxspeed;          // maximum rotational speed of the robots drive axle
 	double lidar_min_range;   // minimum detection range of lidar. Obstacles closer will be shown at max range
 	double lidar_max_range;   // maximum detection range of lidar
 	double target_gps[3];     // coodinates of the target

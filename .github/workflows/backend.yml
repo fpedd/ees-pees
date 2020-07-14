@@ -5,12 +5,12 @@ on:
     branches:
       - master
       - backend
-      - backend_refactor
+
   pull_request:
     branches:
       - master
       - backend
-      - backend_refactor
+ 
 
 jobs:
   Pylint:
@@ -52,8 +52,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
-      # - name: install-unittest
-      #   run: pip install unittest
       - name: install numpy
         run: pip install numpy
       - name: install pynput
@@ -67,9 +65,7 @@ jobs:
       - name: install pathfinding
         run: pip install pathfinding
 
-      # - name: integration_test
-      #   working-directory: backend
-      #   run: python -q test/integration_test.py
-      # - name: unittest_Fakeenv
-      #   working-directory: backend
-      #   run: python test/unittest_Fakeenv.py
+      - name: unittest_Fakeenv
+        working-directory: backend/test
+        run: python3 -m unittest unittest_Fakeenv.py
+
