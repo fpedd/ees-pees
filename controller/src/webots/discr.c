@@ -15,14 +15,13 @@
 // The step size we want to in the webots world [in meter]
 #define STEP_SIZE 0.5
 
-// TODO: why not static?
 // The current target destination the drive function will drive us to.
 // It will a 2d vector on our "virtual" grid inside the webots world. So its a
 // multiple of STEP_SIZE.
-float target[2];
+static float target[2];
 
 // The previous target. Needed to revert action in case of action denied.
-float last_target[2];
+static float last_target[2];
 
 int discr_init() {
 
