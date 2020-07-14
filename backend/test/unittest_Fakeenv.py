@@ -1,16 +1,10 @@
 import unittest
-
 import sys
-sys.path.insert(0, '..')
-
-
+sys.path.insert(0,'../../backend')
 import numpy as np
-
 import gym
 from fakegym.fakeenv import WbtGymFake
 import random
-
-
 
 
 class TestFakeEnv(unittest.TestCase):
@@ -24,6 +18,7 @@ class TestFakeEnv(unittest.TestCase):
         del self.env
 
     def test_Baseenv(self):
+            """Test some basic things."""
             env = self.env
             self.assertEqual(self.env.field.shape, (self.N,self.N))
             assert type(env.action_space) is gym.spaces.discrete.Discrete
@@ -32,6 +27,7 @@ class TestFakeEnv(unittest.TestCase):
             self.assertEqual(len(env.gps_target ), 2)
             
     def test_reset(self):
+        """Test reset function."""
         env = self.env
         obs_1 =  env.reset()
         pos_actual1 = env.gps_actual
@@ -44,6 +40,7 @@ class TestFakeEnv(unittest.TestCase):
         self.assertFalse((obs_1 == obs_2).all())
     
     def test_step(self):
+        """Test step function."""
         env = self.env
         obs_start = env.reset()
         action = random.randint(0,3)

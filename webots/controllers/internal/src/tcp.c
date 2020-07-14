@@ -11,7 +11,6 @@
 #include <errno.h>
 
 #include "../include/tcp.h"
-#include "../include/util.h"
 
 #define PORT "10200"
 #define ADDR "127.0.0.1"

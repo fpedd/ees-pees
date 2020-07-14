@@ -16,12 +16,12 @@ An excerpt from the "internal_com.h" of the internal controller:
 ```c
 // webot --> external controller
 typedef struct {
-	double sim_time;              // current simulation time [if requested]
-	double current_speed;         // current robot speed [if requested]
-	double actual_gps[3];         // coordiantes where the robot is
-	double compass[3];            // direction the front of the robot points in
-	float distance[DIST_VECS];    // distance to the next object from robot prespective
-	double steer_angle;           // current measured steering angle
+	double sim_time;              // current simulation time (in ms)
+	double current_speed;         // current absolute robot speed (in m/s)
+	double actual_gps[3];         // coordinates where the robot is (in m)
+	double compass[3];            // direction the front of the robot points to
+	float distance[DIST_VECS];    // distance to the next object from robot perspective (in m)
+	double steer_angle;           // currently measured steering angle (in rad)
 } __attribute__((packed)) wb_to_ext_msg_t;
 
 // webot <-- external controller
@@ -32,21 +32,34 @@ typedef struct {
 
 // init msg --> external controller
 typedef struct {
-	int timestep;             // timestep (in ms) of the simulation
+	int timestep;             // timestep of the simulation (in ms)
 	double maxspeed;          // maximum rotational speed of the robots drive axle
 	double lidar_min_range;   // minimum detection range of lidar. Obstacles closer will be shown at max range
 	double lidar_max_range;   // maximum detection range of lidar
 }__attribute__((packed)) init_to_ext_msg_t;
 ```
 
-The init message is sent once after connection establishment.
+__Remarks__:
+- The init message is sent once after connection establishment.
+- Keep in mind that the Webots y-coordinate is containing information regarding the height. As for this environment this is mostly unnecessary and thus ommited often.
+- As is in a standard Webots world, the virtual north is set to [1, 0, 0] for our environment.
+- The motor in the robot is built in backwards, thus a negative speed command makes the robot drive forwars (wide side first).
 
 ### Supervisor (SV) controller
 
 The supervisor controller (webots side) is designed to make automated training of the robot possible. To counteract overfitting of the neural network the supervisor controller is capable of generating a world. Given size, scale and the amount of obstacles, an imaginary grid is randomly filled with these obstacles to create a world through which the robot is challenged to navigate.
 On the network side it actively connects to the backend via TCP on startup and retries to connect every 4 seconds if connection is lost.
-**Important** Using the supervisor controller for other worlds than "training_env.wbt" need the same DEFs for proper function as well as the attributes of the *supervisor* robot set SYNCHRONIZATION to false and SUPERVISOR to true.
+
+**Important:** Using the supervisor controller for other worlds than "training_env.wbt" need the same DEFs for proper function as well as the attributes of the *supervisor* robot set SYNCHRONIZATION to false and SUPERVISOR to true.
 To use the supervisors asserts, use the debugging flag when compiling.
+
+#### Using the SV controller
+
+To use the supervisors capabilities in python, Webots has to be running with the world "training\_env.wbt" and compiled controllers. Then the supervisor.py offers 3 functions to interact with the supervisor:
+- start\_env: Setup and start a completely new world in parameters of size, scaling, number of obstacles, running mode and seed.
+- reset\_environment: Use the same parameters as from the last start\_env call with a newly sent seed to save processing time.
+- close\_environment: Close the connection to the supervisor and terminate the Webots environment.
+
 
 #### Packet structure
 
@@ -83,6 +96,6 @@ typedef struct {
 	float scale;                      // scale of the world, actual_size = world_size*scale [float]
 } __attribute__((packed)) bcknd_to_sv_msg_t;
 ```
-
-The function code defines the interpretation of the package. "Start" creates a world with all given parameters. "Reset" on the other hand is used for optimization purposes, as it only creates a new world based on the parameters of the last start packet but with a new seed from the reset. As this reduces time usage significantly it is very useful for the usual batch/epoch training sessions.
+__Remarks__:
+- The function code defines the interpretation of the package. "Start" creates a world with all given parameters. "Reset" on the other hand is used for optimization purposes, as it only creates a new world based on the parameters of the last start packet but with a new seed from the reset. As this reduces time usage significantly it is very useful for the usual batch/epoch training sessions.
 Target is sent back as both start and target are set by the supervisor.

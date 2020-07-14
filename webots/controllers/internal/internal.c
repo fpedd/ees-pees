@@ -30,8 +30,6 @@
 #include <time.h>
 
 #include "internal_com.h"
-#include "util.h"
-
 
 
 int main(int argc, char **argv) {
