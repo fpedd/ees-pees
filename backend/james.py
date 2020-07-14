@@ -72,5 +72,5 @@ class James():
 
 if __name__ == "__main__":
     print("================== Hi, my name is James ==================")
-    schnitty = James(direction_type="heading")
+    schnitty = James(direction_type="steering")
     schnitty.action()
