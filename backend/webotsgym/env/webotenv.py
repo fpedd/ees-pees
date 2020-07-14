@@ -32,7 +32,7 @@ class WbtGym(gym.Env):
         # some general inits
         self.history = []
         self.config = config
-        self.distances = []
+        self.distances = [self.get_target_distance()]
         self.rewards = []
         self.results = np.empty((0, 3))
         self.pre_action = ActionOut(config, (0, 0))
@@ -205,8 +205,8 @@ class WbtGym(gym.Env):
         """Reset environment to random."""
         if self.supervisor_connected is True:
             # logging trajectory results
-            if self.iterations > 0:
-                trajectory_result = np.array([self.iterations,
+            if self.steps_in_run > 0:
+                trajectory_result = np.array([self.steps_in_run,
                                               self.total_reward,
                                               self.state.sim_time])
                 self.results = np.vstack((self.results, trajectory_result))
@@ -219,7 +219,7 @@ class WbtGym(gym.Env):
             self.supervisor.reset_environment(self.main_seed)
             self.history = []
             self.rewards = []
-            self.distances = []
+            self.distances = [self.get_target_distance()]
             self._init_com()
             self.get_data()
 
@@ -301,7 +301,7 @@ class WbtGym(gym.Env):
         return distance
 
     @property
-    def iterations(self):
+    def steps_in_run(self):
         """Get number of total timesteps of the current run."""
         return len(self.history)
 
