@@ -86,10 +86,12 @@ void *webot_worker(void *ptr) {
 			start = 0;
 		}
 
-		// TODO: disable/enable according to safety flag from backend
+
 		/***** 5) Do safety checks if we arent using grid moves*****/
 		// In grid moves safety is handled by the backend, and we don't want to interfere
-		action_denied = safety_check(init_data, data_from_wb, &cmd_to_wb);
+		if (cmd_from_backend_worker.disable_safety != 1) {
+			action_denied = safety_check(init_data, data_from_wb, &cmd_to_wb);
+		}
 
 
 		/***** 6) Send command to robot *****/
