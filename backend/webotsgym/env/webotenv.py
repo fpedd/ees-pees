@@ -191,7 +191,6 @@ class WbtGym(gym.Env):
         if done is True:
             self.send_stop_action()
 
-
         return self.observation, reward, done, {}
 
     def calc_reward(self):
