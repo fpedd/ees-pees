@@ -32,7 +32,7 @@ class WbtGym(gym.Env):
         # some general inits
         self.history = []
         self.config = config
-        self.distances = [self.get_target_distance()]
+        self.distances = []
         self.rewards = []
         self.results = np.empty((0, 3))
         self.pre_action = ActionOut(config, (0, 0))
@@ -219,7 +219,7 @@ class WbtGym(gym.Env):
             self.supervisor.reset_environment(self.main_seed)
             self.history = []
             self.rewards = []
-            self.distances = [self.get_target_distance()]
+            self.distances = []
             self._init_com()
             self.get_data()
 
