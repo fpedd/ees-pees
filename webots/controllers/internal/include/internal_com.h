@@ -7,10 +7,10 @@
 typedef struct {
 	double sim_time;              // current simulation time (in ms)
 	double current_speed;         // current absolute robot speed (in m/s)
+	double steer_angle;           // currently measured steering angle (in rad)
 	double actual_gps[3];         // coordinates where the robot is (in m)
 	double compass[3];            // direction the front of the robot points to
 	float distance[DIST_VECS];    // distance to the next object from robot perspective (in m)
-	double steer_angle;           // currently measured steering angle (in rad)
 } __attribute__((packed)) wb_to_ext_msg_t;
 
 // webot <-- external controller
