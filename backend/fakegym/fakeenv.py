@@ -24,22 +24,10 @@ class WbtGymFake(gym.Env):
     def __init__(self, seed=None, N=10, num_of_sensors=4, obstacles_each=4,
                  step_range=(1, 1), obs=FakeState, obs_len=1):
         super(WbtGymFake, self).__init__()
-        # inits reward/action/seed/observation
-        self.action_mapper = FakeAction(4, step_range)
-        self.action_mapping = self.action_mapper.action_map
-        self.action_space = self.action_mapper.action_space
         self.seed(seed)
-        self.next_seed_idx = 1  
-        if type(obs) == type:
-            self.obs = (obs)(self)
-        else:
-            self.obs = obs
-        self.observation_space = spaces.Box(0, np.inf, shape=self.obs.shape(),
-                                            dtype=np.float32)
+        self.next_seed_idx = 1 
 
         # some general inits
-        self.total_reward = 0
-        self.reward_range = (-1000, 1000)
         self.history = {}
         self.N = N
         self.offset = int(2 * self.N)
@@ -50,6 +38,19 @@ class WbtGymFake(gym.Env):
         self.time_steps = 0
         self.plotpadding = 0
         self.visited_count = np.zeros(self.field.shape)
+
+        # inits reward, action, observation
+        self.total_reward = 0
+        self.reward_range = (-1000, 1000)
+        self.action_mapper = FakeAction(4, step_range)
+        self.action_mapping = self.action_mapper.action_map
+        self.action_space = self.action_mapper.action_space
+        if type(obs) == type:
+            self.obs = (obs)(self)
+        else:
+            self.obs = obs
+        self.observation_space = spaces.Box(0, np.inf, shape=self.obs.shape(),
+                                            dtype=np.float32)
 
 
     # =========================================================================
