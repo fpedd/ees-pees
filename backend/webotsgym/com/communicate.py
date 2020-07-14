@@ -96,7 +96,7 @@ class Communication():
             safety_flag = SafetyType.OFF
         else:
             safety_flag = SafetyType.ON
-        pack_out = PacketOut(self.msg_cnt, 0, safety_flag,
+        pack_out = PacketOut(self.msg_cnt, 1, safety_flag,
                              PacketType.COM, move, 0)
         self.send(pack_out)
 

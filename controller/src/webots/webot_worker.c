@@ -86,8 +86,6 @@ void *webot_worker(void *ptr) {
 			start = 0;
 		}
 
-		print_cmd_from_bcknd(cmd_from_backend_worker);
-
 		// TODO: disable/enable according to safety flag from backend
 		/***** 5) Do safety checks if we arent using grid moves*****/
 		// In grid moves safety is handled by the backend, and we don't want to interfere
