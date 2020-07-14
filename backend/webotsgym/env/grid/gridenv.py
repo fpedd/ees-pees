@@ -9,7 +9,7 @@ from webotsgym.env.reward import WbtRewardGrid
 
 class WbtGymGrid(WbtGym):
     def __init__(self, seed=None, gps_target=(1, 1),
-                 train=False, evaluate_class=WbtRewardGrid,
+                 train=True, evaluate_class=WbtRewardGrid,
                  config: WbtConfig = WbtConfig()):
         config.world_scaling = 0.5
         super(WbtGymGrid, self).__init__(seed=seed,
