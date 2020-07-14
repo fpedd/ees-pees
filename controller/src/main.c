@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <pthread.h>
+#include <unistd.h>
 
 #include "backend/backend_worker.h"
 #include "backend/backend_com.h"
@@ -54,7 +55,8 @@ int main(int argc, char **argv) {
 	}
 
 	while (1) {
-		// TODO: put this boi to sleep
+		// Sleep for one second to safe resources
+		sleep(1);
 	}
 
 	return 0;
