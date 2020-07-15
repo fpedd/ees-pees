@@ -22,7 +22,7 @@ class TestFakeEnv(unittest.TestCase):
             env = self.env
             self.assertEqual(self.env.field.shape, (self.N,self.N))
             assert type(env.action_space) is gym.spaces.discrete.Discrete
-            self.assertEqual(env.obs.get(env).shape, (9,))
+            self.assertEqual(env.obs.get(env).shape, (10,))
             self.assertEqual(len(env.gps_actual ), 2)
             self.assertEqual(len(env.gps_target ), 2)
             
