@@ -5,8 +5,7 @@
 
 #include "backend/backend_com.h"
 
-// TODO: replace this with data from init packet
-// TODO: Do we really want to create another itc-struct for this?
+
 #define TIMESTEP 32.0
 
 void *backend_worker(void *ptr) {
