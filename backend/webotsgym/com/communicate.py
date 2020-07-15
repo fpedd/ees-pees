@@ -97,16 +97,9 @@ class Communication():
         else:
             safety_flag = SafetyType.ON
         pack_out = PacketOut(self.msg_cnt, 1, safety_flag,
-                             PacketType.COM, move, 0)
+                             PacketType.GRID_MOVE, move, 0)
         self.send(pack_out)
-
-    def wait_for_grid_action_done(self, wait_time=0.01):
-        # give controller some time to update internal data
-        time.sleep(wait_time)
-        self.get_data()
-        while self.state.discrete_action_done != 1:
-            self.get_data()
-            time.sleep(wait_time)
+        self.recv()
 
 # if IP != addr[0]:
 #     print("ERROR: recv did from wrong address", addr)
