@@ -3,16 +3,16 @@ name: integration
 on:
   push:
     branches:
-      - master
-      - webots
-      - controller
-      - backend
+      # - master
+      # - webots
+      # - controller
+      # - backend
   pull_request:
     branches:
-      - master
-      - webots
-      - controller
-      - backend
+      # - master
+      # - webots
+      # - controller
+      # - backend
 
 jobs:
   integration-test:

@@ -48,14 +48,15 @@ void *webot_worker(void *ptr) {
 		webot_format_wb_to_bcknd(&data_to_backend_worker, data_from_wb,
 		                         action_denied, discrete_action_done);
 		pthread_mutex_lock(arg_struct->itc_data_lock);
+
+		// Keep action_denied flag until backend worker reads it
 		if (arg_struct->itc_data->action_denied == 1) {
 			data_to_backend_worker.action_denied = 1;
 		}
-		int touching = arg_struct->itc_data->touching;
-		if (touching == -1) {
-			data_to_backend_worker.touching = -1;
-		} else if (touching > 0) {
-			data_to_backend_worker.touching += touching;
+
+		// Keep touching flag until backend worker reads it
+		if (arg_struct->itc_data->touching != 0) {
+			data_to_backend_worker.touching = arg_struct->itc_data->touching;
 		}
 
 		memcpy(arg_struct->itc_data, &data_to_backend_worker, sizeof(data_to_bcknd_msg_t));
@@ -89,7 +90,7 @@ void *webot_worker(void *ptr) {
 
 		/***** 5) Do safety checks if we arent using grid moves*****/
 		// In grid moves safety is handled by the backend, and we don't want to interfere
-		if (cmd_from_backend_worker.disable_safety != 1) {
+		if (cmd_from_backend_worker.disable_safety == 0) {
 			action_denied = safety_check(init_data, data_from_wb, &cmd_to_wb);
 		}
 
@@ -110,7 +111,7 @@ int webot_format_wb_to_bcknd(data_to_bcknd_msg_t* data_to_bcknd,
 
 	// cast sim time and robot speed to float, scale speed to [-1, 1]
 	data_to_bcknd->sim_time = (float) data_from_wb.sim_time;
-	data_to_bcknd->speed = (float) speed_with_dir(data_from_wb) / 0.29;
+	data_to_bcknd->speed = (float) speed_with_dir(data_from_wb) / MAX_SPEED;
 
 	// Calculate projections from 3D gps/compass data to backend format
 	// (x, z coorinates represent horizontal plane in webots system)
@@ -159,11 +160,14 @@ float speed_with_dir(data_from_wb_msg_t data_from_wb) {
 	static double last_gps[2] = {data_from_wb.actual_gps[0], data_from_wb.actual_gps[2]};
 
 	// Get normalized trajectory vector from gps
-	double len = sqrt(pow(data_from_wb.actual_gps[0], 2)
-	                + pow(data_from_wb.actual_gps[2], 2));
 	double traj[2];
-	traj[0] = (data_from_wb.actual_gps[0] - last_gps[0]) / len;
-	traj[1] = (data_from_wb.actual_gps[2] - last_gps[1]) / len;
+	traj[0] = (data_from_wb.actual_gps[0] - last_gps[0]);
+	traj[1] = (data_from_wb.actual_gps[2] - last_gps[1]);
+
+	double len = sqrt(pow(traj[0], 2) + pow(traj[1], 2));
+
+	traj[0] /= len;
+	traj[1] /= len;
 
 	// Safe prev gps
 	last_gps[0] = data_from_wb.actual_gps[0];

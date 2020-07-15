@@ -60,7 +60,6 @@ class WbtGymGrid(WbtGym):
         else:
             action = self.action_class.map(action)
             self.com.send_grid_move(action)
-            self.com.wait_for_grid_action_done()
 
         self.visited_count[self.gps_actual_scaled] += 1
         reward = self.calc_reward()

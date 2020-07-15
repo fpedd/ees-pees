@@ -20,6 +20,7 @@ class PacketType(IntEnum):
     COM = 1
     REQ = 2
     COM_REQ = 3
+    GRID_MOVE = 4
 
 
 class SafetyType(IntEnum):

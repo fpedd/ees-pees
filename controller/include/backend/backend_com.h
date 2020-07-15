@@ -7,7 +7,8 @@ enum response_request {
 	UNDEF = 0,                  // Invalid Packet
 	COMMAND_ONLY = 1,           // Only new instructions for Robot, dont send next packet
 	REQUEST_ONLY = 2,           // Only request for new packet
-	COMMAND_REQUEST = 3         // New instructions for robot AND request for new packet
+	COMMAND_REQUEST = 3,        // New instructions for robot AND request for new packet
+	GRID_MOVE = 4               // Send new packet once discrete action is done
 };
 extern const char* response_request_str[];
 
@@ -49,7 +50,7 @@ typedef struct {
 	unsigned long long msg_cnt;    // total number of messages (odd) (internal)
 	double time_stmp;              // time the message got send (internal)
 	int every_x;                   // number of timesteps before new data is send
-	int disable_safety;            // do not use safety in the external controller 
+	int disable_safety;            // do not use safety in the external controller
 	enum response_request request; // type of response the backend awaits to the packet
 	enum discrete_move move;       // ignore everything else and do a discrete_action
 	enum direction_type dir_type;  // heading or steering command from backend
