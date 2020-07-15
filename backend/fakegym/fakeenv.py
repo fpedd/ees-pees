@@ -21,7 +21,7 @@ VAL_TARGET = 6
 
 
 class WbtGymFake(gym.Env):
-    def __init__(self, seed=None, N=10, num_of_sensors=4, obstacles_each=4,
+    def __init__(self, seed=None, N=10, num_of_sensors=4, obstacles_num=4,
                  step_range=(1, 1), obs=FakeState, obs_len=1):
         super(WbtGymFake, self).__init__()
         self.seed(seed)
@@ -33,12 +33,12 @@ class WbtGymFake(gym.Env):
         self.offset = int(2 * self.N)
         self.num_of_sensors = num_of_sensors
         self.obs_len = obs_len
-        self.obstacles_each = obstacles_each
+        self.obstacles_num= obstacles_num
         if type(obs) == type:
             self.obs = (obs)(self)
         else:
             self.obs = obs
-        self._init(self.N, self.obstacles_each, self.obs_len)
+        self._init(self.N, self.obstacles_num, self.obs_len)
         self.time_steps = 0
         self.plotpadding = 0
         self.visited_count = np.zeros(self.field.shape)
@@ -103,7 +103,7 @@ class WbtGymFake(gym.Env):
 
         # place obstacles randomly (horizontal and vertical walls)
         self.place_random_obstacle(dx=1, dy=obs_len, N=obstacles_each)
-        self.place_random_obstacle(obs_len, 1, N=obstacles_each)
+        # self.place_random_obstacle(obs_len, 1, N=obstacles_each)
 
         # random start and finish positions
         self.obs.gps_actual = self.random_position()
@@ -245,7 +245,7 @@ class WbtGymFake(gym.Env):
             seed = np_random_seed(set=False)
         self.seed(seed)
         self.next_seed_idx = 1
-        self._init(self.N, self.obstacles_each, self.obs_len)
+        self._init(self.N, self.obstacles_num, self.obs_len)
         self.time_steps = 0
         self.visited_count = np.zeros(self.field.shape)
         if hard is True and len(finder_path(self.field, self.gps_actual, self.gps_target)) < min_complexity:

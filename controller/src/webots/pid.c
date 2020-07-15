@@ -58,8 +58,7 @@ int pid_run(pid_ctrl_t *pid, float dt, float set, float in, float *out) {
 
 	float integ = err * dt + pid->err_acc;
 
-	// TODO: not sure about order here
-	float deriv = (pid->prev_in - in) / dt;
+	float deriv = -(pid->prev_in - in) / dt;
 
 	*out = err * pid->k_p + integ * pid->k_i + deriv * pid->k_d;
 
@@ -68,7 +67,7 @@ int pid_run(pid_ctrl_t *pid, float dt, float set, float in, float *out) {
 	// printf("err: %f\n", err);
 	// printf("prop: %f\n", err * pid->k_p);
 	// printf("integ: %f\n", integ * pid->k_i);
-	// printf("deriv: %f\n", deriv * pid->k_d);
+	// printf("deriv: %f\n", deriv);
 	// printf("out: %f\n", *out);
 
 	if (*out < pid->out_min) {
