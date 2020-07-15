@@ -10,7 +10,7 @@ import random
 class TestFakeEnv(unittest.TestCase):
     
     def setUp(self):
-        self.env =WbtGymFake(N=10, num_of_sensors=4, obstacles_each=4,
+        self.env =WbtGymFake(N=10, num_of_sensors=4, obstacles_num=4,
                  step_range=(1, 1), obs_len=1)
         self.N = 10
 
