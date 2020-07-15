@@ -48,14 +48,15 @@ void *webot_worker(void *ptr) {
 		webot_format_wb_to_bcknd(&data_to_backend_worker, data_from_wb,
 		                         action_denied, discrete_action_done);
 		pthread_mutex_lock(arg_struct->itc_data_lock);
+
+		// Keep action_denied flag until backend worker reads it
 		if (arg_struct->itc_data->action_denied == 1) {
 			data_to_backend_worker.action_denied = 1;
 		}
-		int touching = arg_struct->itc_data->touching;
-		if (touching == -1) {
-			data_to_backend_worker.touching = -1;
-		} else if (touching > 0) {
-			data_to_backend_worker.touching += touching;
+
+		// Keep touching flag until backend worker reads it
+		if (arg_struct->itc_data->touching != 0) {
+			data_to_backend_worker.touching = arg_struct->itc_data->touching;
 		}
 
 		memcpy(arg_struct->itc_data, &data_to_backend_worker, sizeof(data_to_bcknd_msg_t));
