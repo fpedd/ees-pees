@@ -36,7 +36,12 @@ int navi_init() {
 
 // This function can be used to tell the robot to drive to dest[] coorinates
 int navigate(cmd_to_wb_msg_t *cmd_to_wb, data_to_bcknd_msg_t data_to_bcknd,
-             init_to_ext_msg_t init_data, float dest[]) {
+             init_to_ext_msg_t init_data, float dest[], int reset) {
+
+	// If needed, reset the controllers internal state
+	if (reset == 1) {
+		pid_reset(&pos_pid);
+	}
 
 	// Ensure that time difference is not to big and not zero when starting
 	if (last_time == 0.0) {
@@ -66,7 +71,7 @@ int navigate(cmd_to_wb_msg_t *cmd_to_wb, data_to_bcknd_msg_t data_to_bcknd,
 	drive_automatic(cmd_to_wb, init_data,
 	                com_speed, com_heading,
 	                data_to_bcknd.speed, data_to_bcknd.heading,
-	                data_to_bcknd.sim_time);
+	                data_to_bcknd.sim_time, reset);
 
 	return done;
 }

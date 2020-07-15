@@ -99,6 +99,8 @@ int pid_reset(pid_ctrl_t *pid) {
 	pid->err_acc = 0.0;
 	pid->prev_in = 0.0;
 
+	printf("RESET\n");
+
 	return 0;
 }
 

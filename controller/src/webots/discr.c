@@ -32,11 +32,11 @@ int discr_init() {
 
 int discr_step(cmd_to_wb_msg_t *cmd_to_wb, cmd_from_bcknd_msg_t cmd_from_bcknd,
                data_to_bcknd_msg_t data_to_bcknd, init_to_ext_msg_t init_data,
-               int start, int action_denied) {
+               int reset, int action_denied) {
 
 	// Start where the robot currently is at
-	if (start == 1) {
-		
+	if (reset == 1) {
+
 		// Use rounding to align the target to "nearest" point on "virtual" grid
 		target[0] = round_with_factor(data_to_bcknd.actual_gps[0], STEP_SIZE);
 		target[1] = round_with_factor(data_to_bcknd.actual_gps[1], STEP_SIZE);
@@ -89,5 +89,5 @@ int discr_step(cmd_to_wb_msg_t *cmd_to_wb, cmd_from_bcknd_msg_t cmd_from_bcknd,
 
 	// Let the navigate function navigate the robot to the destination
 	// It will return 1 when its done (has reached its destination)
-	return navigate(cmd_to_wb, data_to_bcknd, init_data, target);
+	return navigate(cmd_to_wb, data_to_bcknd, init_data, target, reset);
 }
