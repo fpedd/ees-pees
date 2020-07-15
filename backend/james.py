@@ -94,7 +94,7 @@ class James():
 
         # Outpacket by grid value
         if self.grid is True:
-            self.com.send_grid_move(move, safety=False)
+            self.com.send_grid_move(move, safety=True)
         else:
             self.act.print_action()
             self.com.send_command(self.act)

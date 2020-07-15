@@ -81,11 +81,11 @@ int discr_step(cmd_to_wb_msg_t *cmd_to_wb, cmd_from_bcknd_msg_t cmd_from_bcknd,
 	(void) action_denied;
 	// The backend actually checks for safety violations. So we have no need for
 	// the action denied flag and reverting.
-	// if (action_denied != 0) {
-	// 	printf("DISCR: Reverted from target [%.2f,%.2f] to [%.2f,%.2f]\n", target[0], target[1], last_target[0], last_target[1]);
-	// 	target[0] = last_target[0];
-	// 	target[1] = last_target[1];
-	// }
+	if (cmd_from_bcknd.disable_safety != 1 && action_denied != 0) {
+		printf("DISCR: Reverted from target [%.2f,%.2f] to [%.2f,%.2f]\n", target[0], target[1], last_target[0], last_target[1]);
+		target[0] = last_target[0];
+		target[1] = last_target[1];
+	}
 
 	return navigate(cmd_to_wb, data_to_bcknd, init_data, target);
 }

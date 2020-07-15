@@ -89,7 +89,7 @@ void *webot_worker(void *ptr) {
 
 		/***** 5) Do safety checks if we arent using grid moves*****/
 		// In grid moves safety is handled by the backend, and we don't want to interfere
-		if (cmd_from_backend_worker.disable_safety != 1) {
+		if (cmd_from_backend_worker.disable_safety == 0) {
 			action_denied = safety_check(init_data, data_from_wb, &cmd_to_wb);
 		}
 
