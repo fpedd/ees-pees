@@ -30,6 +30,7 @@ int drive_init() {
 int drive(cmd_to_wb_msg_t *cmd_to_wb, cmd_from_bcknd_msg_t cmd_from_bcknd,
           data_to_bcknd_msg_t data_to_bcknd, init_to_ext_msg_t init_data) {
 
+	// Check if we should drive in STEERING (Manual) or HEADING (Automatic) mode
 	if (cmd_from_bcknd.dir_type == STEERING) {
 		drive_manual(cmd_to_wb, init_data,
 		             cmd_from_bcknd.speed, cmd_from_bcknd.heading);
