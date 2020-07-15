@@ -12,7 +12,7 @@
 #include "util.h"
 #include "print.h"
 
-// Defines to fine tune the angle prediction for hitbox calculation (not used)
+// Parameters to fine tune the angle prediction for hitbox calculation (not used)
 #define SPEED_PREDICT 0.0
 #define STEERING_PREDICT 45.0
 

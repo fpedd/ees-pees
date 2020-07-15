@@ -82,6 +82,7 @@ int discr_step(cmd_to_wb_msg_t *cmd_to_wb, cmd_from_bcknd_msg_t cmd_from_bcknd,
 	// The backend actually checks for safety violations. So we have no need for
 	// the action denied flag and reverting.
 	if (cmd_from_bcknd.disable_safety != 1 && action_denied != 0) {
+		// TODO remove print?
 		printf("DISCR: Reverted from target [%.2f,%.2f] to [%.2f,%.2f]\n", target[0], target[1], last_target[0], last_target[1]);
 		target[0] = last_target[0];
 		target[1] = last_target[1];

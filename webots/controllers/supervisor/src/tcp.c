@@ -2,12 +2,12 @@
 #include <string.h>
 #include <sys/types.h>
 #include <time.h>
-#include <arpa/inet.h>  /* definition of inet_ntoa */
-#include <netdb.h>      /* definition of gethostbyname */
-#include <netinet/in.h> /* definition of struct sockaddr_in */
+#include <arpa/inet.h>
+#include <netdb.h>
+#include <netinet/in.h>
 #include <sys/socket.h>
 #include <sys/time.h>
-#include <unistd.h> /* definition of close */
+#include <unistd.h>
 #include <errno.h>
 
 #include "../include/tcp.h"
@@ -22,8 +22,8 @@ static int tcp_socket_fd;
 //returns socket_fd
 int tcp_connect() {
 
-	struct addrinfo hints, *server_info;		//init structs and add hints for
-	memset(&hints, 0, sizeof(hints));				//getaddrinfo() function
+	struct addrinfo hints, *server_info;
+	memset(&hints, 0, sizeof(hints));
 	hints.ai_family = AF_UNSPEC;
 	hints.ai_socktype = SOCK_STREAM;
 
@@ -47,7 +47,7 @@ int tcp_connect() {
 		return -3;
 	}
 
-	freeaddrinfo(server_info);    //not needed anymore
+	freeaddrinfo(server_info);
 
 	return 0;
 }

@@ -2,15 +2,6 @@
 
 #include <stdio.h>
 #include <string.h>
-#include <sys/types.h>
-#include <time.h>
-#include <arpa/inet.h>  /* definition of inet_ntoa */
-#include <netdb.h>      /* definition of gethostbyname */
-#include <netinet/in.h> /* definition of struct sockaddr_in */
-#include <sys/socket.h>
-#include <sys/time.h>
-#include <unistd.h> /* definition of close */
-
 #include "../include/tcp.h"
 
 int internal_connect(){
