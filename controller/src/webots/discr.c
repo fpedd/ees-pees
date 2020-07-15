@@ -17,7 +17,7 @@
 
 // The current target destination the drive function will drive us to.
 // It will a 2d vector on our "virtual" grid inside the webots world. So its a
-// multiple of STEP_SIZE.
+// always in the middle of a tile of size STEP_SIZE.
 static float target[2];
 
 // The previous target. Needed to revert action in case of action denied.
