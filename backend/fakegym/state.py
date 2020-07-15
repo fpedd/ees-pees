@@ -13,9 +13,10 @@ class FakeState():
         self.gps_target = env.state_object.gps_target
         self.distance = env.state_object.distance
         self.touching = env.state_object.touching
+        self.visit_count = env.gps_visited_count
 
     def shape(self):
-        return (9, )
+        return (10, )
 
     def get(self, env):
         """Get observation as numpy array."""
@@ -25,4 +26,5 @@ class FakeState():
         arr = np.hstack((arr, np.array(self.gps_target)))
         arr = np.hstack((arr, np.array(self.distance)))
         arr = np.hstack((arr, np.array(self.touching)))
+        arr = np.hstack((arr, np.array(self.visit_count)))
         return arr
