@@ -2,21 +2,21 @@
 #define PID_H
 
 enum pid_special {
-	NORM = 0,           // Normal PID controller
-	WRAP = 1,           // Use wrap around logic
-	EXPO = 2,           // Use an expoential error function
+	NORM = 0, // Normal PID controller
+	WRAP = 1, // Use wrap around logic
+	EXPO = 2, // Use an expoential error function
 };
 
 typedef struct {
-	float k_p;
-	float k_i;
-	float k_d;
-	float out_min;
-	float out_max;
-	float deadband;
-	float err_acc;
-	float prev_in;
-	pid_special special;
+	float k_p;            // P Gain
+	float k_i;            // I Gain
+	float k_d;            // D Gain
+	float out_min;        // Min and
+	float out_max;        // Max output bounds
+	float deadband;       // Deadband to allow for response in finite time
+	float err_acc;        // Error accumulator, for integral
+	float prev_in;        // Previous error, for derivative
+	pid_special special;  // Special funtion Flag
 } pid_ctrl_t;
 
 int pid_init(pid_ctrl_t *pid, float k_p, float k_i, float k_d,

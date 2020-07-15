@@ -33,8 +33,10 @@ int pid_run(pid_ctrl_t *pid, float dt, float set, float in, float *out) {
 		return -1;
 	}
 
+	// Calculate the control error
 	float err = set - in;
 
+	// Check for special exponential function
 	if (pid->special == EXPO) {
 		if (err > 0.0) {
 			err = exp(err) - 1;
@@ -43,11 +45,13 @@ int pid_run(pid_ctrl_t *pid, float dt, float set, float in, float *out) {
 		}
 	}
 
+	// Check, when deadband active, if inside deadband
 	if (fabs(err) < pid->deadband && pid->deadband != 0.0) {
 		*out = 0.0;
 		return 1;
 	}
 
+	// Check for special warp around function
 	if (pid->special == WRAP) {
 		if (err < pid->out_min) {
 			err += 2.0 * pid->out_max;
@@ -56,20 +60,26 @@ int pid_run(pid_ctrl_t *pid, float dt, float set, float in, float *out) {
 		}
 	}
 
+	// Calculate integral error
 	float integ = err * dt + pid->err_acc;
 
+	// Calculate derivative error
+	// Do derivate of only process variable to avoid command glitches
 	float deriv = -(pid->prev_in - in) / dt;
 
+	// Calculate overall error
 	*out = err * pid->k_p + integ * pid->k_i + deriv * pid->k_d;
 
+	// Prints for showcasing (or debugging)
 	// printf("set: %f\n", set);
 	// printf("in: %f\n", in);
 	// printf("err: %f\n", err);
 	// printf("prop: %f\n", err * pid->k_p);
 	// printf("integ: %f\n", integ * pid->k_i);
-	// printf("deriv: %f\n", deriv);
+	// printf("deriv: %f\n", deriv * pid->k_d);
 	// printf("out: %f\n", *out);
 
+	// Bound output to set limits, this is also our anti windup logic
 	if (*out < pid->out_min) {
 		*out = pid->out_min;
 	} else if (*out > pid->out_max) {
@@ -78,6 +88,7 @@ int pid_run(pid_ctrl_t *pid, float dt, float set, float in, float *out) {
 		pid->err_acc += err * dt;
 	}
 
+	// Store current error in prev variable for next iteration
 	pid->prev_in = in;
 
 	return 0;
@@ -87,6 +98,8 @@ int pid_reset(pid_ctrl_t *pid) {
 
 	pid->err_acc = 0.0;
 	pid->prev_in = 0.0;
+
+	printf("RESET\n");
 
 	return 0;
 }

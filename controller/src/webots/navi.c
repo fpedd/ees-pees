@@ -14,39 +14,52 @@ static double last_time;
 static pid_ctrl_t pos_pid;
 
 int navi_init() {
+
+	// Initialize time variable
 	last_time = 0.0;
+
+	// The PID was tuned in a way that minimizes rise time and avoids overshoot
+	// Since we dont encounter any significant disturbance from the environment
+	// there was no real need to include I or D gains at this point
+
+	// Initialize PID for navigation speed control using a deadband
 	pid_init(&pos_pid, 4.5,   // k_p
 	                   0.0,   // k_i
 	                   0.0,   // k_d
 	                  -1.0,   // min
 	                   1.0,   // max
 	                   0.03,  // deadband
-	                   NORM); // special function?
+	                   NORM); // special functions deactivated
 
 	return 0;
 }
 
-// this function can be used to tell the robot to drive to dest[] coorinates
+// This function can be used to tell the robot to drive to dest[] coorinates
 int navigate(cmd_to_wb_msg_t *cmd_to_wb, data_to_bcknd_msg_t data_to_bcknd,
-             init_to_ext_msg_t init_data, float dest[]) {
+             init_to_ext_msg_t init_data, float dest[], int reset) {
 
-	// ensure that time difference is not to big and not zero when starting
+	// If needed, reset the controllers internal state
+	if (reset == 1) {
+		pid_reset(&pos_pid);
+	}
+
+	// Ensure that time difference is not to big and not zero when starting
 	if (last_time == 0.0) {
 		last_time = data_to_bcknd.sim_time;
 		return 0;
 	}
 
-	// get the heading we need to drive in
+	// Get the heading we need to drive in
 	float com_heading = navi_get_heading(data_to_bcknd, dest);
 
-	// get the actual distance to the target field
+	// Get the actual distance to the target field
 	float act_distance = navi_get_distance(data_to_bcknd, dest);
 
-	// run the pid controller for speed control
+	// Run PID for navigation speed control
 	float com_speed = 0;
 	int done = pid_run(&pos_pid, data_to_bcknd.sim_time - last_time, 0, act_distance, &com_speed);
 
-	// should we drive backwards of forwards?
+	// Should we drive backwards of forwards?
 	if (navi_check_back(data_to_bcknd.heading, com_heading)) {
 		com_speed *= 1.0;
 		com_heading = navi_inv_heading(com_heading);
@@ -54,33 +67,39 @@ int navigate(cmd_to_wb_msg_t *cmd_to_wb, data_to_bcknd_msg_t data_to_bcknd,
 		com_speed *= -1.0;
 	}
 
-	// command robot to drive to the target
+	// Command robot to drive to the target
 	drive_automatic(cmd_to_wb, init_data,
 	                com_speed, com_heading,
 	                data_to_bcknd.speed, data_to_bcknd.heading,
-	                data_to_bcknd.sim_time);
+	                data_to_bcknd.sim_time, reset);
 
 	return done;
 }
 
 int navi_check_back(float start_heading, float dest_heading) {
 
+	// Get the absolute heading difference
 	float diff = fabs(start_heading - dest_heading);
 
-	if (diff > 1) {
-		diff = fabs(diff - 2);
+	// If bigger than 1, use wrap arounf logic
+	if (diff > 1.0) {
+		diff = fabs(diff - 2.0);
 	}
 
+	// Check wether we should drive backwards of forwards
 	if (diff > 0.5) {
+		// Backwards is faster
 		return 1;
 	} else {
+		// Forwards is faster
 		return 0;
 	}
 }
 
 float navi_get_heading(data_to_bcknd_msg_t data_to_bcknd, float dest[]) {
 
-	// weird coorinate system in webots...
+	// Get the two distance vectors and use arcan to calculate the correct angle
+	// Weird coorinate system in webots...
 	float dx = data_to_bcknd.actual_gps[0] - dest[0];
 	float dy = dest[1] - data_to_bcknd.actual_gps[1];
 	float he = atan2(dx, dy) / M_PI;
@@ -90,6 +109,7 @@ float navi_get_heading(data_to_bcknd_msg_t data_to_bcknd, float dest[]) {
 
 float navi_get_distance(data_to_bcknd_msg_t data_to_bcknd, float dest[]) {
 
+	// Get the two distance vectors and do pythagorean
 	float dx = dest[0] - data_to_bcknd.actual_gps[0];
 	float dy = dest[1] - data_to_bcknd.actual_gps[1];
 	float di = sqrt(pow(dx, 2) + pow(dy, 2));
@@ -99,7 +119,8 @@ float navi_get_distance(data_to_bcknd_msg_t data_to_bcknd, float dest[]) {
 
 float navi_inv_heading(float heading) {
 
-	if (heading > 0) {
+	// Invert the heading
+	if (heading > 0.0) {
 		return heading - 1.0;
 	} else {
 		return heading + 1.0;

@@ -28,8 +28,10 @@ int drive_init() {
 }
 
 int drive(cmd_to_wb_msg_t *cmd_to_wb, cmd_from_bcknd_msg_t cmd_from_bcknd,
-          data_to_bcknd_msg_t data_to_bcknd, init_to_ext_msg_t init_data) {
+          data_to_bcknd_msg_t data_to_bcknd, init_to_ext_msg_t init_data,
+          int reset) {
 
+	// Check if we should drive in STEERING (Manual) or HEADING (Automatic) mode
 	if (cmd_from_bcknd.dir_type == STEERING) {
 		drive_manual(cmd_to_wb, init_data,
 		             cmd_from_bcknd.speed, cmd_from_bcknd.heading);
@@ -37,7 +39,7 @@ int drive(cmd_to_wb_msg_t *cmd_to_wb, cmd_from_bcknd_msg_t cmd_from_bcknd,
 		drive_automatic(cmd_to_wb, init_data,
 		                cmd_from_bcknd.speed, cmd_from_bcknd.heading,
 		                data_to_bcknd.speed, data_to_bcknd.heading,
-		                data_to_bcknd.sim_time);
+		                data_to_bcknd.sim_time, reset);
 	}
 
 	return 0;
@@ -57,7 +59,12 @@ int drive_manual(cmd_to_wb_msg_t *cmd_to_wb, init_to_ext_msg_t init_data,
 int drive_automatic(cmd_to_wb_msg_t *cmd_to_wb, init_to_ext_msg_t init_data,
                     float set_speed, float set_heading,
                     float act_speed, float act_heading,
-                    float curr_time) {
+                    float curr_time, int reset) {
+
+	// If needed, reset the controllers internal state
+	if (reset == 1) {
+		pid_reset(&heading_pid);
+	}
 
 	// Ensure that time difference is not to big and not zero when starting
 	if (last_time == 0.0) {
