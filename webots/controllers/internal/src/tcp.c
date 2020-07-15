@@ -2,12 +2,12 @@
 #include <string.h>
 #include <sys/types.h>
 #include <time.h>
-#include <arpa/inet.h>  /* definition of inet_ntoa */
-#include <netdb.h>      /* definition of gethostbyname */
-#include <netinet/in.h> /* definition of struct sockaddr_in */
+#include <arpa/inet.h>
+#include <netdb.h>
+#include <netinet/in.h>
 #include <sys/socket.h>
 #include <sys/time.h>
-#include <unistd.h> /* definition of close */
+#include <unistd.h>
 #include <errno.h>
 
 #include "../include/tcp.h"
@@ -62,7 +62,7 @@ int tcp_send (char* data, int data_len) {
 }
 
 int tcp_recv (char* buf, int buf_size) {
-	
+
 	int received = recv(tcp_socket_fd, buf, buf_size, 0);
 	if (received < 0) {
 		fprintf(stderr, "ERROR(tcp): Error on recv: %s'\n", strerror(errno));

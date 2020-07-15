@@ -48,7 +48,7 @@ int main(int argc, char **argv) {
 	gps     = wb_robot_get_device("gps");
 	compass = wb_robot_get_device("compass");
 
-	// configure devices
+	// Configure devices
 	// Switch to velocity control mode for unbounded motors.
 	wb_motor_set_position(motor, INFINITY);
 	wb_lidar_enable(lidar, timestep);
@@ -70,17 +70,14 @@ int main(int argc, char **argv) {
 	*/
 
 	int res = wb_lidar_get_horizontal_resolution(lidar);
-	printf("lidar resolution %i\n", res);
 
 	printf("Starting Coms on Webots Controller\n");
 	int ret_connect = internal_connect();
 	if (ret_connect) {
 		printf("INTERNAL: Can't establish connection to ext controller\n");
 
-		// TODO: stand and wait to connect again?
-
 		wb_robot_cleanup();
-		return EXIT_SUCCESS;
+		return EXIT_FAILURE;
 	}
 
 	wb_robot_step(0);
@@ -101,7 +98,7 @@ int main(int argc, char **argv) {
 		wb_to_ext_msg_t robot_data;
 		memset(&robot_data, 0, sizeof(wb_to_ext_msg_t));
 
-		// read values from devices
+		// Read values from devices
 		robot_data.sim_time = wb_robot_get_time();
 		robot_data.current_speed = wb_gps_get_speed(gps);
 		robot_data.steer_angle = wb_position_sensor_get_value(angle);
@@ -109,11 +106,7 @@ int main(int argc, char **argv) {
 		memcpy (&robot_data.compass, wb_compass_get_values(compass), sizeof(double) * 3);
 		memcpy (&robot_data.distance, wb_lidar_get_range_image(lidar), sizeof(float) * DIST_VECS);
 
-		// print_wb_to_ext(robot_data);
-
-
-		// send data
-		// printf("Sending test_msg on Webots Controller\n");
+		// Send data
 		internal_send(robot_data);
 
 		// receive response
@@ -123,17 +116,10 @@ int main(int argc, char **argv) {
 		// printf("receiving Message on Webots Controller\n");
 		internal_recv(&buf);
 
-		// printf("===========RECEIVED=========\n");
-		// printf("Steering:    %f\n", buf.heading);
-		// printf("Motor Speed: %f\n", buf.speed);
-		// printf("============================\n");
-
 		// Set motor speed and steering
 		wb_motor_set_position(steer, buf.heading);
 		wb_motor_set_velocity(motor, buf.speed);
-
 	}
-
 	wb_robot_cleanup();
 
 	return EXIT_SUCCESS;
