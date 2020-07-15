@@ -69,8 +69,6 @@ int main(int argc, char **argv) {
 	printf("SamplPer: %i\n", wb_lidar_get_sampling_period(lidar));
 	*/
 
-	int res = wb_lidar_get_horizontal_resolution(lidar);
-
 	printf("Starting Coms on Webots Controller\n");
 	int ret_connect = internal_connect();
 	if (ret_connect) {
