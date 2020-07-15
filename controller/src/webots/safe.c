@@ -127,7 +127,7 @@ int safety_check(init_to_ext_msg_t init_data, data_from_wb_msg_t data_from_wb, c
 
 	/***** Stop robot if very close to obstacle *****/
 	// Stop robot from moving very slowly towards very close obstacles
-	if (too_close_to_obstacle(distance, cmd_to_wb->speed, direction) == 1) {
+	if (too_close_to_obstacle(distance, cmd_to_wb->speed) == 1) {
 		cmd_to_wb->speed = 0;
 		action_denied = 1;
 		// Stops robot from "wiggling" into an obstacle, but makes training harder
@@ -172,11 +172,11 @@ int predict_angle(int direction, double speed, double steering) {
 
 	if (direction == FORWARDS) {
 		angle = (DIST_VECS - 1) / 2;
-		angle += (int) (STEERING_PREDICT * steering) * (1 + SPEED_PREDICT * speed/0.58);
+		angle += (int) (STEERING_PREDICT * steering) * (1 + SPEED_PREDICT * abs(speed/0.29));
 
 	} else if (direction == BACKWARDS) {
 		angle = 0;
-		angle += (int) (STEERING_PREDICT * steering) * (1 + SPEED_PREDICT * speed/0.58);
+		angle += (int) (STEERING_PREDICT * steering) * (1 + SPEED_PREDICT * abs(speed/0.29));
 
 	} else {
 		return (DIST_VECS - 1) / 2;
@@ -192,7 +192,7 @@ int predict_angle(int direction, double speed, double steering) {
  * lidar range. This leads to the robot not recognizing the obstacle and speeding
  * up again
  */
-int too_close_to_obstacle(float *distance, double cmd_speed, int direction) {
+int too_close_to_obstacle(float *distance, double cmd_speed) {
 
 	// Get averaged sensor data at the corners, frontside  and backside of the silhouette
 	float front_left  = condense_data(distance, 20, 127);
@@ -203,12 +203,12 @@ int too_close_to_obstacle(float *distance, double cmd_speed, int direction) {
 	float back_right  = condense_data(distance, 20, 320);
 
 	// Check whether an obstacle in movement direction is closer than allowed
-	if (direction == FORWARDS && cmd_speed < 0.0) {
+	if (cmd_speed < 0.0) {
 		if(front_left < CLOSEST_ALLOWED || front_right < CLOSEST_ALLOWED || front < CLOSEST_ALLOWED) {
 			// fprintf(stderr, "SAFE: Obstacle in front, cant drive forwards\n");
 			return 1; // deny action
 		}
-	} else if (direction == BACKWARDS && cmd_speed > 0.0) {
+	} else if (cmd_speed > 0.0) {
 		if(back_left < CLOSEST_ALLOWED || back_right < CLOSEST_ALLOWED || back < CLOSEST_ALLOWED) {
 			// fprintf(stderr, "SAFE: Obstacle in back, cant drive backwards\n");
 			return 1; // deny action
@@ -239,7 +239,7 @@ float condense_data(float *distance, int width, int angle) {
 	float sum = 0.0;
 	int angle_plus = angle + DIST_VECS;    // To facilitate traversing the array boundaries
 
-	for (int i = angle_plus - width/2; i <= angle_plus + width/2; i++) {
+	for (int i = angle_plus - width/2; i < angle_plus + (width+1)/2; i++) {
 		sum += distance[i%DIST_VECS];
 	}
 
