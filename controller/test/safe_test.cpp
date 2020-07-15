@@ -16,7 +16,6 @@ TEST(safe, check_for_tipover) {
 
 	data_from_wb.actual_gps[1] = 0.01;
 	ASSERT_FALSE(check_for_tipover(data_from_wb));
-
 }
 
 TEST(safe, touching) {
@@ -32,8 +31,6 @@ TEST(safe, touching) {
 	data_from_wb.distance[rand()%DIST_VECS] /= 2;
 
 	ASSERT_TRUE(touching(data_from_wb));
-
-
 }
 
 TEST(safe, compare_direction) {
@@ -134,16 +131,13 @@ TEST(safe, too_close_to_obstacle) {
 			ASSERT_FALSE(too_close_to_obstacle(distance, -0.1));
 			ASSERT_FALSE(too_close_to_obstacle(distance, 0.0));
 			ASSERT_FALSE(too_close_to_obstacle(distance, 0.0));
-
 		}
-
 		distance[i] *= 2;
 	}
 }
 
 
 TEST(safe, predict_angle) {
-
 
 	for (size_t i = 0; i < 20; i++) {
 		double speed = (double) (2*rand()-RAND_MAX)/RAND_MAX;
@@ -157,6 +151,4 @@ TEST(safe, predict_angle) {
 
 		ASSERT_EQ(predict_angle(STOPPED, speed, steering), 179);
 	}
-
-
 }

@@ -205,12 +205,12 @@ int too_close_to_obstacle(float *distance, double cmd_speed) {
 
 	// Check whether an obstacle in movement direction is closer than allowed
 	if (cmd_speed < 0.0) {
-		if(front_left < CLOSEST_ALLOWED || front_right < CLOSEST_ALLOWED || front < CLOSEST_ALLOWED) {
+		if (front_left < CLOSEST_ALLOWED || front_right < CLOSEST_ALLOWED || front < CLOSEST_ALLOWED) {
 			// fprintf(stderr, "SAFE: Obstacle in front, cant drive forwards\n");
 			return 1; // deny action
 		}
 	} else if (cmd_speed > 0.0) {
-		if(back_left < CLOSEST_ALLOWED || back_right < CLOSEST_ALLOWED || back < CLOSEST_ALLOWED) {
+		if (back_left < CLOSEST_ALLOWED || back_right < CLOSEST_ALLOWED || back < CLOSEST_ALLOWED) {
 			// fprintf(stderr, "SAFE: Obstacle in back, cant drive backwards\n");
 			return 1; // deny action
 		}
