@@ -12,15 +12,14 @@
 #include "webots/navi.h"
 #include "backend/backend_com.h"
 
-// The step size we want to in the webots world [in meter]
+// The step size we want to in the webots world [in meters]
 #define STEP_SIZE 0.5
 
-// The current target destination the drive function will drive us to.
-// It will a 2d vector on our "virtual" grid inside the webots world. So its a
-// always in the middle of a tile of size STEP_SIZE.
+// The current target destination the drive function will drive us to
+// Its a 2d vector on our "virtual" grid inside the webots world
 static float target[2];
 
-// The previous target. Needed to revert action in case of action denied.
+// The previous target, needed to revert action in case of action denied
 static float last_target[2];
 
 int discr_init() {
@@ -37,7 +36,8 @@ int discr_step(cmd_to_wb_msg_t *cmd_to_wb, cmd_from_bcknd_msg_t cmd_from_bcknd,
 
 	// Start where the robot currently is at
 	if (start == 1) {
-		// Use rounding to align the target to "nearest" point on "virtual" grid.
+		
+		// Use rounding to align the target to "nearest" point on "virtual" grid
 		target[0] = round_with_factor(data_to_bcknd.actual_gps[0], STEP_SIZE);
 		target[1] = round_with_factor(data_to_bcknd.actual_gps[1], STEP_SIZE);
 
@@ -46,15 +46,15 @@ int discr_step(cmd_to_wb_msg_t *cmd_to_wb, cmd_from_bcknd_msg_t cmd_from_bcknd,
 		last_target[1] = target[1];
 	}
 
-	// make sure we only do actions once per message
+	// Make sure we only do actions once per message
 	static unsigned long long last_msg_cnt = -1;
 	if (cmd_from_bcknd.msg_cnt != last_msg_cnt) {
 
-		// update last_target
+		// Update last_target in case we need to revert the move because of safety violations
 		last_target[0] = target[0];
 		last_target[1] = target[1];
 
-		// Do the move coming from backend by adjusting the target accordingly.
+		// Do the move coming from backend by adjusting the target accordingly
 		switch (cmd_from_bcknd.move) {
 			case UP:
 				target[1] += STEP_SIZE;
@@ -74,18 +74,20 @@ int discr_step(cmd_to_wb_msg_t *cmd_to_wb, cmd_from_bcknd_msg_t cmd_from_bcknd,
 				break;
 		}
 
+		// Save message count to for check above
 		last_msg_cnt = cmd_from_bcknd.msg_cnt;
-
 	}
 
-	(void) action_denied;
-	// The backend actually checks for safety violations. So we have no need for
-	// the action denied flag and reverting.
+	// When we did an illegal move and the backend did not disable the safety
+	// revert the move to the last "safe" move location
 	if (cmd_from_bcknd.disable_safety != 1 && action_denied != 0) {
-		printf("DISCR: Reverted from target [%.2f,%.2f] to [%.2f,%.2f]\n", target[0], target[1], last_target[0], last_target[1]);
+		printf("DISCR: Reverted from target [%.2f,%.2f] to [%.2f,%.2f]\n",
+		       target[0], target[1], last_target[0], last_target[1]);
 		target[0] = last_target[0];
 		target[1] = last_target[1];
 	}
 
+	// Let the navigate function navigate the robot to the destination
+	// It will return 1 when its done (has reached its destination)
 	return navigate(cmd_to_wb, data_to_bcknd, init_data, target);
 }
