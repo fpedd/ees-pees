@@ -8,12 +8,14 @@
 
 
 int wb_init_com(){
+
 	tcp_init();
 	tcp_accept();
 	return 0;
 }
 
 int wb_close(){
+	
 	tcp_close();
 	return 0;
 }
