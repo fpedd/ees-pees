@@ -1,5 +1,5 @@
 import sys
-sys.path.insert(0, '/home/ruili/github/ees-pees/backend')
+sys.path.insert(0, '../../backend')
 import numpy as np
 import os
 import stable_baselines
