@@ -7,6 +7,7 @@
 #include <float.h>
 
 #include "backend/backend_com.h"
+#include "webots/webot_worker.h"
 #include "silhouette.h"
 #include "util.h"
 #include "print.h"
