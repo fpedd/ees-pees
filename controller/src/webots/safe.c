@@ -231,9 +231,9 @@ int subtract_silhouette(float *distance) {
  */
 float condense_data(float *distance, int width, int angle) {
 
-	if (angle < 0 || angle > 359) {
-		fprintf(stderr, "SAFE: Invalid angle: %d\n", angle);
-		return 0.0;
+	if (angle < 0 || angle > 359 || width < 1 || width > 359) {
+		fprintf(stderr, "SAFE: Invalid angle or width\n");
+		return -1.0;
 	}
 
 	float sum = 0.0;
