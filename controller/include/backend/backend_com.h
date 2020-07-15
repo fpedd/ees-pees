@@ -31,7 +31,7 @@ extern const char* direction_type_str[];
 // DATA TO BACKEND
 // Packet that contains data that is send to the backend
 typedef struct {
-	unsigned long long msg_cnt;    // total number of messages TODO: (even) (internal)
+	unsigned long long msg_cnt;    // total number of messages (internal)
 	double time_stmp;              // time the message got send (internal)
 	float sim_time;                // actual simulation time in webots in seconds
 	float speed;                   // current speed of robot in webots [-1, 1]
@@ -44,10 +44,11 @@ typedef struct {
 	float distance[DIST_VECS];     // distance to the next object from robot prespective
 } __attribute__((packed)) data_to_bcknd_msg_t;
 
+
 // COMMAND FROM BACKEND
 // Packet that contains command and command type from backend
 typedef struct {
-	unsigned long long msg_cnt;    // total number of messages TODO: (odd) (internal)
+	unsigned long long msg_cnt;    // total number of messages (internal)
 	double time_stmp;              // time the message got send (internal)
 	int every_x;                   // number of timesteps before new data is send
 	int disable_safety;            // do not use safety in the external controller
