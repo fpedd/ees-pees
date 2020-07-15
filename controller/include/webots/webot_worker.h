@@ -4,6 +4,8 @@
 #include "util.h"
 #include "wb_com.h"
 
+#define MAX_SPEED 0.29
+
 void *webot_worker(void *ptr);
 
 int webot_format_wb_to_bcknd(data_to_bcknd_msg_t* data_to_bcknd,

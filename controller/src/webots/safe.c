@@ -172,11 +172,11 @@ int predict_angle(int direction, double speed, double steering) {
 
 	if (direction == FORWARDS) {
 		angle = (DIST_VECS - 1) / 2;
-		angle += (int) (STEERING_PREDICT * steering) * (1 + SPEED_PREDICT * abs(speed/0.29));
+		angle += (int) (STEERING_PREDICT * steering) * (1 + SPEED_PREDICT * abs(speed/MAX_SPEED));
 
 	} else if (direction == BACKWARDS) {
 		angle = 0;
-		angle += (int) (STEERING_PREDICT * steering) * (1 + SPEED_PREDICT * abs(speed/0.29));
+		angle += (int) (STEERING_PREDICT * steering) * (1 + SPEED_PREDICT * abs(speed/MAX_SPEED));
 
 	} else {
 		return (DIST_VECS - 1) / 2;
