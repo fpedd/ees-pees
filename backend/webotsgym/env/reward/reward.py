@@ -19,7 +19,7 @@ class WbtReward():
     def check_done(self):
         if self.env.get_target_distance() < self.targetband:
             return True
-        if self.env.iterations % 100000 == 0:
+        if self.env.steps_in_run % 100000 == 0:
             return True
         return False
 

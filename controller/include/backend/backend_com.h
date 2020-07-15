@@ -31,28 +31,29 @@ extern const char* direction_type_str[];
 // DATA TO BACKEND
 // Packet that contains data that is send to the backend
 typedef struct {
-	unsigned long long msg_cnt;    // total number of messages (even) (internal)
+	unsigned long long msg_cnt;    // total number of messages (internal)
 	double time_stmp;              // time the message got send (internal)
 	float sim_time;                // actual simulation time in webots in seconds
 	float speed;                   // current speed of robot in webots [-1, 1]
-	float actual_gps[2];           // coordiantes where the robot is
+	float actual_gps[2];           // coordinates where the robot is
 	float heading;                 // direction the front of the robot points in [-1, 1]
-	float steer_angle;             // current angle the of the steering apparatus [-1, 1]
-	unsigned int touching;         // is the robot touching something?
+	float steer_angle;             // current angle of the steering apparatus [-1, 1]
+	unsigned int touching;         // is the robot touching something or tipped over
 	unsigned int action_denied;    // did we have to take over control for saftey reasons
 	unsigned int discr_act_done;   // did the robot complete its discrete action
 	float distance[DIST_VECS];     // distance to the next object from robot prespective
 } __attribute__((packed)) data_to_bcknd_msg_t;
 
+
 // COMMAND FROM BACKEND
 // Packet that contains command and command type from backend
 typedef struct {
-	unsigned long long msg_cnt;    // total number of messages (odd) (internal)
+	unsigned long long msg_cnt;    // total number of messages (internal)
 	double time_stmp;              // time the message got send (internal)
 	int every_x;                   // number of timesteps before new data is send
 	int disable_safety;            // do not use safety in the external controller
 	enum response_request request; // type of response the backend awaits to the packet
-	enum discrete_move move;       // ignore everything else and do a discrete_action
+	enum discrete_move move;       // ignore command parameters and do a discrete_action
 	enum direction_type dir_type;  // heading or steering command from backend
 	float heading;                 // the direction the robot should move in next [-1, 1]
 	float speed;                   // the speed the robot should drive at [-1, 1]

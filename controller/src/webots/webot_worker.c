@@ -111,7 +111,7 @@ int webot_format_wb_to_bcknd(data_to_bcknd_msg_t* data_to_bcknd,
 
 	// cast sim time and robot speed to float, scale speed to [-1, 1]
 	data_to_bcknd->sim_time = (float) data_from_wb.sim_time;
-	data_to_bcknd->speed = (float) speed_with_dir(data_from_wb) / 0.29;
+	data_to_bcknd->speed = (float) speed_with_dir(data_from_wb) / MAX_SPEED;
 
 	// Calculate projections from 3D gps/compass data to backend format
 	// (x, z coorinates represent horizontal plane in webots system)
@@ -160,11 +160,14 @@ float speed_with_dir(data_from_wb_msg_t data_from_wb) {
 	static double last_gps[2] = {data_from_wb.actual_gps[0], data_from_wb.actual_gps[2]};
 
 	// Get normalized trajectory vector from gps
-	double len = sqrt(pow(data_from_wb.actual_gps[0], 2)
-	                + pow(data_from_wb.actual_gps[2], 2));
 	double traj[2];
-	traj[0] = (data_from_wb.actual_gps[0] - last_gps[0]) / len;
-	traj[1] = (data_from_wb.actual_gps[2] - last_gps[1]) / len;
+	traj[0] = (data_from_wb.actual_gps[0] - last_gps[0]);
+	traj[1] = (data_from_wb.actual_gps[2] - last_gps[1]);
+
+	double len = sqrt(pow(traj[0], 2) + pow(traj[1], 2));
+
+	traj[0] /= len;
+	traj[1] /= len;
 
 	// Safe prev gps
 	last_gps[0] = data_from_wb.actual_gps[0];
