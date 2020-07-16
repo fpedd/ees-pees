@@ -4,7 +4,6 @@ import numpy as np
 import os
 import stable_baselines
 from stable_baselines.common.env_checker import _check_spaces, _check_obs
-from stable_baselines.common.env_checker import check_env
 import gym
 from gym import spaces
 
@@ -17,6 +16,7 @@ def check_reset_step(env: gym.Env, observation_space: spaces.Space, action_space
     obs_current = env.reset()
     assert (obs_pre[1:8] != obs_current[1:8]).any()
     assert (obs_pre[10:] != obs_current[10:]).any()
+
     for i in range(3):
         action = action_space.sample()
         obs_next, reward, done, info = env.step(action)
@@ -45,6 +45,7 @@ def check_run(env:gym.Env, action_space: spaces.Space):
 def check_webotenv(env: gym.Env):
     assert isinstance(env, gym.Env)
     _check_spaces(env)
+
     observation_space = env.observation_space
     action_space = env.action_space
     assert isinstance(observation_space, spaces.Box)
@@ -52,7 +53,7 @@ def check_webotenv(env: gym.Env):
         assert np.all(np.abs(action_space.low) == np.abs(action_space.high))
         assert np.all(np.abs(action_space.low) <= 1)
         assert np.all(np.abs(action_space.high) <= 1)
-    check_env(env)
+
     check_reset_step(env, observation_space, action_space)
     env.reset()
     check_run(env, action_space)

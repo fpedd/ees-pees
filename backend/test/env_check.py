@@ -1,12 +1,12 @@
 if __name__ == "__main__":
     import sys
-    sys.path.insert(0, '..')
+    sys.path.insert(0, '../../backend')
     from stable_baselines.common.env_checker import check_env
-    import webotsgym.environment as environment
-    import webotsgym.automate as automate
-    ctr = automate.ExtCtrl()
+    import webotsgym as wg
+    
+    ctr = wg.com.automate.ExtCtrl()
     ctr.init()
-    env = environment.WebotsEnv(request_start_data=False)
+    env = wg.WbtGym(request_start_data=False)
     check_env(env)
     ctr.close()
     print("========== END OF TEST ==========")
