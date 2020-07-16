@@ -54,25 +54,25 @@ TEST(pid, run) {
 	pid_ctrl_t pid_2;
 	pid_init(&pid_2, 1.0, 2.0, 5.0, -100.0, 100.0, 0.0, WRAP);
 	ASSERT_EQ(pid_run(&pid_2, 1.0, 1.0, 2.0, &out), 0);
-	ASSERT_NEAR(out, -13.0, 1.0e-10);
+	ASSERT_NEAR(out, 7.0, 1.0e-10);
 
 	// test pid compute 2
 	pid_ctrl_t pid_3;
 	pid_init(&pid_3, 1.0, 2.0, 3.0, -100.0, 100.0, 0.0, WRAP);
 	ASSERT_EQ(pid_run(&pid_3, 1.0, -1.0, 1.0, &out), 0);
-	ASSERT_NEAR(out, -9.0, 1.0e-10);
+	ASSERT_NEAR(out, -3.0, 1.0e-10);
 
 	// test pid compute 3
 	pid_ctrl_t pid_4;
 	pid_init(&pid_4, 1.0, 2.0, 3.0, -100.0, 100.0, 0.0, WRAP);
 	ASSERT_EQ(pid_run(&pid_4, 0.01, 0.673, 0.123, &out), 0);
-	ASSERT_NEAR(out, -36.339000701904297, 1.0e-10);
+	ASSERT_NEAR(out, 37.461002349853516, 1.0e-10);
 
 	// test pid compute 4
 	pid_ctrl_t pid_5;
 	pid_init(&pid_5, 1.0, 2.0, 3.0, -100.0, 100.0, 0.0, NORM);
 	ASSERT_EQ(pid_run(&pid_5, 1.0, 1.0, 5.0, &out), 0);
-	ASSERT_NEAR(out, -27.0, 1.0e-10);
+	ASSERT_NEAR(out, 3.0, 1.0e-10);
 	ASSERT_EQ(pid_run(&pid_5, 1.0, 1.0, 5.0, &out), 0);
 	ASSERT_NEAR(out, -20.0, 1.0e-10);
 	ASSERT_EQ(pid_run(&pid_5, 1.0, 1.0, 5.0, &out), 0);
@@ -86,12 +86,12 @@ TEST(pid, reset) {
 
 	pid_init(&pid, 0.0, 2.0, 3.0, -100.0, 100.0, 0.0, WRAP);
 	pid_run(&pid, 1.0, 1.0, 2.0, &out);
-	ASSERT_NEAR(out, -8.0, 1.0e-10);
+	ASSERT_NEAR(out, 4.0, 1.0e-10);
 
 	// reset should reset
 	pid_reset(&pid);
 	pid_run(&pid, 1.0, 1.0, 2.0, &out);
-	ASSERT_NEAR(out, -8.0, 1.0e-10);
+	ASSERT_NEAR(out, 4.0, 1.0e-10);
 }
 
 
