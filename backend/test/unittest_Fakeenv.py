@@ -10,7 +10,7 @@ import random
 class TestFakeEnv(unittest.TestCase):
     
     def setUp(self):
-        self.env =WbtGymFake(N=10, num_of_sensors=4, obstacles_each=4,
+        self.env =WbtGymFake(N=10, num_of_sensors=4, obstacles_num=4,
                  step_range=(1, 1), obs_len=1)
         self.N = 10
 
@@ -22,7 +22,7 @@ class TestFakeEnv(unittest.TestCase):
             env = self.env
             self.assertEqual(self.env.field.shape, (self.N,self.N))
             assert type(env.action_space) is gym.spaces.discrete.Discrete
-            self.assertEqual(env.obs.get(env).shape, (9,))
+            self.assertEqual(env.obs.get(env).shape, (10,))
             self.assertEqual(len(env.gps_actual ), 2)
             self.assertEqual(len(env.gps_target ), 2)
             

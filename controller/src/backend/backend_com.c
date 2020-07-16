@@ -18,7 +18,7 @@ static unsigned int msg_cnt;
 static float link_qual;
 
 // Some string arrays that make the prints look nicer
-const char* response_request_str[] = {"UNDEF", "COMMAND_ONLY", "REQUEST_ONLY", "COMMAND_REQUEST"};
+const char* response_request_str[] = {"UNDEF", "COMMAND_ONLY", "REQUEST_ONLY", "COMMAND_REQUEST", "GRID_MOVE"};
 const char* discrete_move_str[] = {"NONE", "UP", "LEFT", "DOWN", "RIGHT"};
 const char* direction_type_str[] = {"STEERING", "HEADING"};
 
@@ -29,7 +29,7 @@ int com_init() {
 	// Start with message 0
 	msg_cnt = 0;
 
-	// Dont know anything about the link at this point, so start in the middle 
+	// Dont know anything about the link at this point, so start in the middle
 	link_qual = 0.5;
 
 	return 0;

@@ -22,21 +22,21 @@ static int tcp_socket_fd;
 // Returns Socket describtor
 int tcp_init() {
 
-	// init structs for server_info and getaddrinfo()
+	// Init structs for server_info and getaddrinfo()
 	struct addrinfo hints, *server_info;
 	memset(&hints, 0, sizeof(hints));
 	hints.ai_family = AF_UNSPEC;
 	hints.ai_socktype = SOCK_STREAM;
 	hints.ai_flags = AI_PASSIVE;
 
-	//fill server_info struct with parameters
+	// Fill server_info struct with parameters
 	int stat_addrinfo = getaddrinfo(NULL, PORT, &hints, &server_info);
 	if (stat_addrinfo != 0) {
 		fprintf(stderr, "ERROR: tcp cant get addrinfo %s\n", strerror(errno));
 		return stat_addrinfo;
 	}
 
-	//set up socket
+	// Set up socket
 	tcp_socket_fd = socket(server_info->ai_family, server_info->ai_socktype, server_info->ai_protocol);
 	if (tcp_socket_fd < 0) {
 		fprintf(stderr, "ERROR: tcp open socket %s\n", strerror(errno));
@@ -49,7 +49,7 @@ int tcp_init() {
 		return -3;
 	}
 
-	//bind socket to address
+	// Bind socket to address
 	int bind_stat = bind(tcp_socket_fd, server_info->ai_addr, server_info->ai_addrlen);
 	if (bind_stat != 0) {
 		fprintf(stderr, "ERROR: tcp bind %s\n", strerror(errno));
@@ -64,19 +64,18 @@ int tcp_init() {
 // Accecpt incoming Client (Robot)
 int tcp_accept() {
 
-	//client socket
+	// Client socket
 	struct sockaddr_storage their_addr;
 	socklen_t addr_size = sizeof(their_addr);
 
-	//listen for connections
+	// Listen for connections
 	int listen_stat = listen(tcp_socket_fd, 5);
 	if(listen_stat != 0) {
 		fprintf(stderr, "ERROR: tcp cant listen %s\n", strerror(errno));
 		return listen_stat;
 	}
 
-	//accept new connection with client
-	// printf("TCP: Waiting for webot to connect...\n");
+	// Accept new connection with client
 	tcp_socket_fd = accept(tcp_socket_fd, (struct sockaddr *)&their_addr, &addr_size);
 	if(tcp_socket_fd < 0) {
 		fprintf(stderr, "ERROR: tcp cant accept %s\n", strerror(errno));
@@ -107,6 +106,7 @@ int tcp_recv (char* buf, int buf_size) {
 }
 
 int tcp_close () {
+	
 	close(tcp_socket_fd);
 	return 0;
 }

@@ -17,7 +17,7 @@ BCKND_SCRIPT=/backend/james.py    # <- continous and discrete action example
 # RIP Schnitty :(
 
 ### Terminal Emulator you want to use
-TERM_EM=gnome-terminal\ -x
+TERM_EM=gnome-terminal\ --
 # TERM_EM=xterm\ -e
 
 ### Uncomment this if you want to run the processes detached

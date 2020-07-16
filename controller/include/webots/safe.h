@@ -19,7 +19,7 @@ int calc_hitbox(float *hitbox, int angle);
 
 int predict_angle(int direction, double speed, double steering);
 
-int too_close_to_obstacle(float *distance, double cmd_speed, int direction);
+int too_close_to_obstacle(float *distance, double cmd_speed);
 
 int subtract_silhouette(float *distance);
 

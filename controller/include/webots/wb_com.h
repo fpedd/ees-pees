@@ -7,9 +7,9 @@
 // DATA FROM WEBOT
 // Packet that contains all sensor data received from robot
 typedef struct {
-	double sim_time;              // current simulation time
-	double current_speed;         // current robot speed
-	double steer_angle;           // current angle the of the steering apparatus [-1, 1]
+	double sim_time;              // current simulation time in seconds
+	double current_speed;         // current robot speed (without direction)
+	double steer_angle;           // current angle of the steering apparatus [-1, 1]
 	double actual_gps[3];         // coordinates where the robot is
 	double compass[3];            // direction the front of the robot points in
 	float distance[DIST_VECS];    // distance to the next object from robot perspective
@@ -19,7 +19,7 @@ typedef struct {
 // Packet that contains the command that is send to robot
 typedef struct {
 	double heading;               // the direction the robot should move in next; between -1 and 1
-	double speed;                 // the speed the robot should drive at; between -1 and 1
+	double speed;                 // the speed the robot should drive at; between -22 (forwards) and 22 (backwards)
 } __attribute__((packed)) cmd_to_wb_msg_t;
 
 // INIT DATA
