@@ -6,13 +6,9 @@
     + [Python Packages](#python-packages)
     + [Stable-Baselines](#stable-baselines)
   * [Usage Example](#usage-example)
-    + [Model Training](#model-training)
-      - [Fake environment](#fake-environment)
-      - [Webots grid environment](#webots-grid-environment)
-      - [Webots continuous environment](#webots-continuous-environment)
-    + [Model Appilication](#model-appilication)
-      - [Webots grid environment](#webots-grid-environment-1)
-      - [Webots continuous environment](#webots-continuous-environment-1)
+    + [Manual Control](#model-training)
+    + [Automated Training and Application](#model-appilication)
+
 
 
 
@@ -21,9 +17,9 @@
 ### OS
 Ubuntu 18.04
 ### Webots
-A tutorial on how to install webots can be found [here](https://cyberbotics.com/doc/guide/installation-procedure).
+A tutorial on how to install Webots can be found [here](https://cyberbotics.com/doc/guide/installation-procedure).
 
-In order for our software (compiler, python, etc.) to know where your webots installation is located at, you will need to set an environment variable. The name of the environment variable you need to set is: `WEBOTS_HOME`. It should point to your webots installation. If you installed webots the "normal" way (see below), setting the variable will look like this: `export WEBOTS_HOME=/usr/local/webots`.
+In order for our software to know where your Webots installation is located at, you will need to set an environment variable. The name of the environment variable you need to set is: `WEBOTS_HOME`. It should point to your Webots installation. If you installed Webots the "normal" way (see below), setting the variable will look like this: `export WEBOTS_HOME=/usr/local/webots`.
 
 In order to not always have to type and execute that in your terminal, you can add this command to the bottom of your `.bashrc` file. You can find this file in your home directory. The contents of the `.bashrc` get executed every time you open a new terminal.
 
@@ -34,10 +30,10 @@ The bottom of your `.bashrc` should look something like this.
 # Webots Installation
 export WEBOTS_HOME=/usr/local/webots
 ```
-Please open webots once and do the setup before continuing. 
+Please open Webots once and do the setup before continuing. 
 
 ### Python Packages
-To use our software, you'll need to install several python packages. Please use `requirements.txt` like this:
+To use our software, you'll need to install several python packages. Please use `requirements.txt` to install the python packeages:
 ```
 pip freeze > requirements.txt
 pip install -r requirements.txt
@@ -57,89 +53,31 @@ A detailed document of Stable-Baselines can be found [here](https://stable-basel
 
 
 ## Usage Example
-[discription for run.sh and kill.sh,balabalabalaba]
+### Manual Control
 
-See the `UseMe` directory.
-* Run ` ` to train a model in fake environment
-* Run `UseMe/model_training_grid_world.ipynb` to train a model in Webots grid environment
-* Run `UseMe/model_training_continuous_world.ipynb` to train a model in Webots continuous environment
-* Run `UseMe/model_application_grid_world.ipynb` to applicate a model in Webots grid environment
-* Run `UseMe/model_application_continuous_world.ipynb` to applicate a model in Webots continuous environment
+To start the communication stack, you can run `./run.sh` in the root directory of the repository. This should compile the Internal and the External Controller. After that is done, it will start the External Controller, then the Webots Environment with the Internal Controller, and after that is the Python Backend.
 
-We have already trained several models in `UseMe/model` directory for application. The models in `UseMe/model/grid` directory can be applied in Webots grid environment, and `UseMe/model/grid` directory includes the models for Webots continuous environment.
+You will see three corresponding terminals open with the three processes mentioned above run from each terminal. Inside the top terminal, the Python Backend should be running.
 
-### Model Training
+You are able to drive the robot by your own in the discrete or continuous action space. You can use the space bar to switch between discrete and continuous action spaces. With the keyboard, you can increase or decrease the speed change the heading in the continuous action space by the default. In the discrete action space, every keypress will trigger an action in the respective direction.
 
-#### Fake environment
-Before training in fake environment you can setup these parameters:
-* `...`
+To stop all processes, just run `./kill.sh`. This will kill all three processes.
 
-You can create your own reward function, these following variables and methods are for your use：
-* `...`
+Before you will be able to run the scripts you may need to run:  
+`chmod +x kill.sh`  
+`chmod +x run.sh`
 
-The model trained in fake environment can be transferred to apply in Webots grid environment.
-#### Webots grid environment
-Run `UseMe/model_training_grid_world.ipynb` to train a model in Webots grid environment. Before training in Webots grid environment you can setup these parameters:
-* `config.world_size` , setup the size of Webots environments for training. For example: `config.world_size = 8` will setup a square map of size 8x8 in Webots.
-* `config.num_obstacles`, setup the number of obstacles. Each obstacle is a block of size 1x1.
-* `config.sim_mode`, used to setup the speed of the simulation of Webots. 
-`config.sim_mode = wg.config.SimSpeedMode.NORMAL`, run the simulation in the Real-Time mode.
-`config.sim_mode = wg.config.SimSpeedMode.RUN`, run the simulation as fast as possible using all the available CPU power. 
-`config.sim_mode = wg.config.SimSpeedMode.FAST`, run the simulation as fast as possible without the graphics rendering, hence the 3d window is black.
-* `time_steps`, setup the total number of samples to train on. It is recommended that you set this parameter to greater than 100000, then you will get a relatively stable model.
-* `model_name`, name the model for saving. The model will be saved in `UseMe/model/grid` directory after training complete.
+### Automated Training and Application
 
-You can create your own reward function, these following variables and methods are for your use：
-* `self.env.get_target_distance()`, some description balabalabala
-* `self.env.gps_visited_count`
-* `self.env.state.touching`
-* `self.targetband`
-* `self.state.action_denied`
-* `...`
+In the `UseMe` directory, there are several notebooks for you to train and apply the model on the Webots environment.
 
+To train a model you can use the notebooks below:
+* `UseMe/model_training_fake_environment.ipynb`, train a grid model in fake environment. Since the fake environment is a mapping of Webots grid environment, the model can be used in Webots grid environment.
+* `UseMe/model_training_grid_world.ipynb`, train a grid model in Webots grid environment. The model can be used in Webots grid environment.
+* `UseMe/model_training_continuous_world.ipynb`, train a grid model in Webots continuous environment. The model can be used in Webots continuous environment.
 
+To apply a trained model to Webots environment, you can use these two notebooks:
+* `UseMe/model_application_grid_world.ipynb`
+* `UseMe/model_application_continuous_world.ipynb`
 
-
-#### Webots continuous environment
-Run `UseMe/model_training_continuous_world.ipynb` to train a model in Webots continuous environment. The setup is similar with the training in Webots grid environment. You can follow the guide in Webots grid environment except:
-* `time_steps`, setup the total number of samples to train on. It is recommended that you set this parameter to greater than ???, then you will get a relatively stable model.
-* `model_name`, name the model for saving. The model will be saved in `UseMe/model/continuous` directory after training complete.
-
-And for rewards there are also some difference:
-* `...`
-### Model Appilication
-After training your own model, you can apply it to Webots environment. Besides, you can use our trained model in `UseMe/mode` directory. The model can only be used in the corresponding environment.
-#### Webots grid environment
-Run `UseMe/model_application_grid_world.ipynb` to applicate a model in Webots grid environment. Before application in Webots grid environment you need to setup these parameters:
-* `config.world_size` , setup the size of Webots environments for training. For example: `config.world_size = 8` will setup a square map of size 8x8 in Webots.
-* `config.num_obstacles`, setup the number of obstacles. Each obstacle is a block of size 1x1.
-* `config.sim_mode`, used to setup the speed of the simulation of Webots. 
-`config.sim_mode = wg.config.SimSpeedMode.NORMAL`, run the simulation in the Real-Time mode.
-`config.sim_mode = wg.config.SimSpeedMode.RUN`, run the simulation as fast as possible using all the available CPU power. 
-`config.sim_mode = wg.config.SimSpeedMode.FAST`, run the simulation as fast as possible without the graphics rendering, hence the 3d window is black.
-* `model_name`, name of the model you use. The model will be loaded from `UseMe/model/grid` directory.
-* ` num_of_steps`, setup the step limit for one environment. For example, `num_of_steps = 100` means the agent must reach the target area within 100 steps. Otherwise, this environment will be judged as unsolved.
-* ` num_of_envs`, setup the number of environments for model application. 
-
-result figure discription balabalabala
-[figure]
-[figure]
-
-You can also compare several models with changing the model loading part like this:
-```python
-model1_name = "Model1Name"
-model2_name = "Model2Name"
-model1 = PPO1.load("model/grid/{}".format(model1_name))
-model2 = PPO1.load("model/grid/{}".format(model2_name))
-models = [model1, model2]
-names = ["Model1Name","Model2Name"]
-```
-
-This is a sample of figure when comparing serveral models.
-[figure]
-#### Webots continuous environment
-Run `UseMe/model_application_continuous_world.ipynb` to applicate a model in Webots continuous environment. The setup is similar with the application in Webots grid environment. You can follow the guide in Webots grid environment except:
-* `config.sim_step_every_x`, balabalabala
-* `config.relative_action`
-* `config.direction_type`
-* `num_of_steps`
+We have already trained a excellent model `UseMe/model/grid/PPO_lam3+vs_500k.zip` for Webots grid environment. Highly recommand to use it in `UseMe/model_application_grid_world.ipynb`.
