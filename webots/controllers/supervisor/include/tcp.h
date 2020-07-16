@@ -11,6 +11,4 @@ int tcp_recv(char* buf, int buf_size);
 int tcp_close();
 
 
-
-
 #endif // TCP_H

@@ -1,11 +1,9 @@
-
 #include <webots/robot.h>
 #include <webots/supervisor.h>
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-
 
 #include "sv_functions.h"
 #include "sv_com.h"
@@ -31,13 +29,12 @@ int main() {
 		com_ret = sv_connect();
 		if (com_ret) {
 			fprintf(stderr, "SUPERVISOR: Can't connect to backend\n");
-			fprintf(stderr, "SUPERVISOR: Retrying to connect...");
+			fprintf(stderr, "SUPERVISOR: Retrying to connect...\n");
 			sleep(RECONNECT_WAIT_TIME_S);
 			continue;
 		}
 
 		while (recv_buffer.function_code != START && com_ret != -1) {
-
 			com_ret = sv_recv(&recv_buffer);
 		}
 
@@ -53,10 +50,12 @@ int main() {
 
 		sv_simulation_start(world);
 
+		// Webots simulation loop
 		while (wb_robot_step(0) != -1 && com_ret != -1) {
 
 			com_ret = sv_recv(&recv_buffer);
 
+			// Routine on receiving a "START" packet: setup world
 			if (recv_buffer.function_code == START) {
 
 				sv_simulation_stop();
@@ -73,6 +72,7 @@ int main() {
 
 				sv_simulation_start(world);
 
+			// Routine on receiving a "RESET" packet: generate with new seed
 			} else if (recv_buffer.function_code == RESET) {
 
 				sv_simulation_stop();
@@ -87,26 +87,27 @@ int main() {
 
 				sv_simulation_start(world);
 
+			// Routine on receiving a "CLOSE" packet: close environment and connection
 			} else if (recv_buffer.function_code == CLOSE) {
 
 				wb_supervisor_simulation_quit(EXIT_SUCCESS);
 				connection = 0;
-				break; //quit should also break the while loop TODO improve comment
+				break;
 			}
-		};
+		}
 
 		sv_simulation_stop();
 
 		if (com_ret == -1) {
-			fprintf(stderr, "ERROR(supervisor_com): Trying to reconnect...");
+			fprintf(stderr, "ERROR(supervisor_com): Trying to reconnect...\n");
 		}
 
-		sv_close();    //close tcp socket
+		sv_close();
 
 		sv_world_clear(world);
 		sv_simulation_cleanup(world);
 	}
-	
+
 	wb_robot_cleanup();
 
 	return EXIT_SUCCESS;

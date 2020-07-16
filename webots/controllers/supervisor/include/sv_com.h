@@ -5,23 +5,23 @@
 
 enum function_code {
 	FUNC_UNDEF = -1,
-    NO_FUNCTION = 0,
-    START = 1,
-    RESET = 2,
-    CLOSE = 3
+	NO_FUNCTION = 0,
+	START = 1,
+	RESET = 2,
+	CLOSE = 3
 };
 
 enum return_code {
-    RET_UNDEF = -1,
-    SUCCESS = 0,
-    ERROR = 1
+	RET_UNDEF = -1,
+	SUCCESS = 0,
+	ERROR = 1
 };
 
 // supervisor --> backend
 typedef struct {
-	enum return_code return_code;   // return_code [enum return_code]
-	int sim_time_step;              // simulation time_step in ms [int]
-	float target[2];                // target position [float[2]]
+	enum return_code return_code;     // return_code [enum return_code]
+	int sim_time_step;                // simulation time_step in ms [int]
+	float target[2];                  // target position [float[2]]
 } __attribute__((packed)) sv_to_bcknd_msg_t;
 
 // supervisor <-- backend

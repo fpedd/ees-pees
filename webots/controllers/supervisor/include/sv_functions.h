@@ -11,19 +11,19 @@ enum sv_sim_mode {
 	FAST   = 2
 };
 
-
 typedef struct {
-	int num_obstacles;                       // number of obstacles
-	int size;                                // size in blocks
-	double scale;                            // size of each block in webots coordinates
-	double start[2];                         // starting coordinates
-	double target[2];                        // target coordinates
-	enum sv_sim_mode mode;                   // simulation speed
-	WbNodeRef robot_node;                    // TODO: ??
-	WbFieldRef target_translation_field;     // TODO: ??
-	WbFieldRef children_field;               // TODO: ??
-	int timestep;                            // length of a timestep in ms
+	int num_obstacles;                    // number of obstacles
+	int size;                             // size in blocks
+	double scale;                         // size of each block in webots coordinates
+	double start[2];                      // starting coordinates
+	double target[2];                     // target coordinates
+	enum sv_sim_mode mode;                // simulation speed
+	WbNodeRef robot_node;                 // reference to robot node
+	WbFieldRef target_translation_field;  // reference to modify target position
+	WbFieldRef children_field;            // reference to the obstacles group children
+	int timestep;                         // length of a timestep in ms
 } sv_world_def;
+
 
 double sv_to_coord(sv_world_def *world, int xy);
 

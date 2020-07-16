@@ -18,8 +18,8 @@
 
 static int tcp_socket_fd;
 
-//Sets up socket and connects to server with address in met
-//returns socket_fd
+// Sets up socket and connects to server with address in met
+// Returns socket_fd
 int tcp_connect() {
 
 	struct addrinfo hints, *server_info;
@@ -33,14 +33,14 @@ int tcp_connect() {
 		return -1;
 	}
 
-	//set up socket for client
+	// Set up socket for client
 	tcp_socket_fd = socket(server_info->ai_family, server_info->ai_socktype, server_info->ai_protocol);
 	if (tcp_socket_fd < 0) {
 		fprintf(stderr, "ERROR(tcp): setup socket: %s'\n", strerror(errno));
 		return -2;
 	}
 
-	//connect client to server
+	// Connect client to server
 	int connect_stat = connect(tcp_socket_fd, server_info->ai_addr, server_info->ai_addrlen);
 	if (connect_stat != 0) {
 		fprintf(stderr, "ERROR(tcp): connect to server: %s'\n", strerror(errno));
@@ -73,6 +73,7 @@ int tcp_recv (char* buf, int buf_size) {
 }
 
 int tcp_close () {
+
 	close(tcp_socket_fd);
 	return 0;
 }

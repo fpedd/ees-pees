@@ -3,8 +3,7 @@
 #include <webots/robot.h>
 #include <webots/supervisor.h>
 
-#define _USE_MATH_DEFINES
-//uncomment to disable assertions
+// Uncomment to disable assertions
 // #define NDEBUG
 
 #include <math.h>
@@ -15,23 +14,23 @@
 #include "util.h"
 
 #define SUPERVISOR_ROBOT_HEIGHT_OFFSET 0.02
-#define SUPERVISOR_MIN_SCALE 0.25 //~0.17 would be the size of robot
+#define SUPERVISOR_MIN_SCALE 0.25 // ~0.17 would be the size of robot
 
 
 /*
  * Calculates the center of a checker field
  */
-double sv_to_coord(sv_world_def *world, int xy) {
+double sv_to_coord(sv_world_def *world, int x) {
 
-	return xy * world->scale + 0.5 * world->scale;
+	return x * world->scale + 0.5 * world->scale;
 }
 
 /*
  * Calculates the internal coordinate of a checker field given a Webots coordinate
  */
-int sv_from_coord(sv_world_def *world, double xy) {
+int sv_from_coord(sv_world_def *world, double x) {
 
-	return xy / world->scale;
+	return x / world->scale;
 }
 
 /*
@@ -41,9 +40,9 @@ void sv_obstacle_put(sv_world_def *world, int x, int y, int id) {
 
 	double coord[3];
 
-	coord[0] = sv_to_coord(world, x);	//x in Webots
-	coord[1] = sv_to_coord(world, 0);	//y in Webots
-	coord[2] = sv_to_coord(world, y);	//z in Webots
+	coord[0] = sv_to_coord(world, x); // x in Webots
+	coord[1] = sv_to_coord(world, 0); // y in Webots
+	coord[2] = sv_to_coord(world, y); // z in Webots
 
 	WbNodeRef obstacle_node = wb_supervisor_field_get_mf_node(world->children_field, id);
 	WbFieldRef obstacle_translation_field = wb_supervisor_node_get_field(obstacle_node, "translation");
@@ -102,9 +101,9 @@ void sv_obstacle_spawn(sv_world_def *world) {
 	double coord[3], scale[3];
 
 	 // Spawn outside of the grid
-	coord[0] = -world->scale;			//x in Webots
-	coord[1] = sv_to_coord(world, 0);	//y in Webots
-	coord[2] = -world->scale;			//z in Webots
+	coord[0] = -world->scale;         // x in Webots
+	coord[1] = sv_to_coord(world, 0); // y in Webots
+	coord[2] = -world->scale;         // z in Webots
 
 	scale[0] = world->scale;
 	scale[1] = world->scale;
@@ -129,7 +128,7 @@ void sv_world_init(sv_world_def *world, int world_size, double scale, int num_ob
 	// Assert inputs
 	assert(world_size > 0 && scale >= SUPERVISOR_MIN_SCALE);
 	assert(num_obstacles >= 0 && num_obstacles <= world_size * world_size);
-	assert(target[0] > 0 && target[0] < world_size && target[1] > 0 && target[1] < world_size); //assert target in arena
+	assert(target[0] > 0 && target[0] < world_size && target[1] > 0 && target[1] < world_size); // Assert target in arena
 
 	// Init struct
 	world->size          = world_size;
@@ -144,7 +143,7 @@ void sv_world_init(sv_world_def *world, int world_size, double scale, int num_ob
 	WbFieldRef arena_translation_field = wb_supervisor_node_get_field(arena_node, "translation");
 
 	double size_vec[2]        = {world->size*world->scale, world->size*world->scale};
-	double scale_vec[2]       = {2*world->scale, 2*world->scale}; //2* factor only for checkered grid alignment
+	double scale_vec[2]       = {2*world->scale, 2*world->scale}; // 2* factor only for checkered grid alignment
 	double translation_vec[3] = {world->size*world->scale/2.0, 0.0, world->size*world->scale/2.0};
 
 	wb_supervisor_field_set_sf_vec2f(arena_size_field, size_vec);
@@ -156,11 +155,11 @@ void sv_world_init(sv_world_def *world, int world_size, double scale, int num_ob
 		sv_obstacle_spawn(world);
 	}
 
-	// Save current world temporarily as a template after resets
-	sv_simulation_update(world); //to register changes made TODO improve comment
+	// Save current world temporarily as a template after reset
+	sv_simulation_update(world);
 	wb_supervisor_world_save("../../worlds/tmp.wbt");
 
-	 // TODO: remove comment? (Idea: adjust camera position to new arena)
+	// (Idea: adjust camera position to new arena)
 }
 
 
@@ -174,8 +173,7 @@ void sv_world_generate(sv_world_def *world, int seed) {
 	// Reset to template first
 	wb_supervisor_simulation_reset();
 	wb_supervisor_simulation_reset_physics();
-	sv_simulation_update(world); //to execute reset TODO improve comment
-
+	sv_simulation_update(world);
 
 	double translation_vec[3] = {0.0, 0.0, 0.0};
 	double rotation_vec[4]    = {0.0, 1.0, 0.0, 0};
@@ -196,7 +194,7 @@ void sv_world_generate(sv_world_def *world, int seed) {
 	translation_vec[0] = world->start[0];
 	translation_vec[1] = SUPERVISOR_ROBOT_HEIGHT_OFFSET;
 	translation_vec[2] = world->start[1];
-	rotation_vec[3] = rand_int(360)*M_PI/180; //1-deg resolution TODO improve comment
+	rotation_vec[3] = rand_int(360)*M_PI/180;
 
 	WbFieldRef robot_translation_field = wb_supervisor_node_get_field(world->robot_node, "translation");
 	WbFieldRef robot_rotation_field = wb_supervisor_node_get_field(world->robot_node, "rotation");
@@ -245,7 +243,6 @@ sv_world_def *sv_simulation_init() {
 	// Malloc struct
 	sv_world_def *world = (sv_world_def *) malloc(sizeof(sv_world_def));
 	if (world == NULL) {
-
 		sv_simulation_stop();
 		abort();
 	}
@@ -310,6 +307,6 @@ void sv_simulation_update(sv_world_def *world) {
  * Cleanup routine for program termination
  */
 void sv_simulation_cleanup(sv_world_def *world) {
-	
+
 	free(world);
 }

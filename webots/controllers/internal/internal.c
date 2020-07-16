@@ -1,19 +1,3 @@
-/*
-* Copyright 1996-2020 Cyberbotics Ltd.
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-*     http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
-
 #include <webots/device.h>
 #include <webots/led.h>
 #include <webots/motor.h>
@@ -36,9 +20,9 @@ int main(int argc, char **argv) {
 
 	wb_robot_init();
 
-	const int timestep = (int)wb_robot_get_basic_time_step();
+	const int timestep = (int) wb_robot_get_basic_time_step();
 
-	printf("This C controller is an TCP interface to Webots\n\n");
+	printf("This C controller is a TCP interface to Webots\n\n");
 
 	WbDeviceTag motor, steer, angle, lidar, gps, compass;
 	motor   = wb_robot_get_device("motor");
@@ -48,7 +32,7 @@ int main(int argc, char **argv) {
 	gps     = wb_robot_get_device("gps");
 	compass = wb_robot_get_device("compass");
 
-	// Configure devices
+	// Configure devices, timestep as update frequency
 	// Switch to velocity control mode for unbounded motors.
 	wb_motor_set_position(motor, INFINITY);
 	wb_lidar_enable(lidar, timestep);
@@ -57,17 +41,8 @@ int main(int argc, char **argv) {
 	wb_compass_enable(compass, timestep);
 	wb_position_sensor_enable(angle, timestep);
 
-	/*
-	// Print lidar properties
-	printf("Frequency: %f\n", wb_lidar_get_frequency(lidar));
-	printf("MAXFreq: %f\n", wb_lidar_get_max_frequency(lidar));
-	printf("MINFreq: %f\n", wb_lidar_get_min_frequency(lidar));
-	printf("FOV: %f\n", wb_lidar_get_fov(lidar));
-	printf("MAXRange: %f\n", wb_lidar_get_max_range(lidar));
-	printf("MINRange: %f\n", wb_lidar_get_min_range(lidar));
-	printf("Resolution: %i\n", wb_lidar_get_horizontal_resolution(lidar));
-	printf("SamplPer: %i\n", wb_lidar_get_sampling_period(lidar));
-	*/
+	// Send configurations to webots
+	wb_robot_step(0);
 
 	printf("Starting Coms on Webots Controller\n");
 	int ret_connect = internal_connect();
@@ -78,9 +53,7 @@ int main(int argc, char **argv) {
 		return EXIT_FAILURE;
 	}
 
-	wb_robot_step(0);
-
-	// Send init information
+	// Send init information to external controller
 	init_to_ext_msg_t init_data;
 	init_data.timestep = timestep;
 	init_data.maxspeed = wb_motor_get_max_velocity(motor);
@@ -89,8 +62,7 @@ int main(int argc, char **argv) {
 
 	internal_send_init(init_data);
 
-
-	// Loop until the simulator stops the controller.
+	// Loop until the simulator stops the controller
 	while (wb_robot_step(timestep) != -1) {
 
 		wb_to_ext_msg_t robot_data;
@@ -107,17 +79,16 @@ int main(int argc, char **argv) {
 		// Send data
 		internal_send(robot_data);
 
-		// receive response
+		// Receive response
 		ext_to_wb_msg_t buf;
 		memset(&buf, 0, sizeof(ext_to_wb_msg_t));
-
-		// printf("receiving Message on Webots Controller\n");
 		internal_recv(&buf);
 
 		// Set motor speed and steering
 		wb_motor_set_position(steer, buf.heading);
 		wb_motor_set_velocity(motor, buf.speed);
 	}
+
 	wb_robot_cleanup();
 
 	return EXIT_SUCCESS;
