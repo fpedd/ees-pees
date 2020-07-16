@@ -64,7 +64,7 @@ int com_init();
 
 int com_deinit();
 
-float link_qualitiy(float factor);
+float link_quality(float amt);
 
 int com_send(data_to_bcknd_msg_t data);
 

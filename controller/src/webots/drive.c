@@ -21,7 +21,7 @@ int drive_init() {
 	// Initialize PID for speed control
 	pid_init(&speed_pid, 3.0, 0.0, 0.0, -1.0, 1.0, 0.0, NORM);
 
-	// Initialize PID for heading control using warp around logic
+	// Initialize PID for heading control using wrap around logic
 	pid_init(&heading_pid, 5.0, 0.0, 0.0, -1.0, 1.0, 0.0, WRAP);
 
 	return 0;
@@ -31,7 +31,7 @@ int drive(cmd_to_wb_msg_t *cmd_to_wb, cmd_from_bcknd_msg_t cmd_from_bcknd,
           data_to_bcknd_msg_t data_to_bcknd, init_to_ext_msg_t init_data,
           int reset) {
 
-	// Check if we should drive in STEERING (Manual) or HEADING (Automatic) mode
+	// Check if we should drive in STEERING (manual) or HEADING (automatic) mode
 	if (cmd_from_bcknd.dir_type == STEERING) {
 		drive_manual(cmd_to_wb, init_data,
 		             cmd_from_bcknd.speed, cmd_from_bcknd.heading);
@@ -66,7 +66,7 @@ int drive_automatic(cmd_to_wb_msg_t *cmd_to_wb, init_to_ext_msg_t init_data,
 		pid_reset(&heading_pid);
 	}
 
-	// Ensure that time difference is not to big and not zero when starting
+	// Ensure that time difference is not too big and not zero when starting
 	if (last_time == 0.0) {
 		last_time = curr_time;
 		return 0;
@@ -76,6 +76,7 @@ int drive_automatic(cmd_to_wb_msg_t *cmd_to_wb, init_to_ext_msg_t init_data,
 	(void) act_speed;
 	float com_speed = set_speed;
 	// float com_speed = 0;
+	// pid_run(&speed_pid, curr_time - last_time, set_speed, act_speed, &com_speed);
 
 	// Use PID to control robots heading
 	float com_heading = 0;

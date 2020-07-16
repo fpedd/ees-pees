@@ -4,7 +4,7 @@
 enum pid_special {
 	NORM = 0, // Normal PID controller
 	WRAP = 1, // Use wrap around logic
-	EXPO = 2, // Use an expoential error function
+	EXPO = 2, // Use an exponential error function
 };
 
 typedef struct {
@@ -16,7 +16,7 @@ typedef struct {
 	float deadband;       // Deadband to allow for response in finite time
 	float err_acc;        // Error accumulator, for integral
 	float prev_in;        // Previous error, for derivative
-	pid_special special;  // Special funtion Flag
+	pid_special special;  // Special function flag
 } pid_ctrl_t;
 
 int pid_init(pid_ctrl_t *pid, float k_p, float k_i, float k_d,

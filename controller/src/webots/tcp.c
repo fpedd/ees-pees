@@ -45,7 +45,7 @@ int tcp_init() {
 
 	int enable = 1;
 	if (setsockopt(tcp_socket_fd, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) < 0) {
-		fprintf(stderr, "ERROR: udp init setsockopt reuse failed '%s'\n", strerror(errno));
+		fprintf(stderr, "ERROR: tcp init setsockopt reuse failed '%s'\n", strerror(errno));
 		return -3;
 	}
 
@@ -106,7 +106,7 @@ int tcp_recv (char* buf, int buf_size) {
 }
 
 int tcp_close () {
-	
+
 	close(tcp_socket_fd);
 	return 0;
 }

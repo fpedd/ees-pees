@@ -21,7 +21,7 @@
 #define STEPS_SLOW 25.0        // if number of steps till obstacle lower than this, slow down
 #define CLOSEST_ALLOWED 0.04   // if distance in move direction lower than this, STOP
 
-// hitbox size to each side of the robot
+// Hitbox size to each side of the robot
 #define SIDE_WIDTH 0.08
 #define MAX_DISTANCE 3.4
 
@@ -108,20 +108,17 @@ int safety_check(init_to_ext_msg_t init_data, data_from_wb_msg_t data_from_wb, c
 	// Robot is extremly close to obstacle --> Overwrite speed command
 	// and send action_denied to backend
 	if (min_steps <= 0.0) {
-		// printf("SAFE: Obstacle is in silhouette!\n");
 		cmd_to_wb->speed = 0;
 		action_denied = 1;
 
 	// Robot is close to obstacle --> Overwrite speed command
 	// and send action_denied to backend
 	} else if (min_steps <= STEPS_STOP) {
-		// fprintf(stderr, "SAFE: Close to obstacle. MIN_STEPS: %f\n", min_steps);
 		cmd_to_wb->speed = 0;
 		action_denied = 1;
 
 	// Robot is approaching to obstacle --> Overwrite speed command to slow down
 	} else if (min_steps <= STEPS_SLOW){
-		// fprintf(stderr, "SAFE: Slowing down. MIN_STEPS: %f\n", min_steps);
 		cmd_to_wb->speed = 0;
 	}
 
@@ -131,8 +128,6 @@ int safety_check(init_to_ext_msg_t init_data, data_from_wb_msg_t data_from_wb, c
 	if (too_close_to_obstacle(distance, cmd_to_wb->speed) == 1) {
 		cmd_to_wb->speed = 0;
 		action_denied = 1;
-		// Stops robot from "wiggling" into an obstacle, but makes training harder
-		// cmd_to_wb->heading = 0;
 	}
 
 	// Update last_gps with current position
@@ -206,12 +201,10 @@ int too_close_to_obstacle(float *distance, double cmd_speed) {
 	// Check whether an obstacle in movement direction is closer than allowed
 	if (cmd_speed < 0.0) {
 		if (front_left < CLOSEST_ALLOWED || front_right < CLOSEST_ALLOWED || front < CLOSEST_ALLOWED) {
-			// fprintf(stderr, "SAFE: Obstacle in front, cant drive forwards\n");
 			return 1; // deny action
 		}
 	} else if (cmd_speed > 0.0) {
 		if (back_left < CLOSEST_ALLOWED || back_right < CLOSEST_ALLOWED || back < CLOSEST_ALLOWED) {
-			// fprintf(stderr, "SAFE: Obstacle in back, cant drive backwards\n");
 			return 1; // deny action
 		}
 	}
@@ -238,7 +231,7 @@ float condense_data(float *distance, int width, int angle) {
 	}
 
 	float sum = 0.0;
-	int angle_plus = angle + DIST_VECS;    // To facilitate traversing the array boundaries
+	int angle_plus = angle + DIST_VECS; // To facilitate traversing the array boundaries
 
 	for (int i = angle_plus - width/2; i < angle_plus + (width+1)/2; i++) {
 		sum += distance[i%DIST_VECS];

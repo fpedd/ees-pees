@@ -93,7 +93,7 @@ void *webot_worker(void *ptr) {
 		}
 
 
-		/***** 5) Do safety checks if we arent using grid moves*****/
+		/***** 5) Do safety checks if safety is not disabled *****/
 		// In grid moves safety is handled by the backend, and we don't want to interfere
 		if (cmd_from_backend_worker.disable_safety == 0) {
 			action_denied = safety_check(init_data, data_from_wb, &cmd_to_wb);
@@ -114,7 +114,7 @@ int webot_format_wb_to_bcknd(data_to_bcknd_msg_t* data_to_bcknd,
                              int action_denied,
                              unsigned int discrete_action_done) {
 
-	// cast sim time and robot speed to float, scale speed to [-1, 1]
+	// Cast sim time and robot speed to float, scale speed to [-1, 1]
 	data_to_bcknd->sim_time = (float) data_from_wb.sim_time;
 	data_to_bcknd->speed = (float) speed_with_dir(data_from_wb) / MAX_SPEED;
 
@@ -128,12 +128,14 @@ int webot_format_wb_to_bcknd(data_to_bcknd_msg_t* data_to_bcknd,
 	data_to_bcknd->heading = (float) heading;
 	data_to_bcknd->steer_angle = (float) data_from_wb.steer_angle;
 
-	// Set touching flag and action_denied if the safety intervened critcally
+	// Set touching flag
 	if (check_for_tipover(data_from_wb) != 0) {
 		data_to_bcknd->touching = -1;
 	} else {
 		data_to_bcknd->touching = touching(data_from_wb);
 	}
+
+	// Set action_denied if the safety intervened critically
 	data_to_bcknd->action_denied = action_denied;
 
 	// Set flag to tell backend that the discrete step was completed

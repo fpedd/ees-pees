@@ -11,10 +11,10 @@
 // The maximum delay we allow on our com between transmission and reception
 #define TIME_OFFSET_ALLOWED 1.0 // in seconds
 
-// We keep a continous count of the messages send and received to and from the backend
+// We keep a continuous count of the messages send and received to and from the backend
 static unsigned int msg_cnt;
 
-// This is an "easy to use" indicator in percent [0, 1] for the current link qualitiy
+// This is an "easy to use" indicator in percent [0, 1] for the current link quality
 static float link_qual;
 
 // Some string arrays that make the prints look nicer
@@ -42,9 +42,9 @@ int com_deinit() {
 	return 0;
 }
 
-float link_qualitiy(float factor) {
+float link_quality(float amt) {
 
-	link_qual += factor;
+	link_qual += amt;
 
 	if (link_qual < 0.0) {
 		link_qual = 0.0;
@@ -67,14 +67,14 @@ int com_send(data_to_bcknd_msg_t data) {
 		        len, sizeof(data_to_bcknd_msg_t));
 
 		// There was a serious error in the com, big link_qual penalty
-		link_qualitiy(-0.1);
+		link_quality(-0.1);
 
 		return -1;
 	}
 
 	// We successfully transmitted a message, so increment message count and increase link_qual
 	msg_cnt++;
-	link_qualitiy(0.1);
+	link_quality(0.1);
 
 	return 0;
 }
@@ -91,11 +91,11 @@ int com_recv(cmd_from_bcknd_msg_t *data) {
 			        len, sizeof(cmd_from_bcknd_msg_t));
 
 			// There was a serious error in the com, big link_qual penalty
-			link_qualitiy(-0.1);
+			link_quality(-0.1);
 		}
 
 		// There was "only" a timeout in the com, small link_qual penalty
-		link_qualitiy(-0.01);
+		link_quality(-0.01);
 
 		return -1;
 	}
@@ -105,7 +105,7 @@ int com_recv(cmd_from_bcknd_msg_t *data) {
 		        get_time(), data->time_stmp, fabs(get_time() - data->time_stmp));
 
 		// The message is very old, indication for big delays in the com, therefore big link_qual penalty
-		link_qualitiy(-0.1);
+		link_quality(-0.1);
 		return -2;
 	}
 
@@ -115,14 +115,14 @@ int com_recv(cmd_from_bcknd_msg_t *data) {
 
 		// We got our messages out of sync, lets resync and give big link_qual penalty
 		msg_cnt = data->msg_cnt + 1;
-		link_qualitiy(-0.1);
+		link_quality(-0.1);
 
 		return -3;
 	}
 
 	// We successfully received a message, so increment message count and increase link_qual
 	msg_cnt++;
-	link_qualitiy(0.1);
+	link_quality(0.1);
 
 	return len;
 }

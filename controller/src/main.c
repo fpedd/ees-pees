@@ -54,10 +54,5 @@ int main(int argc, char **argv) {
 		pthread_join(backend_worker_thread, NULL);
 	}
 
-	while (1) {
-		// Sleep for one second to safe resources
-		sleep(1);
-	}
-
 	return 0;
 }

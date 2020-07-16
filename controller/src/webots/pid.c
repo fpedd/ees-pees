@@ -51,7 +51,7 @@ int pid_run(pid_ctrl_t *pid, float dt, float set, float in, float *out) {
 		return 1;
 	}
 
-	// Check for special warp around function
+	// Check for special wrap around function
 	if (pid->special == WRAP) {
 		if (err < pid->out_min) {
 			err += 2.0 * pid->out_max;
@@ -69,15 +69,6 @@ int pid_run(pid_ctrl_t *pid, float dt, float set, float in, float *out) {
 
 	// Calculate overall error
 	*out = err * pid->k_p + integ * pid->k_i + deriv * pid->k_d;
-
-	// Prints for showcasing (or debugging)
-	// printf("set: %f\n", set);
-	// printf("in: %f\n", in);
-	// printf("err: %f\n", err);
-	// printf("prop: %f\n", err * pid->k_p);
-	// printf("integ: %f\n", integ * pid->k_i);
-	// printf("deriv: %f\n", deriv * pid->k_d);
-	// printf("out: %f\n", *out);
 
 	// Bound output to set limits, this is also our anti windup logic
 	if (*out < pid->out_min) {
@@ -98,8 +89,6 @@ int pid_reset(pid_ctrl_t *pid) {
 
 	pid->err_acc = 0.0;
 	pid->prev_in = 0.0;
-
-	printf("RESET\n");
 
 	return 0;
 }

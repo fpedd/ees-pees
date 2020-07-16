@@ -7,11 +7,11 @@
 enum direction {
 	FORWARDS = -1,
 	STOPPED = 0,
-	BACKWARDS = 1,
+	BACKWARDS = 1
 };
 
 int safety_check(init_to_ext_msg_t init_data, data_from_wb_msg_t data_from_wb,
-	             cmd_to_wb_msg_t* cmd_to_wb);
+                 cmd_to_wb_msg_t* cmd_to_wb);
 
 int check_hitbox(float *distance, float *hitbox);
 

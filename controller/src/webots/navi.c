@@ -81,12 +81,12 @@ int navi_check_back(float start_heading, float dest_heading) {
 	// Get the absolute heading difference
 	float diff = fabs(start_heading - dest_heading);
 
-	// If bigger than 1, use wrap arounf logic
+	// If bigger than 1, use wrap around logic
 	if (diff > 1.0) {
 		diff = fabs(diff - 2.0);
 	}
 
-	// Check wether we should drive backwards of forwards
+	// Check whether we should drive backwards or forwards
 	if (diff > 0.5) {
 		// Backwards is faster
 		return 1;
@@ -98,7 +98,7 @@ int navi_check_back(float start_heading, float dest_heading) {
 
 float navi_get_heading(data_to_bcknd_msg_t data_to_bcknd, float dest[]) {
 
-	// Get the two distance vectors and use arcan to calculate the correct angle
+	// Get the two distance vectors and use arctan to calculate the correct angle
 	// Weird coorinate system in webots...
 	float dx = data_to_bcknd.actual_gps[0] - dest[0];
 	float dy = dest[1] - data_to_bcknd.actual_gps[1];

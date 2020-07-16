@@ -26,6 +26,7 @@ void *backend_worker(void *ptr) {
 	while (1) {
 
 		if (com_recv(&cmd_from_bcknd) < 0) {
+			// Dont do any special error handling concerning the backend communication
 			continue;
 		}
 
@@ -59,8 +60,8 @@ void *backend_worker(void *ptr) {
 				memcpy(arg_struct->itc_cmd, &cmd_from_bcknd, sizeof(cmd_from_bcknd_msg_t));
 				pthread_mutex_unlock(arg_struct->itc_cmd_lock);
 
-				// Wait for new data in rtc struct according to backends every_x request
-				float next_packet_time = arg_struct->itc_data->sim_time + TIMESTEP/1000.0 * 2;
+				// Wait for new data in ITC struct according to backends every_x request
+				float next_packet_time = arg_struct->itc_data->sim_time + TIMESTEP/1000.0 * cmd_from_bcknd.every_x;
 				while (arg_struct->itc_data->sim_time < next_packet_time - (TIMESTEP*0.2)/1000.0);
 
 				// Get data from ITC struct for transmission to backend
@@ -82,7 +83,7 @@ void *backend_worker(void *ptr) {
 				memcpy(arg_struct->itc_cmd, &cmd_from_bcknd, sizeof(cmd_from_bcknd_msg_t));
 				pthread_mutex_unlock(arg_struct->itc_cmd_lock);
 
-				// Wait for new data in rtc struct
+				// Wait for new data in ITC struct
 				float next_packet_time = arg_struct->itc_data->sim_time + TIMESTEP/1000.0 * 2;
 				while (arg_struct->itc_data->sim_time < next_packet_time - (TIMESTEP*0.2)/1000.0);
 
