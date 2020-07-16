@@ -44,6 +44,7 @@ __Remarks__:
 - Keep in mind that the Webots y-coordinate is containing information regarding the height. As for this environment this is mostly unnecessary and thus ommited often.
 - As is in a standard Webots world, the virtual north is set to [1, 0, 0] for our environment.
 - The motor in the robot is built in backwards, thus a negative speed command makes the robot drive forwars (wide side first).
+- With the used sensor 360 distance values are provided, one for each degree. The values are arranged clockwise starting from the back direction.
 
 ### Supervisor (SV) controller
 
