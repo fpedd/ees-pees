@@ -84,7 +84,7 @@ void *backend_worker(void *ptr) {
 				pthread_mutex_unlock(arg_struct->itc_cmd_lock);
 
 				// Wait for new data in ITC struct
-				float next_packet_time = arg_struct->itc_data->sim_time + TIMESTEP/1000.0 * 2;
+				float next_packet_time = arg_struct->itc_data->sim_time + TIMESTEP/1000.0 * 3;
 				while (arg_struct->itc_data->sim_time < next_packet_time - (TIMESTEP*0.2)/1000.0);
 
 				// Wait till the discrete move is done by the PID controller
