@@ -8,6 +8,7 @@ from fakegym.fakeenv import WbtGymFake
 
 
 
+
 class TestFakeEnv(unittest.TestCase):
 
     def setUp(self):

@@ -2,8 +2,8 @@ import unittest
 import os
 import sys
 import numpy as np
-import webotsgym as wg
 sys.path.insert(0, '../../backend')
+import webotsgym as wg
 
 
 class TestEnvironment(unittest.TestCase):
