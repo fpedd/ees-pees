@@ -212,30 +212,37 @@ class WbtGymFake(gym.Env):
             dist = dist / self.max_distance
         return dist
 
+    def calc_reward(self):
+        """Calculate reward"""
+        if self.gps_actual == self.gps_target:
+            reward = 10000
+        else:
+            reward = 0
+
+            # step penalty
+            target_distance = self.get_target_distance(normalized=True)
+            step_penalty = -1
+            lambda_ = 5
+            reward += step_penalty * (1 - np.exp(-lambda_ * target_distance))
+
+            # visited count penalty
+            vc = self.gps_visited_count
+            if vc > 3:
+                reward += -0.2 * (vc - 2)**2
+
+            # touching penalty
+            if self.obs.touching is True:
+                reward -= 500
+
+        return reward
+           
     def check_done(self):
-        """Check done"""
-        if self.time_steps == 1000:
-            return True
-        if self.total_reward < -1000:
+        """Check down"""
+        if self.time_steps == 200:
             return True
         if self.gps_actual == self.gps_target:
             return True
         return False
-
-    def calc_reward(self):
-        """Calculate reward function."""
-        if self.gps_actual == self.gps_target:
-            reward = 1000
-        else:
-            epsilon = 10**-5
-            cost_step = 1
-            distance = self.get_target_distance() + epsilon
-            cost_distance = (distance**0.4) / (distance)
-            reward_factor = -1
-            reward = reward_factor * (cost_step * cost_distance)
-            if self.state_object.touching is True:
-                reward = reward - 10
-        return reward
 
     def reset(self, seed=None, hard=True, min_complexity=1):
         """Reset fake environment to random."""
