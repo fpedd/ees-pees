@@ -6,30 +6,39 @@ import webotsgym as wg
 class James():
     """Create default class james to control the robot.
 
-    Options:
-    With james you can decide to drive the robot by your own
-    in the discrete or continuous action space.
+    Description:
+    ------------
+    With james you drive the robot by your own
+    in the discrete or continuous action space by using your keyboard.
     With the keyboard you can increase or decrease the speed
     change the heading in the continuous action space by the default.
     In the discrete action space every key press will trigger
     an action in the respective direction.
 
-    For adjustment option see __init__!
+    Parameter:
+    ----------
+    direction_type : str
+        range: ["heading", default: "steering"]
+        The direction type sets from which position we control
+        the robot.
+        "heading" -> arrange to north/top
+        "steering" -> arrange to robot view
+
+    Default:
+    --------
+    Action space: continuous action space
+    Heading changes: 0.05 in comparison to pre-state by key press.
+    Speed changes: 0.05 in comparison to pre-state by key press.
+
+    Options:
+    --------
+    Change to grid action space -> self.grid = True
+    Adjust difference for heading -> self.dheading = [0 to 1]
+    Adjust difference for speed -> self.dspeed = [0 to 1]
     """
 
     def __init__(self, direction_type="heading"):
-        """Initialize default james with direction type.
-
-        Default Settings:
-        Action space: continuous action space
-        Heading changes: 0.05 in comparison to pre-state by key press.
-        Speed changes: 0.05 in comparison to pre-state by key press.
-
-        Options:
-        Change to grid action space -> self.grid = True
-        Adjust difference for heading -> self.dheading = [0 to 1]
-        Adjust difference for speed -> self.dspeed = [0 to 1]
-        """
+        """Initialize default james with direction type."""
         self.config = wg.WbtConfig()
         self.config.direction_type = direction_type
         self.com = wg.com.Communication(self.config)
@@ -54,6 +63,12 @@ class James():
     def on_press(self, key):
         """Create action and send it to the controller.
 
+        Parameter:
+        ----------
+        key : keyboard object
+
+        Description:
+        ------------
         Depending on grid or continuous the key press of space
         or arrows keys will trigger action and send it to the controller.
 
@@ -100,7 +115,7 @@ class James():
             self.com.send_command(self.act)
 
     def on_release(self, key):
-        """Return False to end webots through ESC key."""
+        """Finish the toggle option by clicking esc."""
         if key == keyboard.Key.esc:
             return False
 
