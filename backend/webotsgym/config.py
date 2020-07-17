@@ -2,7 +2,12 @@ from enum import IntEnum
 
 
 class SimSpeedMode(IntEnum):
-    """GET ENUM for simulation speed."""
+    """GET ENUM for simulation speed.
+
+    Parameter:
+    ----------
+    IntEnum : str
+    """
 
     NORMAL = 0
     RUN = 1
@@ -10,14 +15,24 @@ class SimSpeedMode(IntEnum):
 
 
 class DirectionType(IntEnum):
-    """GET ENUM for direction type."""
+    """GET ENUM for direction type.
+
+    Parameter:
+    ----------
+    IntEnum : str
+    """
 
     STEERING = 0  # PID-Controller is off
     HEADING = 1  # PID-Controller is on
 
 
 class DiscreteMove(IntEnum):
-    """GET ENUM for move direction in discrete action space."""
+    """GET ENUM for move direction in discrete action space.
+
+    Parameter:
+    ----------
+    IntEnum : str
+    """
 
     NONE = 0
     UP = 1
@@ -75,7 +90,13 @@ class WbtConfig():
 
     @sim_mode.setter
     def sim_mode(self, value):
-        """Set simulation mode."""
+        """Set simulation mode.
+
+        Parameter:
+        ----------
+        value : str
+            ["normal", "run", "fast"]
+        """
         if isinstance(value, SimSpeedMode):
             self._sim_mode = value
         elif value == "normal":
@@ -92,7 +113,13 @@ class WbtConfig():
 
     @direction_type.setter
     def direction_type(self, value):
-        """Set direction type."""
+        """Set direction type.
+
+        Parameter:
+        ----------
+        value : str
+            ["heading", "steering"]
+        """
         if isinstance(value, DirectionType):
             self._direction_type = value
         elif value == "steering":
@@ -107,7 +134,13 @@ class WbtConfig():
 
     @world_scaling.setter
     def world_scaling(self, value):
-        """Set world scaling with mor than 0.25 or equal."""
+        """Set world scaling with more than 0.25 or equal.
+
+        Parameter:
+        ----------
+        value : float
+            parameter to scale the environment.
+        """
         if value < 0.25:
             raise ValueError("world_scaling must be larger or equal 0.25")
         self._world_scaling = value
