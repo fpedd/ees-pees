@@ -3,8 +3,7 @@ import unittest
 import random
 import gym
 import numpy as np
-# sys.path.insert(0, '../../backend')
-sys.path.insert(0, '/home/shanshan/github/ees-pees/backend')
+sys.path.insert(0, '../../backend')
 from fakegym.fakeenv import WbtGymFake
 
 
