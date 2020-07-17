@@ -233,7 +233,7 @@ class WbtGymFake(gym.Env):
             cost_distance = (distance**0.4) / (distance)
             reward_factor = -1
             reward = reward_factor * (cost_step * cost_distance)
-            if self.state_object:
+            if self.state_object.touching is True:
                 reward = reward - 10
         return reward
 
