@@ -21,7 +21,6 @@ class WbtGymGrid(WbtGym):
                                          config=config)
         len_ = int(config.world_size * config.world_scaling) * 2 + 1
         self.visited_count = np.zeros((len_, len_))
-        self.time_steps = 0
 
     def step(self, action):
         """Perform action on environment.
@@ -61,16 +60,14 @@ class WbtGymGrid(WbtGym):
             action = self.action_class.map(action)
             self.com.send_grid_move(action)
 
+        # logging, printing
+        self.distances.append(self.get_target_distance())
+        self._update_history()
         self.visited_count[self.gps_actual_scaled] += 1
+
         reward = self.calc_reward()
         self.rewards.append(reward)
         done = self.check_done()
-
-        # logging, printing
-        self.rewards.append(reward)
-        self.distances.append(self.get_target_distance())
-        self.time_steps += 1
-        self._update_history()
 
         return self.observation, reward, done, {}
 
@@ -80,7 +77,6 @@ class WbtGymGrid(WbtGym):
         Additionally reinitialize visited_count.
         """
         super().reset(seed)
-        self.time_steps = 0
 
         len_ = int(self.config.world_size * self.config.world_scaling) * 2 + 1
         self.visited_count = np.zeros((len_, len_))

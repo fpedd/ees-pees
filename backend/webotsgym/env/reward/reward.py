@@ -25,8 +25,7 @@ class WbtReward():
 
 
 class WbtRewardGrid(WbtReward):
-    def __init__(self, env, config, max_time_steps=1000,
-                 max_neg_reward=-1000, targetband=0.05):
+    def __init__(self, env, config, targetband=0.05):
         super(WbtRewardGrid, self).__init__(env, config)
         self.targetband = targetband
 
@@ -53,7 +52,7 @@ class WbtRewardGrid(WbtReward):
         return reward
 
     def check_done(self):
-        if self.env.time_steps == 200:
+        if self.env.steps_in_run == 200:
             return True
         if self.env.total_reward < -1000:
             return True
