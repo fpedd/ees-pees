@@ -44,7 +44,7 @@ class WbtGymFake(gym.Env):
 
         # inits reward, action, observation
         self.total_reward = 0
-        self.reward_range = (-1000, 1000)
+        self.reward_range = (-10000, 10000)
         self.action_mapper = FakeAction(4, step_range)
         self.action_mapping = self.action_mapper.action_map
         self.action_space = self.action_mapper.action_space

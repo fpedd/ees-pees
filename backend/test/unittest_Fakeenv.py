@@ -40,8 +40,8 @@ class TestFakeEnv(unittest.TestCase):
         obs_2 = env.reset()
         pos_actual2 = env.gps_actual
         pos_target2 = env.gps_target
-        self.assertFalse(pos_actual1 == pos_actual2 or pos_target1
-                         == pos_target2 or (obs_1 == obs_2).all(),
+        self.assertFalse(pos_actual1 == pos_actual2 and pos_target1
+                         == pos_target2 and (obs_1 == obs_2).all(),
                          'The position of start point/the position of target point/infos of observation must be different after reset the environment'
                          )
 
