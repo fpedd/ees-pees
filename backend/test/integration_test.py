@@ -31,11 +31,11 @@ class TestEnvironment(unittest.TestCase):
         """Test num_steps and reset on discrete action env."""
         num_steps = 1
         num_loops = 3
-        for num in range(0, num_loops):
+        for _ in range(0, num_loops):
             self.env.reset()
             gps_checker, gps_state, step_checker = self.apply_steps(num_steps)
-            self.assertEqual(tuple(gps_checker), tuple(gps_state))
-            self.assertEqual(step_checker, num_steps)
+            self.assertEqual(tuple(gps_checker), tuple(gps_state), "The info of gps_actual after several steps must be precise")
+            self.assertEqual(step_checker, num_steps, "The value of steps after running must be correct")
 
     def apply_steps(self, num_steps):
         """Apply num_steps on the discrete environment."""
