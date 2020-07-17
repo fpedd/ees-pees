@@ -1,16 +1,12 @@
 # User Guide
-- [User Guide](#user-guide)
-  * [Setup](#setup)
-    + [OS](#os)
-    + [Webots](#webots)
-    + [Python Packages](#python-packages)
-    + [Stable-Baselines](#stable-baselines)
-  * [Usage Example](#usage-example)
-    + [Manual Control](#model-training)
-    + [Automated Training and Application](#model-appilication)
-
-
-
+- [Setup](#setup)
+  * [OS](#os)
+  * [Webots](#webots)
+  * [Python Packages](#python-packages)
+  * [Stable-Baselines](#stable-baselines)
+- [Usage Example](#usage-example)
+  * [Manual Control](#manual-control)
+  * [Automated Training and Application](#automated-training-and-application)
 
 ## Setup
 
@@ -55,13 +51,13 @@ A detailed document of Stable-Baselines can be found [here](https://stable-basel
 ## Usage Example
 ### Manual Control
 
-To start the communication stack, you can run `./run.sh` in the root directory of the repository. This should compile the Internal and the External Controller. After that is done, it will start the External Controller, then the Webots Environment with the Internal Controller, and after that is the Python Backend.
+To start the communication stack, you can run `scripts/run.sh` in  directory of the repository. This should compile the Internal and the External Controller. After that is done, it will start the External Controller, then the Webots Environment with the Internal Controller, and after that is the Python Backend.
 
 You will see three corresponding terminals open with the three processes mentioned above run from each terminal. Inside the top terminal, the Python Backend should be running.
 
 You are able to drive the robot by your own in the discrete or continuous action space. You can use the space bar to switch between discrete and continuous action spaces. With the keyboard, you can increase or decrease the speed change the heading in the continuous action space by the default. In the discrete action space, every keypress will trigger an action in the respective direction.
 
-To stop all processes, just run `./kill.sh`. This will kill all three processes.
+To stop all processes, just run `scripts/kill.sh`. This will kill all three processes.
 
 Before you will be able to run the scripts you may need to run:  
 `chmod +x kill.sh`  
@@ -76,8 +72,16 @@ To train a model you can use the notebooks below:
 * `UseMe/model_training_grid_world.ipynb`, train a grid model in Webots grid environment. The model can be used in Webots grid environment.
 * `UseMe/model_training_continuous_world.ipynb`, train a grid model in Webots continuous environment. The model can be used in Webots continuous environment.
 
-To apply a trained model to Webots environment, you can use these two notebooks:
+To apply a trained model to Webots environment, you can use these two notebooks for corresponding environment:
 * `UseMe/model_application_grid_world.ipynb`
 * `UseMe/model_application_continuous_world.ipynb`
 
-We have already trained a excellent model `UseMe/model/grid/PPO_lam3+vs_500k.zip` for Webots grid environment. Highly recommand to use it in `UseMe/model_application_grid_world.ipynb`.
+We have already trained a excellent model `UseMe/model/grid/PPO_lam3+vs_500k.zip` for Webots grid environment. Highly recommand to use it in `UseMe/model_application_grid_world.ipynb`. It has strong ability in solving complex grid map. Unfortunately we don't provide a continuous model.
+
+You might meet port block error if you close the connection incorrectly last time. You will receive a notice message: 
+```
+Port blocked due to incorrect closing of connection. Use 'webotsgym.com.kill_spv_connection(password)' or command 'sudo lsof -t -i tcp:10201 | xargs kill -9'. Both approaches will kill the current python process. Therefore the jupyter notebook must be rerun from the beginning.
+Enter password to kill process:
+```
+
+Please enter your password to easily kill the process, and you need to rerun the notebook. To avoid this error, you can command `sudo lsof -t -i tcp:10201 | xargs kill -9` before using the notebooks in `UseMe`.
