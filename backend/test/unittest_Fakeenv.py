@@ -44,7 +44,7 @@ class TestFakeEnv(unittest.TestCase):
         env = self.env
         obs_start = env.reset()
         action = random.randint(0, 3)
-        obs, rewards, done, info = env.step(action)
+        obs, rewards, done, _ = env.step(action)
         self.assertFalse((obs_start == obs).all())
         self.assertTrue(env.reward_range[0] <= rewards <= env.reward_range[1])
         self.assertIsInstance(done, bool)
