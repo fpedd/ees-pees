@@ -31,7 +31,6 @@ Please open Webots once and do the setup before continuing.
 ### Python Packages
 To use our software, you'll need to install several python packages. Please use `requirements.txt` to install the python packeages:
 ```
-pip freeze > requirements.txt
 pip install -r requirements.txt
 ```
 ### Stable-Baselines
