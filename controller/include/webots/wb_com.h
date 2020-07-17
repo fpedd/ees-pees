@@ -18,8 +18,8 @@ typedef struct {
 // COMMAND TO WEBOT
 // Packet that contains the command that is send to robot
 typedef struct {
-	double heading;             // the direction the robot should move in next; between -1 and 1
-	double speed;               // the speed the robot should drive at; between -22 (forwards) and 22 (backwards)
+	double heading;             // the direction the robot should move in next, between -1 and 1
+	double speed;               // the speed the robot should drive at, between -22 (forwards) and 22 (backwards)
 } __attribute__((packed)) cmd_to_wb_msg_t;
 
 // INIT DATA
