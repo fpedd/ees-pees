@@ -1,29 +1,9 @@
 import unittest
 import os
 import sys
-import time
-sys.path.insert(0,'../../backend')
-
-import gym
-import webotsgym
 import numpy as np
-
-
-import webotsgym.utils as utils
-from webotsgym.config import WbtConfig
-
-from webotsgym.env.action.discrete import WbtActDiscrete
-from webotsgym.env.observation import WbtObs
-from webotsgym.env.reward import WbtReward
-from webotsgym.com import WbtCtrl, Communication, ActionOut
+sys.path.insert(0, '../../backend')
 import webotsgym as wg
-
-"""
-from webotsgym.environment import WebotsEnv, WebotsGrid
-from webotsgym.evaluate import Evaluate, EvaluateMats, EvaluatePJ0
-from webotsgym.action import DiscreteAction, ContinuousAction
-from webotsgym.observation import Observation
-"""
 
 
 class TestEnvironment(unittest.TestCase):
@@ -32,7 +12,7 @@ class TestEnvironment(unittest.TestCase):
     def setUp(self):
         """Open webotsEnv ."""
         self.setup_done = True
-        self.config = WbtConfig()
+        self.config = wg.WbtConfig()
         self.config.num_obstacles = 0
         self.config.fast_simulation = False
         self.config.world_size = 8
