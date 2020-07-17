@@ -1,4 +1,3 @@
-"""Test the functionality of webot environment."""
 import sys
 import os
 import numpy as np
@@ -13,16 +12,21 @@ def check_reset_step(env: gym.Env, observation_space: spaces.Space, action_space
     obs_pre = env.reset()
     _check_obs(obs_pre, observation_space, 'reset')
     obs_current = env.reset()
-    assert (obs_pre[1:8] != obs_current[1:8]).any(), "The infos of the observation must be different after reset the webot environment"
-    assert (obs_pre[10:] != obs_current[10:]).any(), "The infos of the lidar data must be different after reset the webot environment"
+    assert (obs_pre[1:8] != obs_current[1:8]).any(), \
+             "The infos of the observation must be different after reset the webot environment"
+    assert (obs_pre[10:] != obs_current[10:]).any(), \
+             "The infos of the lidar data must be different after reset the webot environment"
 
     for _ in range(3):
         action = action_space.sample()
         obs_next, _, _, _ = env.step(action)
         _check_obs(obs_next, observation_space, 'step')
-    assert (obs_next[0:3] != obs_current[0:3]).any(), "The information of observation must be updated after the first action"
-    assert (obs_next[6:9] != obs_current[6:9]).any(), "The information of observation must be updated after the first action"
-    assert (obs_next[10:] != obs_current[10:]).any(), "The information of lidar data must be updated after the first action"
+    assert (obs_next[0:3] != obs_current[0:3]).any(), \
+             "The information of observation must be updated after the first action"
+    assert (obs_next[6:9] != obs_current[6:9]).any(), \
+             "The information of observation must be updated after the first action"
+    assert (obs_next[10:] != obs_current[10:]).any(), \
+             "The information of lidar data must be updated after the first action"
 
 def check_run(env: gym.Env, action_space: spaces.Space):
     """Check normally running process of webotenv."""
@@ -34,23 +38,30 @@ def check_run(env: gym.Env, action_space: spaces.Space):
             action = action_space.sample()
             _, _, done, _ = env.step(action)
             if done is True:
-                assert j+1 == env.steps_in_run, "The value of time steps must be correct when the agent is 'done'"
+                assert j+1 == env.steps_in_run, \
+                         "The value of time steps must be correct when the agent is 'done'"
                 break
             if j == time_steps-1:
-                assert env.steps_in_run == time_steps, "The value of time steps must be correct after the webot has been running for several steps'"
+                assert env.steps_in_run == time_steps, \
+                    "The value of time steps must be correct after the webot has been running for several steps'"
 
 def check_webotenv(env: gym.Env):
     """Main check env function."""
-    assert isinstance(env, gym.Env), "The environment must inherit from gym.Env class"
+    assert isinstance(env, gym.Env), \
+             "The environment must inherit from gym.Env class"
     _check_spaces(env)
 
     observation_space = env.observation_space
     action_space = env.action_space
-    assert isinstance(observation_space, spaces.Box), "The observation space must inherit from gym.spaces"
+    assert isinstance(observation_space, spaces.Box), \
+             "The observation space must inherit from gym.spaces"
     if isinstance(action_space, spaces.Box):
-        assert np.all(np.abs(action_space.low) == np.abs(action_space.high)), "The Box action space must be symmetric"
-        assert np.all(np.abs(action_space.low) <= 1), "The Box action space must be normalized"
-        assert np.all(np.abs(action_space.high) <= 1), "The Box action space must be normalized"
+        assert np.all(np.abs(action_space.low) == np.abs(action_space.high)), \
+                 "The Box action space must be symmetric"
+        assert np.all(np.abs(action_space.low) <= 1), \
+                 "The Box action space must be normalized"
+        assert np.all(np.abs(action_space.high) <= 1), \
+                 "The Box action space must be normalized"
 
     check_reset_step(env, observation_space, action_space)
     env.reset()

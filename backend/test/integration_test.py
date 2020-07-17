@@ -7,44 +7,55 @@ import webotsgym as wg
 
 
 class TestEnvironment(unittest.TestCase):
+
     """Run integration tests for discrete environment."""
 
     def setUp(self):
         """Open webotsEnv ."""
+
         self.setup_done = True
         self.config = wg.WbtConfig()
         self.config.num_obstacles = 0
         self.config.fast_simulation = False
         self.config.world_size = 8
         self.config.world_scaling = 0.5
-        self.env = wg.WbtGymGrid(train=True,
-                                 config=self.config)
+        self.env = wg.WbtGymGrid(train=True, config=self.config)
 
     def tearDown(self):
         """Create final message and close webots."""
-        print("done")
-        os.system("killall -15 webots")
-        os.system("killall -15 controller")
-        os.system("killall -9 webots")
+
+        print ('done')
+        os.system('killall -15 webots')
+        os.system('killall -15 controller')
+        os.system('killall -9 webots')
 
     def test_steps(self):
         """Test num_steps and reset on discrete action env."""
+
         num_steps = 1
         num_loops = 3
         for _ in range(0, num_loops):
             self.env.reset()
-            gps_checker, gps_state, step_checker = self.apply_steps(num_steps)
-            self.assertEqual(tuple(gps_checker), tuple(gps_state), "The info of gps_actual after several steps must be precise")
-            self.assertEqual(step_checker, num_steps, "The value of steps after running must be correct")
+            (gps_checker, gps_state, step_checker) = \
+                self.apply_steps(num_steps)
+            self.assertEqual(tuple(gps_checker), tuple(gps_state),
+                             'The info of gps_actual after several steps must be precise'
+                             )
+            self.assertEqual(step_checker, num_steps,
+                             'The value of steps after running must be correct'
+                             )
 
     def apply_steps(self, num_steps):
         """Apply num_steps on the discrete environment."""
-        gps_checker = np.round(0.5 +
-                               np.array(self.env.com.state.gps_actual) * 2)
+
+        gps_checker = np.round(0.5
+                               + np.array(self.env.com.state.gps_actual)
+                               * 2)
         step_checker = 0
         for num in range(0, num_steps):
-            gps_state = np.round(0.5 +
-                                 np.array(self.env.com.state.gps_actual) * 2)
+            gps_state = np.round(0.5
+                                 + np.array(self.env.com.state.gps_actual)
+                                 * 2)
             if num % 2 == 0:
                 if gps_state[0] < 2:
                     action = 1  # increase x
@@ -67,8 +78,10 @@ class TestEnvironment(unittest.TestCase):
                     self.env.step(action)
                     gps_checker[1] = gps_checker[1] - 1
                     step_checker += 1
-        gps_state = np.round(0.5 + np.array(self.env.com.state.gps_actual) * 2)
-        return gps_checker, gps_state, step_checker
+        gps_state = np.round(0.5
+                             + np.array(self.env.com.state.gps_actual)
+                             * 2)
+        return (gps_checker, gps_state, step_checker)
 
 
 if __name__ == '__main__':
