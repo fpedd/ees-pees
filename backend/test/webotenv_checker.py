@@ -1,12 +1,11 @@
+"""Test the functionality of webot environment."""
 import sys
-sys.path.insert(0, '../../backend')
-import numpy as np
 import os
-import stable_baselines
+import numpy as np
 from stable_baselines.common.env_checker import _check_spaces, _check_obs
 import gym
 from gym import spaces
-
+sys.path.insert(0, '../../backend')
 import webotsgym as wg
 
 def check_reset_step(env: gym.Env, observation_space: spaces.Space, action_space: spaces.Space):
@@ -17,32 +16,31 @@ def check_reset_step(env: gym.Env, observation_space: spaces.Space, action_space
     assert (obs_pre[1:8] != obs_current[1:8]).any()
     assert (obs_pre[10:] != obs_current[10:]).any()
 
-    for i in range(3):
+    for _ in range(3):
         action = action_space.sample()
-        obs_next, reward, done, info = env.step(action)
+        obs_next, _, _, _ = env.step(action)
         _check_obs(obs_next, observation_space, 'step')
     assert (obs_next[0:3] != obs_current[0:3]).any()
     assert (obs_next[6:9] != obs_current[6:9]).any()
     assert (obs_next[10:] != obs_current[10:]).any()
 
-def check_run(env:gym.Env, action_space: spaces.Space):
+def check_run(env: gym.Env, action_space: spaces.Space):
     """Check normally running process of webotenv."""
     num_env = 3
     time_steps = 100
-    for i in range(num_env):
+    for _ in range(num_env):
         env.reset()
-        for i in range(time_steps):
+        for j in range(time_steps):
             action = action_space.sample()
-            obs, reward, done, info = env.step(action)
+            _, _, done, _ = env.step(action)
             if done is True:
-                assert (i+1 == env.steps_in_run)
+                assert j+1 == env.steps_in_run
                 break
-            if i == time_steps-1:
-                assert (env.steps_in_run == time_steps)
-
-
+            if j == time_steps-1:
+                assert env.steps_in_run == time_steps
 
 def check_webotenv(env: gym.Env):
+    """Main check env function."""
     assert isinstance(env, gym.Env)
     _check_spaces(env)
 
@@ -58,12 +56,13 @@ def check_webotenv(env: gym.Env):
     env.reset()
     check_run(env, action_space)
 
+
 if __name__ == "__main__":
     config = wg.WbtConfig()
     config.world_size = 8
     config.num_obstacles = 2
     config.sim_mode = wg.config.SimSpeedMode.RUN
-    #Test Webotenv 
+    #Test Webotenv
     env = wg.WbtGym(config=config)
 
     check_webotenv(env)
