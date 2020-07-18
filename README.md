@@ -4,7 +4,7 @@
 ![controller](https://github.com/fabianpedd/ees-pees/workflows/controller/badge.svg)
 ![webots](https://github.com/fabianpedd/ees-pees/workflows/webots/badge.svg)
 ![integration](https://github.com/fabianpedd/ees-pees/workflows/integration/badge.svg)  
-(currently all failing because we ran out of Github Action minutes.)
+(Currently all failing because we ran out of Github Action minutes.)
 
 ## Architecture
 
