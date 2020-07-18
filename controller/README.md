@@ -11,7 +11,7 @@ The `src/` and `include/` directories are further split into a `webots` director
 
 A general data flow diagram can be seen here:
 
-![](controller-arch.jpg =150x)
+<img src="controller-arch.jpg" width="70%">
 
 `main` launches the `webots_worker` and the `backend_worker`. They in turn establish a connection using `wb_com`/`tcp` and `backend_com`/`udp` respectively. Data then flows from "left to right" and uses the itc structs to cross between the webot facing and the backend facing side. Commands travel from "right to left" and also use the itc structs. Depending on whether the command is continuous or discrete it takes a slightly different path through the "control chain" which computes the appropriate control output that is send to the robot in webots.
 
