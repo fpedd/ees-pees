@@ -18,7 +18,7 @@ The organization and the overall architecture can be seen here:
 
 On top of the above mentioned three main directories we have the following directories:
 * `scripts/` scripts to manually test the robot.
-* `trainingruns/` contains model and logging data from out training runs.
+* `trainingruns/` contains model and logging data from our training runs.
 * `UseMe/` prominent models and examples of our achievements.
 * `.github/` CI scripts used by Github Actions.
 
