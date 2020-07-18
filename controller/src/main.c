@@ -41,7 +41,7 @@ int main(int argc, char **argv) {
 	// Start threads that communicate with robot and backend
 	pthread_t webot_worker_thread, backend_worker_thread;
 
-	printf("MAIN: Starting threads from main \n");
+	printf("MAIN: Starting threads\n");
 
 	int ret1 = pthread_create(&webot_worker_thread, NULL, &webot_worker, &arg_struct);
 	int ret2 = pthread_create(&backend_worker_thread, NULL, &backend_worker, &arg_struct);
