@@ -13,6 +13,8 @@ The repository is split up into three main directories:
 * `controller/` code for the external controller (C/C++).
 * `backend/` code for the backend (Python).
 
+For more information about each directory, its contents and its functions, please consult the corresponding readme found in each directory.
+
 The organization and the overall architecture can be seen here:  
 <img src="overview-arch.jpg" width="100%">
 
@@ -21,8 +23,6 @@ On top of the above mentioned three main directories we have the following direc
 * `trainingruns/` contains model and logging data from our training runs.
 * `UseMe/` prominent models and examples of our achievements.
 * `.github/` CI scripts used by Github Actions.
-
-For more information about each directory, its contents and its functions, please consult the corresponding readme found in each directory.
 
 The `UserGuide.md` will help you set everything up and get started with our models and training.
 
