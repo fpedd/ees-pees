@@ -24,7 +24,7 @@ On top of the above mentioned three main directories we have the following direc
 * `UseMe/` prominent models and examples of our achievements.
 * `.github/` CI scripts used by Github Actions.
 
-The `UserGuide.md` will help you set everything up and get started with our models and training.
+The [`UserGuide.md`](./UserGuide.md) will help you set everything up and get started with our models and training.
 
 
 ## Version Control
