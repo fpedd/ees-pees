@@ -96,18 +96,10 @@ typedef struct {
 
 
 ### Backend
-
-# TODO rewrite this
-The protocol should (for now) run over UDP. UDP has a checksum build in. So if a
-packet arrives, it is intact. On top of that we have to ensure that:
-* when we have no packet / communication for a certain time we will timeout and
-  go into a failsafe state
-* that packets arrive in order, so old packets get discarded
-* check how much delay we have on the line and handle that accordingly
-
-# TODO rewrite bis hier
 We use two types of messages. One that transmits the current data to the backend agent and the response the agent sends back to the controller containing a new command and command type.
 Variables inside the messages with `(internal)` next to them should never be written by the application. These get filled by the transmission protocol. They can however be read.
+
+The backend protocol is run over udp to ensure real time behavior. On top of udp we have build several error detection mechanisms that allow us to determine the quality of our connection and then act appropriately. 
 
 ##### external controller --> backend
 ```
