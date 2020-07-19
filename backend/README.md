@@ -1,6 +1,6 @@
 # EES-PEES Robot Project Backend
 
-## Overview
+## Overview backend
 * fakegym -> code and notebooks to train and run a RL agent on our self created fake environment
 * research -> old notebooks with our first attempts to create RL agents
 * test -> unit and integration tests for the webots environment and fake environments
@@ -9,6 +9,15 @@
 
 For insights into the fake environment, research or the test please see the readme for the specific areas in the regarding folder.
 In the following you can find a closer view on the functionalities of the webotsgym and what is possible from a more technical perspective. 
+
+
+## Overview Readme
+* Webotsgym -> how to setup an environment and add different modular input
+* Reward class -> class to calculate the reward of each action for RL and when episode is finished
+* Action class -> three different default action classes for discrete and continuous environments
+* Observation class -> two different observation classes with data from webots environment
+* Communication -> classes which manage the communication with external controller and supervisor for training and test runs
+* Use of Webotsgym -> how to run training and test runs with customized reward, action and observation classes
 
 ## Webotsgym
 * Goal: create a openai-gym-wrapper around the communication to Webots (http://gym.openai.com/docs/)
