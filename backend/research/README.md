@@ -7,6 +7,8 @@ The code is not refactored, covered by testcases or in any way part of our final
 ## Source of the code
 
 research_DDQN_keras: https://towardsdatascience.com/reinforcement-learning-w-keras-openai-dqns-1eed3a5338c
+
 research_DDPG_tensorflow: 
+
 research_DQN_stable_baseline: https://stable-baselines.readthedocs.io/en/master/modules/dqn.html & https://github.com/openai/baselines
 
