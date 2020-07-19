@@ -1,4 +1,24 @@
-# EES-PEES Robot Project Backend    
+# EES-PEES Robot Project Backend
+
+## Overview
+* fakegym -> code and notebooks to train and run a RL agent on our self created fake environment
+* research -> old notebooks with our first attempts to create RL agents
+* test -> unit and integration tests for the webots environment and fake environments
+* webotsgym -> heart of the backend with code to train and run a RL agent on the webots environment
+* james.py -> wrapper class to control the robot on your own in the webots environment
+
+For insights into the fake environment, research or the test please see the readme for the specific areas in the regarding folder.
+In the following you can find a closer view on the functionalities of the webotsgym and what is possible from a more technical perspective. 
+
+## Webotsgym
+The webotsgym is divided in the creation of a webots environment with the options to easily swap reward, observation and action spaces and the communication of the backend with the supervisor, external controller and webots. Everything is built in a modular way to switch between the different approaches (discrete and continuous) and run the training and test runs from the backend without further knowledge about the external controller or webots.
+
+Independent of the action space (discrete, continuous) or the purpose (training, test run) first a new environment has to be initialized.
+
+### Environment webotsgym/env/webotenv.py
+Setup
+
+
 
 
 ## steps for training using jupyter notebook
