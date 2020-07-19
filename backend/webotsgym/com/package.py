@@ -7,6 +7,8 @@ from webotsgym.env.action import ActionOut
 
 
 class PacketError(IntEnum):
+    """Create ENUM class for packet errors."""
+
     UNITILIZED = -1
     NO_ERROR = 0
     SIZE = 1
@@ -16,6 +18,8 @@ class PacketError(IntEnum):
 
 
 class PacketType(IntEnum):
+    """Create ENUM class for packet types."""
+
     UNDEF = 0
     COM = 1
     REQ = 2
@@ -24,6 +28,8 @@ class PacketType(IntEnum):
 
 
 class SafetyType(IntEnum):
+    """Create ENUM class for safety types."""
+
     ON = 0
     OFF = 1
 
@@ -31,7 +37,7 @@ class SafetyType(IntEnum):
 class PacketIn():
     """Packet received from the external controller.
 
-    Attributes
+    Attributes:
     ----------
     error
     count
@@ -47,7 +53,9 @@ class PacketIn():
     distance
 
     """
+
     def __init__(self, config, buffer=None):
+        """Initialize PacketIn class."""
         self.config = config
         self.buffer = buffer
         self.error = PacketError.UNITILIZED
@@ -74,6 +82,7 @@ class PacketIn():
         self.distance = np.roll(self.distance, 180)
 
     def _check_success(self):
+        """Check if packet communication was succesful."""
         self.error = PacketError.NO_ERROR
         if len(self.buffer) != self.config.PACKET_SIZE:
             self.error = PacketError.SIZE
@@ -94,8 +103,11 @@ class PacketOut():
     action : ActionOut
 
     """
-    def __init__(self, msg_cnt, every_x, disable_safety, packet_type, discrete_move,
-                 direction_type, action: ActionOut = ActionOut(action=(0, 0))):
+
+    def __init__(self, msg_cnt, every_x, disable_safety, packet_type,
+                 discrete_move, direction_type,
+                 action: ActionOut = ActionOut(action=(0, 0))):
+        """Initialize PacketOut class."""
         self.msg_cnt = msg_cnt
         self.every_x = every_x
         self.disable_safety = int(disable_safety)
@@ -105,6 +117,7 @@ class PacketOut():
         self.action = action
 
     def pack(self):
+        """Extract data from packet struct."""
         data = struct.pack('Qdiiiiiff',
                            self.msg_cnt,
                            time.time(),

@@ -24,7 +24,9 @@ class WbtState():
     distance
 
     """
+
     def __init__(self, config, packet_in):
+        """Initialize WbtState class."""
         self.config = config
         self.valid = False
         self.packet = packet_in
@@ -48,11 +50,12 @@ class WbtState():
             self.valid = True
 
     def get_grid_distances(self, num):
+        """Get lidar data for amount of actions in grid action class."""
         every = int(360 / num)
         return self.lidar_absolute[0:-1:every]
 
     def get_pre_action(self):
-        """Get previous value for direction and speed
+        """Get previous value for direction and speed.
 
         Returns
         -------
@@ -94,16 +97,19 @@ class WbtState():
 
     @property
     def touching(self):
+        """Get info if obstacle was hit with helper function."""
         if self._touching != 0:
             return True
         return False
 
     @property
     def lidar_absolute(self):
+        """Get lidar data in absolute values."""
         return np.roll(self.distance, self.heading_idx)
 
     @property
     def lidar_relative(self):
+        """Get lidar data in relative values."""
         return self.distance
 
     @property
@@ -117,6 +123,7 @@ class WbtState():
 
     @property
     def crash(self) -> bool:
+        """Get information if we crashed into an obstacle."""
         if int(self.touching) == 1:
             return True
         return False
