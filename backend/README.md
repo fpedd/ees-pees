@@ -7,7 +7,7 @@
 * webotsgym -> heart of the backend with code to train and run a RL agent on the webots environment
 * james.py -> wrapper class to control the robot on your own in the webots environment
 
-For insights into the fake environment, research or the test please see the readme for the specific areas in the regarding folder.
+For insights into the fake environment, research or the test please have a look into the regarding folder.
 In the following you can find a closer view on the functionalities of the webotsgym and what is possible from a more technical perspective. 
 
 
@@ -33,6 +33,9 @@ Config options of interest:
 * num_obstacles : integer 	-> sets the amount of obstacle in the webots world
 * world_size : integer		-> measures of webots world, the created world is a square of world_size x world_size in grids
 * world_scaling : integer	-> sets the size of the grids in meter
+* timeout_after : float		-> to avoid problems during the training we reset the environment every 5 seconds after a timeout (no package received)*
+
+*With timeout_after = 0 you can deactivate this option because also a break would initialize the reset directly after 5 seconds.
 
 
 ### Current Configurations - webotsgym/config.py
@@ -44,6 +47,7 @@ Config options of interest:
         self.wait_env_creation = 0.5  # in sec
         self.wait_env_reset = 0.5  # in sec
         self.sim_step_every_x = 1  # number of timesteps until next msg is send
+	self._timeout_after = 0  # in sec
 
         # ------------------------ External Controller ------------------------
         self.IP = "127.0.0.1"
@@ -366,11 +370,3 @@ In the same way as we altered the reward class we can also setup a new action or
 * Grid action class: webotsgym/env/grid/action.py
 * Continuous observation class: webotsgym/env/observation/observation.py
 * Grid observation class: webotsgym/env/grid/observation.py
-
-
-<!-- ## Fake environment - environment.py
-* `import environment`
-* There are currenty 3 fake environments available: `FakeEnvironmentMini` (Gridsize: 10x10), `FakeEnvironmentMedium` (50x50) and `FakeEnvironmentLarge` (100x100). To import them use for example: `env = environment.FakeEnvironmentMedium()`.
-* Each environment takes *optional* 2 arguments: (1) `num_of_sensors` - in how many evenly spaces directions should the lidar return values, should be a multiple of 4 and (2) `obstacles_each` - how many random obstacles should be placed horizontally AND vertically. Maze could be unsolvable. **The possible directions the roboter can take always equals `num_of_sensors`**.
-* To **plot** the current environment with obstacles, target and robotor call `env.render()`.
-* The next **step** is performed via `env.step(action)`. The argument `action` must be of the form (`orientation_id`, `step_len`). `orientation_id` describes the direction the roboter should take. (e.g for `num_of_sensors=4`, 0:E, 1:S, 2:W, 3:N. For`num_of_sensors=8` it becomes 0:E, 1:SE, 2:S ,..., 6:N, 7:NE). `step_len` describes roughly how many steps of the grid to take. The `step()` function returns `state, reward, done, {}` as in openai Gym. `state` is a numpy array with `[pos[0], pos[1], target[0], target[1], distance0, distance1, .. distanceN-1]`. -->
