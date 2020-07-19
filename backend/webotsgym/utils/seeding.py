@@ -3,7 +3,20 @@ import numpy as np
 
 
 def set_random_seed(apply=False):
-    """Use current time to set seed to something random."""
+    """Use current time to set seed to something random.
+
+    Parameter:
+    ---------
+    apply : boolean
+        Boolean to randomize created seed
+        Default : False -> seed doesn't get randomized
+
+    Return:
+    -------
+    integer
+        created seed (randomized or not depending on apply)
+
+    """
     t = 1000 * time.time()
     seed = int(t) % 2**16
     if apply is True:

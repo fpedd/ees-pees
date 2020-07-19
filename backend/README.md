@@ -4,7 +4,6 @@
 ## steps for training using jupyter notebook
 * `conda activate spinningup`
 * `jupyter notebook`
-*
 
 ## webotsgym
 * Goal: create a openai-gym-wrapper around the communication to Webots (http://gym.openai.com/docs/)

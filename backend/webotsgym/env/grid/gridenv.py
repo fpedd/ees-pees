@@ -11,9 +11,29 @@ import webotsgym.utils as utils
 
 
 class WbtGymGrid(WbtGym):
+    """Create environment class for the grid action.
+
+    Parameters
+    ----------
+    seed : integer
+        created seed for environment
+
+    action_class : WbtActGrid
+        action class for the grid environment
+
+    evaluate_class : WbtRewardGrid
+        reward class for the grid environment
+
+    observation_class : WbtObsGrid
+        observation class for the grid environment
+
+    The rest of parameters are all the same as for the normal environment.
+
+    """
     def __init__(self, seed=None, gps_target=(1, 1),
                  train=True, evaluate_class=WbtRewardGrid,
                  config: WbtConfig = WbtConfig()):
+        """Initialize WbtGymGrid class."""
         config.world_scaling = 0.5
         super(WbtGymGrid, self).__init__(seed=seed,
                                          gps_target=gps_target,
@@ -28,7 +48,6 @@ class WbtGymGrid(WbtGym):
     def step(self, action):
         """Perform action on environment.
 
-
         Safety in grid world is handled by not allowing actions in a direction
         where zero possible steps are possible.
 
@@ -37,7 +56,6 @@ class WbtGymGrid(WbtGym):
         action : int (0, 1, 2, 3)
             Action from RL agent to be send via external controller. The action
             from the agent is mapped via WbtActGrid.
-
 
         Returns
         -------
@@ -103,8 +121,10 @@ class WbtGymGrid(WbtGym):
 
     @property
     def gps_visited_count(self):
+        """Get visited count."""
         return self.visited_count[self.gps_actual_scaled]
 
     @property
     def gps_actual_scaled(self):
+        """Get actual gps scladed."""
         return tuple(np.round(0.5 + np.array(self.gps_actual) * 2).astype(int))

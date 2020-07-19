@@ -1,5 +1,9 @@
 # EES-PEES Robot Project Controller
 
+## General
+The external controller consists of two parallely running threads, `webot_worker` and `backend_worker`. Both of them communicate by using externally defined message (itc) structs that are protected from simultaneous access using mutexes. The general idea is that the `webot_worker` receives sensor data from the robot in webots, re-formats it to the format the backend needs and puts it into the corresponding above mentioned message struct for the `backend_worker` to read it. Then it continues to read the values the `backend_worker` left for it and uses those to calculate the new motor control settings for the robot using a PID controller and do safety logic. Afterwards it sends the new commands to the webots controller. At the same time the `backend_worker` waits for the backend to either request the newest sensor data, send updated speed and heading, or both.
+
+The `webot_worker` works at the frequency of the simulation, so it does one loop per timestep. The `backend_worker`, on the other hand, works at a variable frequency, determined by the request type used by the backend (see below for more information).
 
 ## Architecture
 The controller code is split up into three directories:
@@ -13,14 +17,9 @@ A general data flow diagram can be seen here:
 
 <img src="controller-arch.jpg" width="100%">
 
-`main` launches the `webots_worker` and the `backend_worker`. They in turn establish a connection using `wb_com`/`tcp` and `backend_com`/`udp` respectively. Data then flows from "left to right" and uses the itc structs to cross between the webot facing and the backend facing side. Commands travel from "right to left" and also use the itc structs. Depending on whether the command is continuous or discrete it takes a slightly different path through the "control chain" which computes the appropriate control output that is send to the robot in webots.
+`main` launches the `webot_worker` and the `backend_worker`. They in turn establish a connection using `wb_com`/`tcp` and `backend_com`/`udp` respectively. Data then flows from "left to right" and uses the itc structs to cross between the webot facing and the backend facing side. Commands travel from "right to left" and also use the itc structs. Depending on whether the command is continuous or discrete it takes a slightly different path through the "control chain" which computes the appropriate control output that is send to the robot in webots.
 
 We also have a `Makefile` to compile the code in the root directory.
-
-## General functioning
-The external controller consists of two parallely running threads, `webot_worker` and `backend_worker`. Both of them communicate by using externally defined message (itc) structs that are protected from simultaneous access using mutexes. The general idea is that the `webot_worker` receives sensor data from the robot in webots, re-formats it to the format the backend needs and puts it into the corresponding above mentioned message struct for the `backend_worker` to read it. Then it continues to read the values the `backend_worker` left for it and uses those to calculate the new motor control settings for the robot using a PID controller and do safety logic. Afterwards it sends the new commands to the webots controller. At the same time the `backend_worker` waits for the backend to either request the newest sensor data, send updated speed and heading, or both.
-
-The `webot_worker` works at the frequency of the simulation, so it does one loop per timestep. The `backend_worker`, on the other hand, works at a variable frequency, determined by the request type used by the backend (see below for more information).
 
 ## Usage
 Use the `Makefile` in the root directory to compile the code. A new `build` directory will be created. The build directory is not part of the version control system and should not be added or commited via git (we have `/build` added to our `.gitignore`). You can then execute the resulting binary file called `controller` in the `/build` directory.

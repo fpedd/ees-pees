@@ -47,6 +47,7 @@ class WbtActDiscrete(WbtAct):
 
     def __init__(self, config, directions=3, range_direction=1, speeds=3,
                  range_speed=1, mode="flatten", relative=True):
+        """Initialize WbtActDiscrete action class."""
         super(WbtActDiscrete, self).__init__()
         self.config = config
         self.type = "normal"
@@ -64,6 +65,7 @@ class WbtActDiscrete(WbtAct):
 
     @property
     def number_of_actions(self):
+        """Set number of actions for flatten or tuple mode."""
         if self.mode == "flatten":
             return self.action_tuple[0] * self.action_tuple[1] + 1
         if self.mode == "tuple":
@@ -71,6 +73,7 @@ class WbtActDiscrete(WbtAct):
         return None
 
     def _set_action_space(self):
+        """Set action space for flatten or tuple mode."""
         if self.mode == "flatten":
             self.action_space = Discrete(self.action_tuple[0]
                                          * self.action_tuple[1])  # noqa W503

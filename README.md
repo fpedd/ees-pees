@@ -3,87 +3,48 @@
 ![backend](https://github.com/fabianpedd/ees-pees/workflows/backend/badge.svg)
 ![controller](https://github.com/fabianpedd/ees-pees/workflows/controller/badge.svg)
 ![webots](https://github.com/fabianpedd/ees-pees/workflows/webots/badge.svg)
-![integration](https://github.com/fabianpedd/ees-pees/workflows/integration/badge.svg)
+![integration](https://github.com/fabianpedd/ees-pees/workflows/integration/badge.svg)  
+(Currently all failing because we ran out of Github Action minutes.)
 
-## Setup
-In order for our software (compiler, python, etc.) to know where your webots
-installation is located at, you will need to set an environment variable. The
-name of the environment variable you need to set is: `WEBOTS_HOME`. It should
-point to your webots installation. If you installed webots the "normal" way (see below),
-setting the variable will look like this:
-`export WEBOTS_HOME=/usr/local/webots`
-In order to not always have to type and execute that in your terminal,
-you can add this command to the bottom of your `.bashrc` file. You can find this
-file in your home directory. The contents of the `.bashrc` get executed every time
-you open a new terminal.
+## Architecture
 
-The bottom of your `.bashrc` should look something like this.
-```
-...
+The repository is split up into three main directories:
+* `webots/` code that runs in the webots simulator / webots controller (C/C++).
+* `controller/` code for the external controller (C/C++).
+* `backend/` code for the backend (Python).
 
-# Webots Installation
-export WEBOTS_HOME=/usr/local/webots
-```
+For more information about each directory, its contents and its functions, please consult the corresponding readme found in each directory.
 
-A tutorial on how to install webots can be found [here](https://cyberbotics.com/doc/guide/installation-procedure). Please open webots once and do the setup before continuing.
+The organization and the overall architecture can be seen here:  
+<img src="overview-arch.jpg" width="100%">
 
-You will probably need to install a bunch of python packages, use `pip` for that. Maybe some ubuntu / linux packages as well.  
+On top of the above mentioned three main directories we have the following directories:
+* `scripts/` scripts to manually test the robot.
+* `trainingruns/` contains model and logging data from our training runs.
+* `UseMe/` prominent models and examples of our achievements.
+* `.github/` CI scripts used by Github Actions.
 
-## Usage
-To start the communication stack you can run `./run.sh` in the root directory of
-the repository. This should compile the Internal and the External Controller.
-After that is done, it will start the External Controller, then the Webots
-Environment with the Internal Controller and after that the Python Backend.
+The [`UserGuide.md`](./UserGuide.md) will help you set everything up and get started with our models and training.
 
-You will see three corresponding terminal open with the three processes mentioned
-above run from each terminal. Inside the top terminal the Python Backend should
-be running.
 
-To stop all processes, just run `./kill.sh`. This will kill all three processes.
+## Version Control
 
-Before you will be able to run the scripts you may need to run:  
-`chmod +x kill.sh`  
-`chmod +x run.sh`
+We have three main branches with the same names as the three main directories (`webots`,`controller`,`backend`). Although they are not necessary, they simplify and streamline working on the different parts of our architecture while helping to prevent big merge conflicts. If we are ready for a system test, we will pull / merge all three (or only the needed) branches into the `master` branch. There we can work on getting the interfaces running and test the system as a hole.
 
-## General
-This repository contains all relevant information for our EES+PEES project.
+The basic branch / merge architecture should look something like this:
 
-It is split up into three directories:
-* `webots/`, code that runs in the webots simulator / webots controller (C/C++)
-* `controller/`, code for the external controller (C/C++)
-* `backend/`, code for the backend (Python)
+<img src="merge-concept.jpg" width="100%">
 
-There is an organizational directory (mostly for meeting pre and post documentation):
-* `orga/`
+**Please never merge branches between any of the three main "zones". Only merge between branches inside these zones or between the three main branches and the `master` branch. This way we can reduce the risk of merge conflicts as much as possible.**
 
-We also have a directory for resources (like papers and similar stuff):
-* `resources/`
-
-We have three main branches with the same names as the three main directories
-(`webots`,`controller`,`backend`).
-Although they are not necessary, they simplify and streamline working on the different
-parts of our architecture. If we are ready for a system test, we will pull / merge
-all three (or only the needed) branches into the `master` branch.
-There we can work on getting the interfaces running and test the system as a hole.
-The basic Branch / Merge architecture should look something like this:
-
-![merge concept](resources/image/merge-concept.jpg)
-
-**Please never merge branches between any of the three main "Zones". Only merge
-between branches inside these Zones or between the three main branches and the
-`master` branch. This way we can reduce the risk of merge conflicts as much as
-possible.**
-
-If you want to test new crazy stuff, please do so in your own test branch. Please use
-your first name as the name for your test branch. After you are done testing you can
-copy or merge your changes into one of the corresponding three branches.
+If you want to test new crazy stuff, please do so in your own test branch. Please use your first name as the name for your test branch. After you are done testing you can copy or better merge your changes into one of the corresponding three branches.
 
 
 ## C/C++ Coding Guide
+(Partially based on some guide from someones Github repository I cant remember.)
 
 #### Whitespace
-* Indent with tabs, not spaces. This way we will not stay consistent with
-  Python and Webots, but who cares :D
+* Indent with tabs, not spaces.
 * End file with a new line (as requested per C99 standard).
 * Use empty line to divide code into logical chunks.
 * Put spaces around binary operators : `x <= 2 && y > 10` is way easier to read than `x<=2&&y>10`.
@@ -154,9 +115,11 @@ if (x == 42) {
 * Put all locally needed function declarations and `#define`s in a `.c` file with the same name.
 * Put all function implementations in the `.c` file with the same name.  
 * Use classic `#ifndef` include guards in header files (as seen below).
-* This way the code interface and implementation are cleanly seperated.
+* This way the code interface and implementation are cleanly separated.
 
 #### Interaction with C++
+(Only applicable if using C and C++ together.)
+
 To allow for easy inclusion of your headers in C++ files, you should put `extern "C"` in your header.
 If you don't do this, you will get weird link time error because of C++ name mangling.
 
