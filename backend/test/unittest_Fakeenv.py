@@ -20,10 +20,10 @@ class TestFakeEnv(unittest.TestCase):
         """Test some basic things."""
         env = self.env
         self.assertEqual(self.env.field.shape, (self.N, self.N),
-                         'The size of the field must be equal to the size of environment'
+                         'The size of field must be equal to the size of env'
                          )
         assert type(env.action_space) is gym.spaces.discrete.Discrete, \
-            'The type of action space must be correspond to gym.space.discrete.Discrete'
+            'The type of action space must be discrete action space'
         self.assertEqual(env.obs.get(env).shape, (10, ),
                          'The size of observation must be equal to 10')
         self.assertEqual(len(env.gps_actual), 2,
@@ -42,7 +42,7 @@ class TestFakeEnv(unittest.TestCase):
         pos_target2 = env.gps_target
         self.assertFalse(pos_actual1 == pos_actual2 and pos_target1
                          == pos_target2 and (obs_1 == obs_2).all(),
-                         'The position of start point/the position of target point/infos of observation must be different after reset the environment'
+                         'start/target pos and observation differs after reset'
                          )
 
     def test_step(self):
@@ -70,12 +70,12 @@ class TestFakeEnv(unittest.TestCase):
                            + np.square(actual[1] - target[1]))
         self.assertEqual(env.get_target_distance(normalized=False),
                          distance,
-                         'The function of get_target_distance(normalized=False) must calculate correct distance'
+                         'Get_target_distance(False) calc. correct distance'
                          )
         distance_normalize = distance / (np.sqrt(2) * env.N)
         self.assertEqual(env.get_target_distance(normalized=True),
                          distance_normalize,
-                         'The function of get_target_distance(normalized=True) must calculate correct normalized distance'
+                         'Get_target_distance(True) calc. correct distance'
                          )
 
     def test_gps_visited_count(self):
@@ -87,12 +87,12 @@ class TestFakeEnv(unittest.TestCase):
         if (rx, ry != env.gps_actual):
             env.step(2)
             self.assertEqual(env.gps_visited_count, vc + 1,
-                             'The value of gps_visited_count must plus 1 when the agent get to the same position'
+                             'GPS_visited count should be > 1'
                              )
             env.step(0)
             env.step(2)
             self.assertEqual(env.gps_visited_count, vc + 2,
-                             'The value of gps_visited_count must plus 1 when the agent get to the same position'
+                             'GPS_visited count should be > 2'
                              )
 
     def test_reset_with_seed(self):
@@ -106,7 +106,7 @@ class TestFakeEnv(unittest.TestCase):
         pos_target2 = env.gps_target
         self.assertTrue(pos_actual1 == pos_actual2 and pos_target1
                         == pos_target2 and (obs_1 == obs_2).all(),
-                        'The position of start point/the position of target point/infos of observation must be same after reset the environment with same seed'
+                        'start/target pos and observation are same (same seed)'
                         )
 
 
