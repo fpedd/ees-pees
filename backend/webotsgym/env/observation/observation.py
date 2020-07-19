@@ -25,6 +25,7 @@ class WbtObs():
     total:     22
 
     """
+
     def __init__(self, env):
         """Initialize WbtObsGrid class with created environment."""
         self.env = env

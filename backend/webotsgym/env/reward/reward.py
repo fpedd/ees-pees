@@ -150,7 +150,7 @@ class WbtRewardGrid(WbtReward):
 
         Description:
         ------------
-        Fpr the grid world the function sets the episode on done if
+        For the grid world the function sets the episode on done if
         - more than 200 steps are performed.
         - total reward went to lower than -1000
         - the target zone was reached

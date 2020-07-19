@@ -11,7 +11,7 @@ class WbtActContinuous(WbtAct):
     ----------
     config : WbtConfig
     bounds : tuple (direction, speed)
-        Restrict the possbile action space symetrtically. For example setting
+        Restrict the possbile action space symmetrically. For example setting
         bounds = (0.7, 0.3) will yield action space with possbile direction
         moves in [-0.7, 0.7] and speeds in [-0.3, 0.3]. Property is only used
         in relative actions. For absolute actions bounds are overwritten to
