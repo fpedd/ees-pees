@@ -4,10 +4,27 @@ from gym.spaces import Discrete
 class WbtActGrid():
     """Map proposed fake environment moves to webots.
 
+    Mapping:
+    ------------
     0: Right -> Up    (1)
     1: Down  -> Left  (2)
     2: Left  -> Down  (3)
     3: Up    -> Right (4)
+
+    Parameters:
+    ----------
+    config : WbtConfig
+
+    action_space : gym.spaces
+        action space from openai gyms to use stablebaselines
+        for grid actions the action space is 4 (see mapping)
+
+    direction_type : string
+        only dummy here because not needed in grid actions
+
+    type : string
+        action type has to be grid here in WbtActGrid class.
+    
     """
     def __init__(self, config=None):
         """Initialize WbtActGrid class."""
