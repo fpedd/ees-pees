@@ -10,7 +10,7 @@ class WbtObsGrid(WbtObs):
     Description:
     ------------
     The grid environment has different observation space as the continuous.
-    The lidar data is mapped to the for action direction
+    The lidar data is mapped to the 4 action direction
     and the observation space has a shape of 10.
 
     gps_actual:         2  -> gps from current position
