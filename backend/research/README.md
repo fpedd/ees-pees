@@ -8,7 +8,7 @@ The code is not refactored, covered by testcases or in any way part of our final
 
 research_DDQN_keras: https://towardsdatascience.com/reinforcement-learning-w-keras-openai-dqns-1eed3a5338c
 
-research_DDPG_tensorflow: 
+research_DDPG_tensorflow: https://github.com/MorvanZhou/Reinforcement-learning-with-tensorflow/blob/master/contents/9_Deep_Deterministic_Policy_Gradient_DDPG/DDPG.py
 
 research_DQN_stable_baseline: https://stable-baselines.readthedocs.io/en/master/modules/dqn.html & https://github.com/openai/baselines
 
