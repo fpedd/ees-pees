@@ -8,6 +8,8 @@ HOME_PATH = str(pathlib.Path(FILE_PATH).parents[3])
 
 
 class ExtCtrl():
+    """Create class to communicate with external controller."""
+
     def init(self):
         self.compile()
         self.start()
