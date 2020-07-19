@@ -228,10 +228,8 @@ class WbtGym(gym.Env):
             self._init_com()
             try:
                 self.get_data()
-            except socket.timeout:
-                print("Didn't receive data from Supervisor! [Timeout]. Resetting.")
-                obs = self.reset()
-                return False
+            except socket.timeout:  # reset did not work
+                return self.reset()
 
             if self.get_target_distance(False) < 0.05:
                 self.reset()

@@ -7,8 +7,6 @@ from webotsgym.env.grid.observation import WbtObsGrid
 from webotsgym.config import WbtConfig
 from webotsgym.env.reward import WbtRewardGrid
 
-import webotsgym.utils as utils
-
 
 class WbtGymGrid(WbtGym):
     """Create environment class for the grid action.
@@ -35,6 +33,7 @@ class WbtGymGrid(WbtGym):
                  config: WbtConfig = WbtConfig()):
         """Initialize WbtGymGrid class."""
         config.world_scaling = 0.5
+        config._timeout_after = 5  # very rare error catching
         super(WbtGymGrid, self).__init__(seed=seed,
                                          gps_target=gps_target,
                                          train=train,
@@ -86,16 +85,6 @@ class WbtGymGrid(WbtGym):
             self.distances.append(self.get_target_distance())
             self._update_history()
             self.visited_count[self.gps_actual_scaled] += 1
-
-            distance_traveled = 0
-            if self.steps_in_run > 1:
-                gps_old = self.history[-2].gps_actual
-                distance_traveled = utils.euklidian_distance(gps_old,
-                                                             self.gps_actual)
-
-            if distance_traveled > 0 and distance_traveled < 0.4:
-                print(self.com.packet.sim_time)
-                raise RuntimeError("Error in Grid world!")
 
             reward = self.calc_reward()
             self.rewards.append(reward)

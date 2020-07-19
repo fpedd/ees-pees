@@ -53,7 +53,7 @@ class WbtConfig():
         self.wait_env_creation = 0.5  # in sec
         self.wait_env_reset = 0.5  # in sec
         self.sim_step_every_x = 1  # number of timesteps until next msg is send
-        self.timeout_after = 5  # in sec
+        self._timeout_after = 0  # in sec
 
         # ------------------------ External Controller ------------------------
         self.IP = "127.0.0.1"

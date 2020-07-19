@@ -1,5 +1,4 @@
 import socket
-import time
 
 from webotsgym.config import WbtConfig, DiscreteMove
 from webotsgym.com.package import PacketIn, PacketOut, PacketType, SafetyType
@@ -31,7 +30,8 @@ class Communication():
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.sock.bind((self.config.IP, self.config.BACKEND_PORT))
-        self.sock.settimeout(self.config.timeout_after)
+        if self.config._timeout_after > 0:
+            self.sock.settimeout(self.config._timeout_after)
 
     # -------------------------------  RECV -----------------------------------
     def recv(self):
