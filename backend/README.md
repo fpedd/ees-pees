@@ -11,17 +11,19 @@ For insights into the fake environment, research or the test please see the read
 In the following you can find a closer view on the functionalities of the webotsgym and what is possible from a more technical perspective. 
 
 ## Webotsgym
+* Goal: create a openai-gym-wrapper around the communication to Webots (http://gym.openai.com/docs/)
+
 The webotsgym is divided in the creation of a webots environment with the options to easily swap reward, observation and action spaces and the communication of the backend with the supervisor, external controller and webots. Everything is built in a modular way to switch between the different approaches (discrete and continuous) and run the training and test runs from the backend without further knowledge about the external controller or webots.
 
 Independent of the action space (discrete, continuous) or the purpose (training, test run) first a new environment has to be initialized. To initialize a new environment a new config has to be created. The default configurations sets all needed parameters for the communication with the external controller and webots. It also sets metrics/metadata for the environment that will be created.
 
 Config options of interest:
 
-seed : integer			-> option to give a specific and not random seed so that same/different environments can be tested
-sim_mode : SimSpeedMode 	-> increase/decrease the simulation speed in the webots world to train/test faster
-num_obstacles : integer 	-> sets the amount of obstacle in the webots world
-world_size : integer		-> measures of webots world, the created world is a square of world_size x world_size in grids
-world_scaling : integer		-> sets the size of the grids in meter
+* seed : integer		-> option to give a specific and not random seed so that same/different environments can be tested
+* sim_mode : SimSpeedMode 	-> increase/decrease the simulation speed in the webots world to train/test faster
+* num_obstacles : integer 	-> sets the amount of obstacle in the webots world
+* world_size : integer		-> measures of webots world, the created world is a square of world_size x world_size in grids
+* world_scaling : integer	-> sets the size of the grids in meter
 
 
 ### Current Configurations - webotsgym/config.py
@@ -87,16 +89,100 @@ For this class some parameters already have different default classes:
 
 The difference between the input classes of WbtGym and WbtGymGrid you can find in the sections for the specific classes.
 
+### Reward function  
+
+
+## Use of the WebotsGym and swapping of classes
+After the explanation of different modules of our webots environment you can find here some examples for the use of the gym and also the option to overwrite classes directly to alter your own reward functions, action space or observation space: 
+
+### Example 1: Create grid world with own reward function
+Here you can find an example how you can alter your own reward function after creating the default WbtGymGrid.
+First you create normally the configuration then you can create a new reward class (as WbtRewardGrid) and set your own rewards and also when the episode should finish. 
+
+	config = wg.WbtConfig()
+	config.world_size = 8
+	config.num_obstacles = 16
+	config.sim_mode = wg.config.SimSpeedMode.FAST
+
+	class MyEval(wg.WbtRewardGrid):
+	    def __init__(self, env, config, targetband=0.05):
+		super(MyEval, self).__init__(env, config)
+		self.targetband = targetband
+
+	    def calc_reward(self):
+		if self.env.get_target_distance() < self.targetband:
+		    reward = 10000
+		else:
+		    reward = 0
+
+		    # step penalty
+		    target_distance = self.env.get_target_distance(normalized=True)
+		    step_penalty = -1
+		    lambda_ = 5
+		    reward += step_penalty * (1 - np.exp(-lambda_ * target_distance))
+
+		    # visited count penalty
+		    vc = self.env.gps_visited_count
+		    if vc > 3:
+			reward += -0.2 * (vc - 2)**2
+
+		    # touching penalty
+		    if self.env.state.touching is True:
+			reward -= 500
+
+		return reward
+
+	    def check_done(self):
+		if self.env.steps_in_run == 200:
+		    return True
+		if self.env.total_reward < -1000:
+		    return True
+		if self.env.get_target_distance() < self.targetband:
+		    return True
+		return False
+		
+	env = wg.WbtGymGrid(config=config,
+                    evaluate_class=MyEval)
 
 
 
-## steps for training using jupyter notebook
-* `conda activate spinningup`
-* `jupyter notebook`
+### Example 2: Create continuous world with own reward function
+Same procedure as with the first example. This time only in the continuous action space.
 
-## webotsgym
-* Goal: create a openai-gym-wrapper around the communication to Webots (http://gym.openai.com/docs/)
-* `sudo lsof -t -i tcp:10201 | xargs kill -9`
+	config = wg.WbtConfig()
+	config.world_size = 3
+	config.num_obstacles = 0
+	config.sim_mode = wg.config.SimSpeedMode.RUN
+	config.sim_step_every_x = 5
+	
+	class MyEval(wg.WbtReward):
+		def __init__(self, env, config: wg.WbtConfig = wg.WbtConfig()):
+			super(MyEval, self).__init__(env, config)
+
+		def calc_reward(self):
+			if self.env.get_target_distance() < 0.05:
+            			reward = 10000
+        		else:
+            			reward = -1
+        		return reward
+
+		def check_done(self):
+			if self.env.get_target_distance() < 0.05:
+            			return True
+        		if self.env.steps_in_run % 2500 == 0:
+            			return True
+        		return False
+	
+	env = wg.WbtGym(config=config, evaluate_class=MyEval)
+
+
+### Action and observation space
+In the same way as we altered the reward class we can also setup a new action or observation space. For this please take a look into the following files:
+* Continuous action class: webotsgym/env/action/continuous.py
+* Discrete action class: webotsgym/env/action/discrete.py
+* Grid action class: webotsgym/env/grid/action.py
+* Continuous observation class: webotsgym/env/observation/observation.py
+* Grid observation class: webotsgym/env/grid/observation.py
 
 ### environment - webotsgym/environment.py
 * `from webotsgym.environment import webotsgym`
@@ -108,37 +194,6 @@ The difference between the input classes of WbtGym and WbtGymGrid you can find i
     * `observation_class`, used the environment to setup an observation to be fed to the agent in the `step()` function. Specify custom observations in **observation.py**.
 * make a action step by `state, reward, done, {} = env.step(action)`.
 * To get the information of the communication, call appropriate action on `env.com`
-
-### Current Configurations - webotsgym/config.py
-
-    # ----------------------------------------------------------------------
-    # external controller protocol
-    IP = "127.0.0.1"
-    CONTROL_PORT = 6969
-    BACKEND_PORT = 6970
-    PACKET_SIZE = 1480
-    TIME_OFFSET_ALLOWED = 1.0
-    DIST_VECS = 360
-
-    # ----------------------------------------------------------------------
-    # supervisor communication protocol
-    IP_S = "127.0.0.1"
-    PORT_S = 10201
-    PACKET_SIZE_S = 16
-
-    # settable for environment start via supervisor
-    fast_simulation = False
-    num_obstacles = 10
-    world_size = 10
-    seed = None
-
-    # (received) world metadata
-    gps_target = None
-    sim_time_step = 32  # ms
-
-    # known constants
-    lidar_min_range = 0.05
-    lidar_max_range = 3.5
 
 
 ### Interface for automated testing - webotsgym/automate.py
