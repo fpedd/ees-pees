@@ -3,7 +3,18 @@ import matplotlib.pyplot as plt
 
 
 def plot_lidar(x):
-    """Plot lidar data."""
+    """Plot lidar data.
+
+    Description:
+    -----------
+    Plotfunction for the lidar data from the webots env.
+
+    Parameter:
+    ----------
+    x : array
+        lidar data of up to 360 data points
+
+    """
     x = np.flip(x)
     theta = np.linspace(0, 2 * np.pi, len(x), endpoint=False)
     ax = plt.subplot(111, projection='polar')
