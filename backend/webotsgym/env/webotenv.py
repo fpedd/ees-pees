@@ -15,6 +15,30 @@ gym.logger.set_level(40)  # disable lowered precision warning
 
 
 class WbtGym(gym.Env):
+    """Create the webotsgym environment.
+
+    Parameter:
+    ---------
+    config : WbtConfig
+
+    action_class : WbtAct class
+        action class for the environment (grid or continuous)
+        default : WbtActContinuous
+
+    request_start_data : Boolean
+        Boolean to request data from webots
+
+    evaluate_class : WbtReward class
+        reward class for the environment (grid or continuous)
+
+    observation_class : WbtObs class
+        observation class for the environment (grid or continuous)
+
+    train : Boolean
+        Boolean to trigger setup of supervisor for training purposes
+
+    """
+
     def __init__(self,
                  seed=None,
                  gps_target=(1, 1),
@@ -24,6 +48,7 @@ class WbtGym(gym.Env):
                  evaluate_class=WbtReward,
                  observation_class=WbtObs,
                  config: WbtConfig = WbtConfig()):
+        """Initialize WbtGym."""
         super(WbtGym, self).__init__()
         self.seed(seed)
 
@@ -102,9 +127,11 @@ class WbtGym(gym.Env):
     # ==========================        SETUPS       ==========================
     # =========================================================================
     def _init_com(self):
+        """Initialize the communication."""
         self.com = Communication(self.config)
 
     def _setup_train(self):
+        """Setup the supervisor for the training_runs."""
         self.supervisor = None
         if self.train is True:
             # start webots program, establish tcp connection
@@ -115,6 +142,7 @@ class WbtGym(gym.Env):
             self.supervisor.start_env()
 
     def _init_act_rew_obs(self, env):
+        """Initialize the action, reward and observation class for env."""
         # type to instance
         if type(self.action_class) == type:
             self.action_class = (self.action_class)(config=self.config)
@@ -312,10 +340,12 @@ class WbtGym(gym.Env):
 
     @property
     def gps_actual(self):
+        """Set the current gps position."""
         return self.com.state.gps_actual
 
     @property
     def max_distance(self):
+        """Get the max distance in the environment."""
         return np.sqrt(2) * self.config.world_size
 
     @property

@@ -116,7 +116,7 @@ class WbtRewardGrid(WbtReward):
 
         The negative reward is even more decrease if webots signal us that with
         the performed action an object (wall or obstacle) was touched/hit.
-        For this the robot gets a negative reward of another 500.
+        For this the robot gets a reward of another -500.
 
         Return:
         -------
@@ -194,6 +194,38 @@ class WbtRewardContinuousV1(WbtReward):
         super(WbtRewardContinuousV1, self).__init__(env, config)
 
     def calc_reward(self):
+        """Create default reward function for the continuous action space.
+
+        Description:
+        ------------
+        The default reward function is divided into a reward if the robot
+        reaches the target zone (reward up to 1000) and a step reward.
+
+        If the robot reaches the target zone it gets a reward of 500 and
+        up to 500 more depending on the speed the robot has reaching the zone.
+        The slower the robot is the better, so the robot learns to actually
+        stop in the target zone and not only reach it with whatever speed
+        possible.
+
+        The robot gets for each step a reward or penalty depending on the
+        distance to the target zone, if the robot moved during the last step
+        closer to the target zone or more far away from it. If it moved closer
+        it gets a positive reward up to 500.
+        If it moved away from the target zone a reward up to -500.
+
+        If an action was denied by the webots or backend because of safety
+        compliance the robot gets another penalty of -1.
+
+        The negative reward is even more decrease if webots signal us that with
+        the performed action an object (wall or obstacle) was touched/hit.
+        For this the robot gets a reward of another -20.
+
+        Return:
+        -------
+        integer
+            reward associated to action depending of the observation state.
+
+        """
         target_distance = self.env.get_target_distance(False)
         if target_distance < 0.1:
             return 500 + 500 * (1 - abs(self.env.state.speed))
@@ -233,6 +265,27 @@ class WbtRewardContinuousV1(WbtReward):
         return reward
 
     def check_done(self):
+        """Create function which checks if we reached the end of one episode.
+
+        Description:
+        ------------
+        For the continuous space the function sets the episode on done if
+        - 500 or more steps are performed.
+        - total reward went to lower than -1000
+        - the target zone was reached
+        - total reward went to higher than 2000
+
+        With this measures we ensure that the robot resets the environment
+        often enough and learns faster if it got stuck,hit a lot of obstacles
+        or came close enough to the goal.
+
+        Return:
+        -------
+        Boolean
+            True  -> episode is done (finished) after the last action
+            False -> episode is not done and continues with next step
+
+        """
         if self.env.total_reward < -1000:
             return True
 
