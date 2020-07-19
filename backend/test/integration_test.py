@@ -7,7 +7,6 @@ import webotsgym as wg
 
 
 class TestEnvironment(unittest.TestCase):
-
     """Run integration tests for discrete environment."""
 
     def setUp(self):
@@ -24,7 +23,7 @@ class TestEnvironment(unittest.TestCase):
     def tearDown(self):
         """Create final message and close webots."""
 
-        print ('done')
+        print('done')
         os.system('killall -15 webots')
         os.system('killall -15 controller')
         os.system('killall -9 webots')
@@ -32,17 +31,17 @@ class TestEnvironment(unittest.TestCase):
     def test_steps(self):
         """Test num_steps and reset on discrete action env."""
 
-        num_steps = 1
-        num_loops = 3
+        num_steps = 1  # number of steps performed on env
+        num_loops = 3  # number of resets and new epsiodes
         for _ in range(0, num_loops):
             self.env.reset()
             (gps_checker, gps_state, step_checker) = \
                 self.apply_steps(num_steps)
             self.assertEqual(tuple(gps_checker), tuple(gps_state),
-                             'The info of gps_actual after several steps must be precise'
+                             'The robot did steps correctly'
                              )
             self.assertEqual(step_checker, num_steps,
-                             'The value of steps after running must be correct'
+                             'The robot applied the exact number of steps'
                              )
 
     def apply_steps(self, num_steps):

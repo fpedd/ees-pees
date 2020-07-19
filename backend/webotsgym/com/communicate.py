@@ -18,6 +18,7 @@ class Communication():
 
     """
     def __init__(self, config: WbtConfig = WbtConfig()):
+        """Initialize communication class."""
         self.config = config
         self.msg_cnt = 0
         self.packet = None
@@ -27,6 +28,7 @@ class Communication():
 
     # ------------------------------  SETUPS  ---------------------------------
     def _set_sock(self):
+        """Set socket for connection."""
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.sock.bind((self.config.IP, self.config.BACKEND_PORT))
@@ -80,7 +82,8 @@ class Communication():
         """Send action to external controller and get current state.
 
         Main communication method. External controller will respond with new
-        data after (sim_step_every_x * 32) webots-ms."""
+        data after (sim_step_every_x * 32) webots-ms.
+        """
         pack_out = PacketOut(self.msg_cnt, self.config.sim_step_every_x,
                              SafetyType.ON, PacketType.COM_REQ,
                              DiscreteMove.NONE, self.config.direction_type,
@@ -92,7 +95,8 @@ class Communication():
     def send_grid_move(self, move, safety=False):
         """Send grid move to external controller.
 
-        Used for grid communication and WbtGymGrid."""
+        Used for grid communication and WbtGymGrid.
+        """
         if safety is False:
             safety_flag = SafetyType.OFF
         else:

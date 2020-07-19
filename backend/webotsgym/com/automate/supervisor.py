@@ -18,6 +18,8 @@ HOME_PATH = str(pathlib.Path(FILE_PATH).parents[3])
 
 
 class FunctionCode(IntEnum):
+    """Create ENUM function for function codes."""
+
     UNDEFINED = -1
     NO_FUNCTION = 0
     START = 1
@@ -26,12 +28,16 @@ class FunctionCode(IntEnum):
 
 
 class ReturnCode(IntEnum):
+    """Create ENUM function for return codes."""
+
     UNDEFINED = -1
     SUCCESS = 0
     ERROR = 1
 
 
 class WbtCtrl():
+    """Create class to communicate with WebotsController."""
+
     def __init__(self, config: WbtConfig = WbtConfig()):
         self.config = config
         self.sock = None
@@ -161,6 +167,7 @@ class WbtCtrl():
         self.client_sock.send(data)
 
     def print(self):
+        """Print help for connection with WebotController."""
         print("===== WebotCtrl =====")
         print("return_code", self.return_code)
         print("target", self.config.gps_target[0], self.config.gps_target[1])
@@ -169,6 +176,7 @@ class WbtCtrl():
 
 
 def kill_spv_connection(password):
+    """Kill connection with supervisor by password."""
     command = 'lsof -t -i tcp:10201 | xargs kill -9'
     p = os.system('echo %s|sudo -S %s' % (password, command))
     del password

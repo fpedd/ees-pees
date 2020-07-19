@@ -1,4 +1,93 @@
-# EES-PEES Robot Project Backend    
+# EES-PEES Robot Project Backend
+
+## Overview
+* fakegym -> code and notebooks to train and run a RL agent on our self created fake environment
+* research -> old notebooks with our first attempts to create RL agents
+* test -> unit and integration tests for the webots environment and fake environments
+* webotsgym -> heart of the backend with code to train and run a RL agent on the webots environment
+* james.py -> wrapper class to control the robot on your own in the webots environment
+
+For insights into the fake environment, research or the test please see the readme for the specific areas in the regarding folder.
+In the following you can find a closer view on the functionalities of the webotsgym and what is possible from a more technical perspective. 
+
+## Webotsgym
+The webotsgym is divided in the creation of a webots environment with the options to easily swap reward, observation and action spaces and the communication of the backend with the supervisor, external controller and webots. Everything is built in a modular way to switch between the different approaches (discrete and continuous) and run the training and test runs from the backend without further knowledge about the external controller or webots.
+
+Independent of the action space (discrete, continuous) or the purpose (training, test run) first a new environment has to be initialized. To initialize a new environment a new config has to be created. The default configurations sets all needed parameters for the communication with the external controller and webots. It also sets metrics/metadata for the environment that will be created.
+
+Config options of interest:
+
+seed : integer			-> option to give a specific and not random seed so that same/different environments can be tested
+sim_mode : SimSpeedMode 	-> increase/decrease the simulation speed in the webots world to train/test faster
+num_obstacles : integer 	-> sets the amount of obstacle in the webots world
+world_size : integer		-> measures of webots world, the created world is a square of world_size x world_size in grids
+world_scaling : integer		-> sets the size of the grids in meter
+
+
+### Current Configurations - webotsgym/config.py
+
+	# -------------------------- General Settings  ------------------------
+        self._direction_type = DirectionType.STEERING
+        self.relative_action = None  # if set overwrites action class setting
+        self.DIST_VECS = 360  # num of distance vectors
+        self.wait_env_creation = 0.5  # in sec
+        self.wait_env_reset = 0.5  # in sec
+        self.sim_step_every_x = 1  # number of timesteps until next msg is send
+
+        # ------------------------ External Controller ------------------------
+        self.IP = "127.0.0.1"
+        self.CONTROL_PORT = 6969
+        self.BACKEND_PORT = 6970
+        self.PACKET_SIZE = 1492
+        self.TIME_OFFSET_ALLOWED = 1.0
+
+        # ------------------------ Supervisor ------------------------
+        # network settings
+        self.IP_S = "127.0.0.1"
+        self.PORT_S = 10201
+        self.PACKET_SIZE_S = 16
+
+        # setting for world generation via supervisor
+        self.seed = None
+        self._sim_mode = SimSpeedMode.NORMAL
+        self.num_obstacles = 10  # number of obstacles in environment
+        self.world_size = 8  # NxN environment measures
+        self._world_scaling = 0.5  # meters: 20*0.25 -> 5m x 5m
+
+        # (received) world metadata
+        self.gps_target = None  # gps data for target as tuple
+        self.sim_time_step = 32  # ms
+
+
+After the configuration is created, the environment can be created. The backend will setup the environment which holds next to the measures of the worlds in webots also the classes for reward function, action space and observation space of the RL agent. 
+
+### Environment webotsgym/env/webotenv.py
+Setup: env = WbtGym(config=config)
+
+Parameters for initialization:
+
+* seed : integer		-> used to setup different Webot environments in *training* in combination with the supervisor mode
+* gps_target : tuple		-> define the gps position of the target zone
+* train : Boolean		-> if True the trainings mode in the supervisor is activated and the training of a model is possible
+* action_class : WbtAct		-> class that holds the action space for the RL agent (more in action section)
+* request_start_data : Boolean	-> activate that the backend has to request start of communication
+* evaluate_class : WbtReward	-> class that holds the reward function for the RL agent (more in reward section)
+* observation_class : WbtObs	-> class that holds the observation space for the RL agent (more in observation section)
+* config : WbtConfig		-> the created config for the environment
+
+Because of the big differences between discrete and continuous action space we created next to the main class (WbtGym) also the WbtGymGrid which holds all configurations and settings needed for the discrete action space (webotsgym/env/grid/gridenv). To use the discrete action space you have to do the following:
+
+Setup: env = WbtGymGrid(config=config)
+
+For this class some parameters already have different default classes:
+
+* action_class : WbtActGrid -> default action class for the grid environment
+* evaluate_class : WbtRewardGrid -> default reward class for the grid environment
+* observation_class : WbtObsGrid -> default observation class for the grid environment
+
+The difference between the input classes of WbtGym and WbtGymGrid you can find in the sections for the specific classes.
+
+
 
 
 ## steps for training using jupyter notebook
