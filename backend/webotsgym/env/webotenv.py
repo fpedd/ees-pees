@@ -1,4 +1,5 @@
 import warnings
+import socket
 import numpy as np
 import pandas as pd
 import gym
@@ -178,20 +179,24 @@ class WbtGym(gym.Env):
 
         pre_action = self.state.get_pre_action()
         action = self.action_class.map(action, pre_action)
-        self.send_command_and_data_request(action)
         # self.pre_action = action
+        try:
+            self.send_command_and_data_request(action)
+            # logging, printing
+            self.distances.append(self.get_target_distance())
+            self._update_history()
 
-        # logging, printing
-        self.distances.append(self.get_target_distance())
-        self._update_history()
+            reward = self.calc_reward()
+            self.rewards.append(reward)
+            done = self.check_done()
+            if done is True:
+                self.send_stop_action()
+            return self.observation, reward, done, {}
 
-        reward = self.calc_reward()
-        self.rewards.append(reward)
-        done = self.check_done()
-        if done is True:
-            self.send_stop_action()
-
-        return self.observation, reward, done, {}
+        except socket.timeout:
+            print("Didn't receive data from Webots! [Timeout]. Resetting.")
+            obs = self.reset()
+            return obs, 0, False, {}
 
     def calc_reward(self):
         """Calculate reward with evaluate_class."""

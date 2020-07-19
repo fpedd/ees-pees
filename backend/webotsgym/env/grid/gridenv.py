@@ -1,3 +1,4 @@
+import socket
 import numpy as np
 
 from webotsgym.env.webotenv import WbtGym
@@ -55,33 +56,39 @@ class WbtGymGrid(WbtGym):
         if self.action_class.type != "grid":
             raise TypeError("WebotsGrid need grid action class.")
 
-        self.state.action_denied = 0
-        if self.observation_class.lidar[action] < 1:  # safety :D
-            self.state.action_denied = 1
-        else:
-            action = self.action_class.map(action)
-            self.com.send_grid_move(action)
+        try:
+            self.state.action_denied = 0
+            if self.observation_class.lidar[action] < 1:  # safety :D
+                self.state.action_denied = 1
+            else:
+                action = self.action_class.map(action)
+                self.com.send_grid_move(action)
 
-        # logging, printing
-        self.distances.append(self.get_target_distance())
-        self._update_history()
-        self.visited_count[self.gps_actual_scaled] += 1
+            # logging, printing
+            self.distances.append(self.get_target_distance())
+            self._update_history()
+            self.visited_count[self.gps_actual_scaled] += 1
 
-        distance_traveled = 0
-        if self.steps_in_run > 1:
-            gps_old = self.history[-2].gps_actual
-            distance_traveled = utils.euklidian_distance(gps_old,
-                                                         self.gps_actual)
-                                                         
-        if distance_traveled > 0 and distance_traveled < 0.4:
-            print(self.com.packet.sim_time)
-            raise RuntimeError("Error in Grid world!")
+            distance_traveled = 0
+            if self.steps_in_run > 1:
+                gps_old = self.history[-2].gps_actual
+                distance_traveled = utils.euklidian_distance(gps_old,
+                                                             self.gps_actual)
 
-        reward = self.calc_reward()
-        self.rewards.append(reward)
-        done = self.check_done()
+            if distance_traveled > 0 and distance_traveled < 0.4:
+                print(self.com.packet.sim_time)
+                raise RuntimeError("Error in Grid world!")
 
-        return self.observation, reward, done, {}
+            reward = self.calc_reward()
+            self.rewards.append(reward)
+            done = self.check_done()
+
+            return self.observation, reward, done, {}
+
+        except socket.timeout:
+            print("Didn't receive data from Webots! [Timeout]. Resetting.")
+            obs = self.reset()
+            return obs, 0, False, {}
 
     def reset(self, seed=None):
         """Reset environment as in WbtGym.

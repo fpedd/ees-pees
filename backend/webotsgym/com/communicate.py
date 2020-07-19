@@ -31,6 +31,7 @@ class Communication():
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.sock.bind((self.config.IP, self.config.BACKEND_PORT))
+        self.sock.settimeout(self.config.timeout_after)
 
     # -------------------------------  RECV -----------------------------------
     def recv(self):
@@ -38,9 +39,9 @@ class Communication():
         buffer, addr = self.sock.recvfrom(self.config.PACKET_SIZE)
         self.packet = PacketIn(self.config, buffer)
         if self.packet.count != self.msg_cnt:
-            print("ERROR: recv msg count, is ", self.packet.count, " should ",
-                  self.msg_cnt)
-            self.msg_cnt = self.packet.count
+            print("ERROR: recv msg count, is ", self.packet.count,
+                  " should ", self.msg_cnt)
+        self.msg_cnt = self.packet.count
 
         self.msg_cnt += 1
         self.state = WbtState(self.config, self.packet)
