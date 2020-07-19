@@ -4,12 +4,46 @@ import webotsgym.utils as utils
 
 
 class WbtReward():
+    """Create general reward class for RL agent learning.
+
+    Parameter:
+    ---------
+    env : WbtEnv
+
+    config : WbtConfig
+
+    targetband : float
+        radius for the target zone
+
+    """
+
     def __init__(self, env, config: WbtConfig = WbtConfig()):
+        """Initialize WbtReward class."""
         self.env = env
         self.config = config
         self.targetband = 0.05
 
     def calc_reward(self):
+        """Create reward function which gives general reward back.
+
+        Description:
+        ------------
+        The reward function is the heart of the RL approach.
+        After an action is performed the function gives back
+        a reward attached to the action based on the observation space.
+
+        Here you can find a simplified function because they are overwritten
+        for the different action space (discrete and continuous) in
+        the subclasses.
+        If the robot reaches the target zone it gets a fixed reward of 10000.
+        Otherwise it gets a step penalty of -1
+
+        Return:
+        -------
+        integer
+            reward associated to action depending of the observation state.
+
+        """
         if self.env.get_target_distance() < self.targetband:
             reward = 10000
         else:
@@ -17,6 +51,24 @@ class WbtReward():
         return reward
 
     def check_done(self):
+        """Create function which checks if we reached the end of one episode.
+
+        Description:
+        ------------
+        The check_done function is different from environment and
+        action space and gets overwritten for each trainingsrun
+        depending on what to test and run.
+
+        The simplified function here, gives back that the episode
+        is done (finished) if we reach the target zone or after 2500 steps.
+
+        Return:
+        -------
+        Boolean
+            True  -> episode is done (finished) after the last action
+            False -> episode is not done and continues with next step
+
+        """
         if self.env.get_target_distance() < self.targetband:
             return True
         if self.env.steps_in_run % 2500 == 0:
@@ -25,11 +77,53 @@ class WbtReward():
 
 
 class WbtRewardGrid(WbtReward):
+    """Create reward class for RL agent learning in grid action space.
+
+    Parameter:
+    ---------
+    env : WbtEnv
+
+    config : WbtConfig
+
+    targetband : float
+        radius for the target zone
+
+    """
+
     def __init__(self, env, config, targetband=0.05):
+        """Initialize WbtRewardGrid class which is a subclass to WbtReward."""
         super(WbtRewardGrid, self).__init__(env, config)
         self.targetband = targetband
 
     def calc_reward(self):
+        """Create default reward function for the grid (discrete) action space.
+
+        Description:
+        ------------
+        The default reward function is divided into a reward if the robot
+        reaches the target zone (reward of 10000) and a negative step reward.
+
+        The negative step reward consists out of a negative reward depending
+        on the distance to the target, the visited count and if an object was
+        touched/hit or not.
+        If the robot moves closer to the target it gets a smaller negative
+        award than staying as far as before. For moving away the penalty
+        increases all normalized between 0 and -1 as the maxium.
+
+        The visited count gives a negative reward after the robot visited
+        more than 2 times the same gps position with an exponential negative
+        reward.
+
+        The negative reward is even more decrease if webots signal us that with
+        the performed action an object (wall or obstacle) was touched/hit.
+        For this the robot gets a negative reward of another 500.
+
+        Return:
+        -------
+        integer
+            reward associated to action depending of the observation state.
+
+        """
         if self.env.get_target_distance() < self.targetband:
             reward = 10000
         else:
@@ -52,6 +146,26 @@ class WbtRewardGrid(WbtReward):
         return reward
 
     def check_done(self):
+        """Create function which checks if we reached the end of one episode.
+
+        Description:
+        ------------
+        Fpr the grid world the function sets the episode on done if
+        - more than 200 steps are performed.
+        - total reward went to lower than -1000
+        - the target zone was reached
+
+        With this measures we ensure that the robot resets the environment
+        often enough and learns faster if it got stuck or
+        hit a lot of obstacles.
+
+        Return:
+        -------
+        Boolean
+            True  -> episode is done (finished) after the last action
+            False -> episode is not done and continues with next step
+
+        """
         if self.env.steps_in_run == 200:
             return True
         if self.env.total_reward < -1000:
@@ -62,7 +176,21 @@ class WbtRewardGrid(WbtReward):
 
 
 class WbtRewardContinuousV1(WbtReward):
+    """Create reward class for RL agent learning in continuous action space.
+
+    Parameter:
+    ---------
+    env : WbtEnv
+
+    config : WbtConfig
+
+    targetband : float
+        radius for the target zone
+
+    """
+
     def __init__(self, env, config):
+        """Initialize WbtRewardContinuousV1 class for subclass WbtReward."""
         super(WbtRewardContinuousV1, self).__init__(env, config)
 
     def calc_reward(self):
