@@ -33,9 +33,9 @@ Config options of interest:
 * num_obstacles : integer 	-> sets the amount of obstacle in the webots world
 * world_size : integer		-> measures of webots world, the created world is a square of world_size x world_size in grids
 * world_scaling : integer	-> sets the size of the grids in meter
-* timeout_after : float		-> to avoid problems during the training we reset the environment every 5 seconds after a timeout (no package received)*
+* timeout_after : float		-> to increase stability during long training the environment gets reset after 5 seconds if no package is received*
 
-*With timeout_after = 0 you can deactivate this option because also a break would initialize the reset directly after 5 seconds.
+*With timeout_after = 0 you can deactivate this option, otherwise the simulation will get reset after the timeout, even if it is paused.
 
 
 ### Current Configurations - webotsgym/config.py
@@ -74,7 +74,7 @@ Config options of interest:
         self.sim_time_step = 32  # ms
 
 
-After the configuration is created, the environment can be created. The backend will setup the environment which holds next to the measures of the worlds in webots also the classes for reward function, action space and observation space of the RL agent. 
+After the configuration is created, the environment can be created. The backend will setup the environment which holds, next to the measures of the worlds in webots, also the classes for reward function, action space and observation space of the RL agent. 
 
 ### Environment webotsgym/env/webotenv.py
 Setup: env = WbtGym(config=config)
@@ -90,7 +90,7 @@ Parameters for initialization:
 * observation_class : WbtObs	-> class that holds the observation space for the RL agent (more in observation section)
 * config : WbtConfig		-> the created config for the environment
 
-Because of the big differences between discrete and continuous action space we created next to the main class (WbtGym) also the WbtGymGrid which holds all configurations and settings needed for the discrete action space (webotsgym/env/grid/gridenv). To use the discrete action space you have to do the following:
+Because of the big differences between discrete and continuous action space, we created next to the main class (WbtGym) also the WbtGymGrid, which holds all configurations and settings needed for the discrete action space (webotsgym/env/grid/gridenv). To use the discrete action space you have to do the following:
 
 Setup: env = WbtGymGrid(config=config)
 
@@ -100,13 +100,13 @@ For this class some parameters already have different default classes:
 * evaluate_class : WbtRewardGrid -> default reward class for the grid environment
 * observation_class : WbtObsGrid -> default observation class for the grid environment
 
-The difference between the input classes of WbtGym and WbtGymGrid you can find in the sections for the specific classes.
+You can find the differences between the input classes of WbtGym and WbtGymGrid in the sections for the specific classes.
 
 ### Reward class
-For each of the two gyms (WbtGym and WbtGymGrid) the default reward classes are added as a default in the initialization. 
+For each of the two gyms (WbtGym and WbtGymGrid) the default reward classes are added as default in the initialization. 
 As we have two gyms we have also two subclasses classes: webotsgym/env/reward/reward.py
 
-The reward class has two components: calc_reward and check_done
+The reward class has two components: calc_reward and check_done.
 
 #### WbtRewardContinuousV1:
 - calc_reward
@@ -179,21 +179,21 @@ The reward class has two components: calc_reward and check_done
         hit a lot of obstacles.
 	
 
-These two reward classes can be easily overwritten to create your own reward class for training. How you can overwrite the default reward functions you find in the section about how to use WebotsGym and the swapping of classes.
+These two reward classes can easily be overwritten to create your own reward class for training. How to overwrite the default reward functions is described in the section about how to use WebotsGym and the swapping of classes.
 
 
 ### Action class
-Also for the action class we have different classes. Here we actually have 3 different classes. One class is for the grid world (webotsgym/env/grid/action.py), the other two are for the continuous action space (webotsgym/env/action/continuous.py & webotsgym/env/action/discrete.py) and differ by how "continuous" the actions are.
+Also for the action class we have different classes. Here we actually have three different classes. One class is for the grid world (webotsgym/env/grid/action.py), the other two are for the continuous action space (webotsgym/env/action/continuous.py & webotsgym/env/action/discrete.py) and differ by how "continuous" the actions are.
 
 #### WbtActContinuous webotsgym/env/action/continuous.py
-This action class actually allows completely continuous actions for direction and speed from [-1 to 1]. You can set a bound for the class which can limit the maximum of the space. For absolut actions it is fixed to (1,1).
+This action class actually allows completely continuous actions for direction and speed from [-1 to 1]. You can set a bound for the class which can limit the maximum of the space. For absolute actions it is fixed to (1,1).
 
 #### WbtActDiscrete webotsgym/env/action/discrete.py
-This action class gives fix values for the direction and speed so that the action space is actually not continuous anymore but still quite big by size.
+This action class gives fixed values for the direction and speed so that the action space is actually not continuous anymore. The size of the action space can be configured using the `directions` and `speeds` parameters.
 The possible actions are the following:
 
 	Generate matrix of possible actions. Rows are possible speeds, columns possible directions. The following symetric grid is generated by settings:
-        direcstions = 5
+        directions = 5
         range_direction = 0.3
         speeds = 3
         range_speed = 0.1
@@ -264,7 +264,7 @@ Also these observation classes can be overwritten and used in a customized way w
 There are different classes that organize and manage the communication of the backend with webots, external controller and the supervisor. There is the communication class, the packetIn/Out classes, WbtCtrl class and ExtCtrl class.
 
 #### WbtCtrl webotsgym/com/automate/supervisor.py
-The WbtCtrl class organizes the communication with Webotscontroller/Supervisor in an autonomous way. It can initialize webots, environment and external controller but also compile all controllers, open webots, establish the tcp connection and start, reset and close environments. With this whole stack of functionalities it is managing the communication and setup for the trainingspart. 
+The WbtCtrl class organizes the communication with Webotscontroller/Supervisor in an autonomous way. It can initialize webots, environment and external controller but also compile all controllers, open webots, establish the tcp connection and start, reset and close environments. With this whole stack of functionalities it is managing the communication and setup for the trainings part. 
 
 
 #### ExtCtrl webotsgym/com/automate/extcontroller.py
@@ -272,7 +272,7 @@ The ExtCtrl is the class that starts, resets, compile and closes the external co
 
 
 #### Communication webotsgym/com/communicate.py
-The communication class is the main class to setup the socket connection, receive and send packets from the backend to the external controller. Here also the moves from the RL agent are transmitted. 
+The communication class is the main class to setup the socket connection, receive and send packets from the backend to the external controller. Also the moves from the RL agent are transmitted here. 
 
 
 #### PacketIn/PacketOut webotsgym/com/package.py
