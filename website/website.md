@@ -62,7 +62,7 @@ To train a reinforcement learning agent, we need a substantial amount of trainin
 <!-- What does the environment look like in which your robot operates?
 *The same: **Why** did you choose this environment? -->
 
-![evironment](./images/environment.png)
+![environment](./images/environment.png)
 
 ### Algorithms
 As described in our software design, we build a custom environment following the interface of the OpenAI gym. The required functionality (see also: [https://stable-baselines.readthedocs.io/en/master/guide/custom_env.html](https://stable-baselines.readthedocs.io/en/master/guide/custom_env.html)) for custom environments are:
@@ -96,7 +96,9 @@ Before this project, we all did not have a lot of exposure to reinforcement lear
 
 ### Lessons learned
 <!-- What did you learn from the project? What decisions would you have made differently from your current perspective? -->
-As all of us did not have a lot of prior knowledge regarding reinforcement learning projects, we decided to take the agile approach to this project to flexibly direct our work to the most meaningful areas. Further, in this summer, only virtual teamwork was possible due to COVID-19. This was especially challenging and created some organizational overhead. We experienced that weekly meetings with stand-ups as well as sprints with a length of about two weeks were optimal to balance teamwork, flexibility and long-term progress. Further, we learned a great deal about tackling reinforcement learning projects their computational requirements.
+As all of us did not have a lot of prior knowledge regarding reinforcement learning projects, we decided to take the agile approach to this project to flexibly direct our work to the most meaningful areas.
+In this summer, only virtual teamwork was possible due to COVID-19. This was especially challenging and created some organizational overhead. We experienced that weekly meetings with stand-ups as well as sprints with a length of about two weeks were optimal to balance teamwork, flexibility and long-term progress. Further, we learned a great deal about tackling reinforcement learning projects their computational requirements.
+
 For this project we naturally used git with GitHub. For some of us this was the first project with more than three team members and we could expand our knowledge, especially regarding branching and GitHub actions. This is an essential skill for our future work environment.
 
 ### Future work
