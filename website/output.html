@@ -15,8 +15,7 @@
 <body>
 <div id="content">
     <div id="main">
-        <h1>Group name</h1>
-<p><strong>Group members</strong>: <em>Your names</em></p>
+        <h1>Safe Reinforcement Learning 1</h1>
 <ul>
 <li>Mats Kipper</li>
 <li>Jonas Dommes</li>
@@ -27,45 +26,86 @@
 <li>Per Joachims</li>
 </ul>
 <h2>Project overview</h2>
-<p>A <strong>short</strong> summary of your project topic.</p>
+<p>&lt;!-- A **short** summary of your project topic. --&gt;</p>
+<p>In this project we</p>
 <h3>Goals</h3>
-<p>What were your main goals?</p>
-<h3>Requirements</h3>
-<p>List the <strong>necessary</strong> and <strong>optional</strong> requirements that were set for your project.</p>
+<p>At the start of our project our goal was to create a robot in webots that can learn to reach a target in a unknown environment. Furthermore, it was supposed to avoid crashes, even while learning. We set the goal to simulate sensor noise and add solutions to handle communication failure.</p>
+<p>However, the complexity of a continuous world neccessitated lots of experiments with the reinforcement learning agent. Therefore, we decided to create an environment where we can flexibly change parameters both relating to the overall world and the way the agent interacts with the robot. Additionally, we enabled the robot to move in the checkerboard like tiled world.</p>
+<h1>Grid</h1>
 <ul>
-<li>Requirement 1</li>
-<li>Requirement 2</li>
-<li>Requirement 3</li>
+<li>reach target autonomosly in randomzied world (otherwise just memorization)</li>
+<li>safety</li>
+</ul>
+<h1>Continuous</h1>
+<ul>
+<li>lots of options + flexibel</li>
+</ul>
+<h3>Requirements</h3>
+<p>&lt;!-- List the **necessary** and **optional** requirements that were set for your project.
+- Safe Exploration while training --&gt;</p>
+<ul>
+<li>webot ctrl, external ctrl and backend agent have to be divided (c/python) to simulate realistic behaviour</li>
+<li>world with small gps target and obstacles</li>
 </ul>
 <h3>Approach</h3>
-<p>How have you tried to meet the above requirements? What were your ideas?</p>
 <ul>
-<li>Approach 1</li>
-<li>Approach 2</li>
-<li>Approach 3</li>
+<li>3 phasic:
+<ol>
+<li>communication stack aufgebaut + fakegym</li>
+<li>automation + fakegym learnings</li>
+<li>transferability of fakegym learning to GridGym + Continuous Experiments</li>
+</ol>
+</li>
 </ul>
+<p>&lt;!-- How have you tried to meet the above requirements? What were your ideas? --&gt;</p>
+<p>This reduces the complexity for the agent and allows to transfer learnings made in a simulated environment.</p>
 <h2>System architecture</h2>
-<p>Some <strong>general</strong> information about your ideas to the overall system architecture.</p>
+<p>To simulate a realistic behaviour of a robot performing actions, we split our software into controllers - internal and external - and backend. The external controller communicates with the backend and sends commands to the internal controller, which merely executes them. In a real design both would run on the robots hardware. The backend, running on an external server, is responsible for evaluating sensor data to generate actions. To simplify the learning process we build a wrapper around our whole architecture to create a custom extension of OpenAI Gym. This <em>WbtGym</em> can be used with any algorithm from stable baselines.</p>
 <h3>Software design</h3>
-<p><img src="./images/software_design.svg" alt="diagram" /></p>
+<p>To showcase our <em>communication</em>, let us examine how an action is generated and executed. The robot is randomly placed in a world and observes its environment using sensors. This sensor data is forwarded to the external controller via TCP/IP. The external controller formats and slightly extends the data and sends it via UDP/IP to the backend. In the backend an agent calculates a corresponding action maximizing a reward function. This action is send to the external controller, who in turn interprets and forwards the action. The internal controller performs the action by setting motor speeds. This process is done iteratively until the robot reaches its predefined goal or we stop the run.</p>
+<p>Specifically, we have three patterns of communication between the backend and the external controller:</p>
+<ul>
+<li>Send an action <em>or</em> ask for new data</li>
+<li>Send an action <em>and</em> ask for new data after some number of Webots timesteps</li>
+<li>Perform a grid move and get new data once this move is fully executed by PID controller</li>
+</ul>
+<p>An action is tuple (direction, speed), consisting of two floats in [-1, 1]. The external controller interprets the direction value as <em>steering</em> or <em>heading</em>. The former directly sets the steering angle of the robot, the latter defines a cardinal direction in which the robot should move. In the <em>heading</em> mode the external controller sets the steering angle accordingly. Further, we can specify <em>absolute</em> or <em>relative</em> actions, where <em>absolute</em> means just forwarding the action while <em>relative</em> leads to changing the last action by the set amount.</p>
+<p><img src="./images/software_design.png" alt="diagram" /></p>
+<p>To train a reinforcement learning agent, we need a substantial amount of training runs. Even in our - quite simple - FakeGym the robot requires about 500 to 1,000 different environments to learn. To generate random worlds, we created an <em>automation</em> protocol between the backend and the internal controller. Using this we can start all components and create up a random world in Webots with a set amount of obstacles and size. More importantly, we can end a training run and reset the world when we need to. This way our <em>WbtGym</em> ressembles the OpenAI Gym's.</p>
 <h3>Robot design</h3>
-<p>What does your robot look like, and what functionality does it contain.
-But most of all: <strong>Why</strong> did you choose this design?</p>
-<p><img src="./images/robot.png" alt="robot" /></p>
+<ul>
+<li>look like picture</li>
+<li>2 sachen erreichen, speed change, direction change independently -&gt; models normal driving -&gt; quite hard
+-&gt; able to work in grid as well as continues environment</li>
+<li>Welche Sensors und Warum erklaerung</li>
+</ul>
+<p><img src="./images/robot_design.png" alt="robot" /></p>
 <h3>Environment design</h3>
-<p>What does the environment look like in which your robot operates?
-The same: <strong>Why</strong> did you choose this environment?</p>
+<ul>
+<li>grid based (simplification) world + obsracles + starting poits etc -&gt; continuous/grid in same environment</li>
+<li>important parameters</li>
+<li>randomized</li>
+</ul>
+<p>&lt;!-- What does the environment look like in which your robot operates?
+*The same: **Why** did you choose this environment? --&gt;</p>
 <p><img src="./images/environment.png" alt="evironment" /></p>
 <h3>Algorithms</h3>
-<p>Write an introduction to the <strong>most essential</strong> algorithms or technologies in general that you have chosen for your project.</p>
-<p>Maybe with <strong>short</strong> code examples.</p>
-<pre><code class="language-python">def our_algorithm(x, y):
-    # Do fancy stuff here
-    return {'x': x, 'y': y}
-</code></pre>
+<p>As described in our software design, we build a custom environment following the interface of the OpenAI gym. The required functionality (see also: https://stable-baselines.readthedocs.io/en/master/guide/custom_env.html) for custom environments are:</p>
+<ul>
+<li><em>action_space</em> defines the possible actions for a robot, e.g. discrete of continuous actions. This is set in our action_class. We provide both options as well as the possibility to use a custom action class.</li>
+<li><em>observation_space</em> defines the size of the observation. Can be customized as well.</li>
+<li><em>step(action)</em> applies the action from the reinforcement learning agent to the environment. This is handled by mapping the action with the action_class and sending it via the external controller to Webots.</li>
+<li><em>reset()</em> is used to randomly create new worlds where the robot can train in after the current run has ended.</li>
+<li><em>render()</em> normally renders the environment. This is not needed for us.</li>
+<li><em>close()</em> terminates the training.
+Further, we included the option to use a custom reward function with the evaluate_class as parameter for the WbtGym.</li>
+</ul>
+<p>Our <em>WbtGym</em> can be used with any algorithm from stable baselines (https://stable-baselines.readthedocs.io/). After numerous experiments in our <em>FakeGym</em> - in turn a extension onf the OpenAI gyms - we</p>
+<p>&lt;!-- Write an introduction to the **most essential** algorithms or technologies in general that you have chosen for your project. --&gt;</p>
+<p>&lt;!-- Maybe with **short** code examples. --&gt;</p>
 <h2>Summary</h2>
-<p>Overview of the achieved <strong>and</strong> not attained goals. Why were some goals not reached? Too difficult or wrong time management?
-ATTAINED:</p>
+<p>&lt;!-- Overview of the achieved **and** not attained goals. Why were some goals not reached? Too difficult or wrong time management? --&gt;</p>
+<p>ATTAINED:</p>
 <ul>
 <li>Setup Webots world and communication stack to the backend</li>
 <li>Build a wrapper to use Webots as a gym environment, enabling us to train the algorithms from stable baselines</li>
@@ -74,12 +114,23 @@ ATTAINED:</p>
 </ul>
 <p>NOT ATTAINED:</p>
 <ul>
-<li>Successfully train a PPO1</li>
+<li>Successfully train a PPO1 in continues randomized world. Too difficult. All goals &quot;after&quot; this were not acheived such as: noise , blabla</li>
+<li>Adding noise to make it more realisitc (-&gt; not enough time, goal after continuous)</li>
 </ul>
-<h3>Lessions learned</h3>
-<p>What did you learn from the project? What decisions would you have made differently from your current perspective?</p>
+<h3>Lessons learned</h3>
+<p>&lt;!-- What did you learn from the project? What decisions would you have made differently from your current perspective? --&gt;</p>
+<ul>
+<li>Comoutational Requirements for reinforcement learning continuous</li>
+<li>Virtual teamwork requires a lot of organizational overhead</li>
+<li>Usefulness of git.</li>
+<li>Automated testing features -&gt; github actions</li>
+<li>Agile project management</li>
+</ul>
 <h3>Future work</h3>
-<p>What problems would you tackle if you would continue to work on the project? Are there things you might actually take up and work on in the future? This part is <strong>optional</strong>.</p>
+<p>&lt;!-- What problems would you tackle if you would continue to work on the project? Are there things you might actually take up and work on in the future? This part is **optional**. --&gt;</p>
+<ul>
+<li>Possibily &quot;publishing&quot; the stuff</li>
+</ul>
 
     </div>
 </div>
