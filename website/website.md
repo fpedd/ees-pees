@@ -2,15 +2,16 @@
 Mats Kipper | Jonas Dommes | Shanshan Yi | Fabian Peddinghaus | Rui Li | Wladimir Assmann | Per Joachims
 
 ## Project overview
+In this project we tackled the autonomous driving of a robot to a predetermined goal in the open source robot simulation software [Webots](https://www.cyberbotics.com/). Our software tries to mimic a realistic training by sending data via UDP/TCP between all components
 <!-- A **short** summary of your project topic. -->
 
 
 ### Goals
-At the start of our project our goal was to create a robot in webots that can learn to reach a target in a unknown environment. Furthermore, it was supposed to avoid crashes, even while learning. We set the goal to simulate sensor noise and add solutions to handle communication failure.
+At the start of our project our goal was to create a robot in Webots that learns to reach a target in a unknown environment. Furthermore, it was supposed to avoid crashes, even while learning. We set the goal to simulate sensor noise and add solutions to handle communication failure.
 
 However, the complexity of a continuous world neccessitated lots of experiments with the reinforcement learning agent. Therefore, we decided to create an environment where we can flexibly change parameters both relating to the overall world and the way the agent interacts with the robot. Additionally, we enabled the robot to move in the checkerboard like tiled world.
 
-- reach target autonomosly in randomzied world (otherwise just memorization)
+- reach target autonomously in randomzied world (otherwise just memorization)
 - safety
 - lots of options + flexibel
 
@@ -95,12 +96,10 @@ Before this project, we all did not have a lot of exposure to reinforcement lear
 
 ### Lessons learned
 <!-- What did you learn from the project? What decisions would you have made differently from your current perspective? -->
- - Comoutational Requirements for reinforcement learning continuous
- - Virtual teamwork requires a lot of organizational overhead
- - Usefulness of git.
- - Automated testing features -> github actions
- - Agile project management
+As all of us did not have a lot of prior knowledge regarding reinforcement learning projects, we decided to take the agile approach to this project to flexibly direct our work to the most meaningful areas. Further, in this summer, only virtual teamwork was possible due to COVID-19. This was especially challenging and created some organizational overhead. We experienced that weekly meetings with stand-ups as well as sprints with a length of about two weeks were optimal to balance teamwork, flexibility and long-term progress. Further, we learned a great deal about tackling reinforcement learning projects their computational requirements.
+For this project we naturally used git with GitHub. For some of us this was the first project with more than three team members and we could expand our knowledge, especially regarding branching and GitHub actions. This is an essential skill for our future work environment.
 
 ### Future work
 <!-- What problems would you tackle if you would continue to work on the project? Are there things you might actually take up and work on in the future? This part is **optional**. -->
- - Possibily "publishing" the stuff
+If we were to continue this project, we would further try to solve the problem of reaching the target in a continuous world with continuous actions and observations. Further, it would be challenging and interesting to increase the complexity of the world even further and come closer to modeling realistic self driving cars.
+Maybe poublis this stuff
