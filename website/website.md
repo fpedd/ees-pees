@@ -97,7 +97,7 @@ Before this project, we all did not have a lot of exposure to reinforcement lear
 ### Lessons learned
 <!-- What did you learn from the project? What decisions would you have made differently from your current perspective? -->
 As all of us did not have a lot of prior knowledge regarding reinforcement learning projects, we decided to take the agile approach to this project to flexibly direct our work to the most meaningful areas. Further, in this summer, only virtual teamwork was possible due to COVID-19. This was especially challenging and created some organizational overhead. We experienced that weekly meetings with stand-ups as well as sprints with a length of about two weeks were optimal to balance teamwork, flexibility and long-term progress. Further, we learned a great deal about tackling reinforcement learning projects their computational requirements.
-For this project, we naturally used git with GitHub. For some of us, this was the first project with more than three team members and we could expand our knowledge, especially regarding branching and GitHub actions. This is an essential skill for our future work environment.
+For this project, we naturally used git with GitHub. For some of us this was the first project with more than three team members and we could expand our knowledge, especially regarding branching and GitHub actions. This is an essential skill for our future work environment.
 
 ### Future work
 <!-- What problems would you tackle if you would continue to work on the project? Are there things you might actually take up and work on in the future? This part is **optional**. -->
