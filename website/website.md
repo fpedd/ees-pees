@@ -8,7 +8,7 @@ In this project, we tackled the autonomous driving of a robot to a predetermined
 ### Goals
 At the start of our project, our goal was to create a robot in Webots that learns to reach a target in an unknown environment. Furthermore, it was supposed to avoid crashes, even while training. We set the goal to simulate sensor noise and add solutions to handle communication failure.
 
-However, the complexity of a continuous world necessitated lots of experiments with the reinforcement learning agent. Therefore, we decided to create an environment where we can flexibly change parameters both relating to the overall world and the way the agent interacts with the robot. Additionally, we enabled the robot to move in the checkerboard-like a tiled world.
+However, the complexity of a continuous world necessitated lots of experiments with the reinforcement learning agent. Therefore, we decided to create an environment where we can flexibly change parameters both relating to the overall world and the way the agent interacts with the robot. Additionally, we enabled the robot to move in the checkerboard like a tiled world.
 
 - reach target autonomously in randomized world (otherwise just memorization)
 - safety
