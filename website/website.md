@@ -58,25 +58,25 @@ As described in our software design, we build a custom environment following the
 * *observation_space* defines the size of the observation. Can be customized as well.
 * *step(action)* applies the action from the reinforcement learning agent to the environment. This is handled by mapping the action with the action_class and sending it via the external controller to Webots.
 * *reset()* is used to randomly create new worlds where the robot can train in after the current run has ended.
-* *render()* normally renders the environment. This is not needed for us.
+* *render()* normally renders the environment. This is not needed here.
 * *close()* terminates the training.
 
-Further, we included the option to use a custom reward function with the evaluate_class as parameter for the WbtGym.
+Further, we included the option to use a custom reward function with the *evaluate_class* as parameter for the WbtGym.
 
-Our *WbtGym* can be used with any algorithm from [stable-baselines](https://stable-baselines.readthedocs.io/). After numerous experiments in our *FakeGym* - in turn an extension of the OpenAI gym - we decided to use the *PPO1* algorithm for training.
+Our *WbtGym* can be used with any algorithm from [stable-baselines](https://stable-baselines.readthedocs.io/). After numerous experiments in our *FakeGym* - an extension of the OpenAI gym - we decided to use the *PPO1* algorithm for training.
 
 ## Summary
 In our project we have **achieved** the following goals:
-* Setup Webots world and the whole communication from the internal controller to the external controller to the backend.
-* Incorporate a safety layer to fulfill the requirement of **safe** reinforcement learning environment where the robot does not crash even while training
+* Setup Webots world and the communication from the internal controller to the external controller to the backend.
+* Incorporate a safety layer to fulfill the requirement of **safe** reinforcement learning environment where the robot does not crash, even while training.
 * Build a wrapper around Webots with the interface of the OpenAI gym, enabling us to train any algorithm from stable baselines.
 * Build a *FakeGym* to generate learnings, train models, and apply transfer learning.
 * Apply a PPO1 trained on the *Fakegym* on our *WbtGymGrid*.
 * Automatically train in our *WbtGym*.
 
-Before this project, we all did not have a lot of exposure to reinforcement learning. Therefore, we might have started a bit too optimistic and have **not attained** the following goals:
-* Successfully train a PPO1 in a continuous randomized world. Compared to grid based worlds, training in continuous environments takes a substantially larger amount of time and requires good hardware. For example, testing a small tweak in the reward function can take more than a night to evaluate. We are convinced that with more time and experiments, this problem is solvable with the infrastructure we build.
-* The subsequent and optional goals such as incorporating sensor noise to make the communication even more realistic or adding a second robot were not attained as they would have complicated the continuous training process even more.
+Prior to this project, not all of us had exposure to reinforcement learning. Therefore, we might have started a bit too optimistic and sadly were not able to achieve the following goals:
+* Successfully train a PPO1 in a continuous randomized world. Compared to grid based worlds, training in continuous environments takes a substantially larger amount of time and requires good hardware. For example, testing a small tweak in the reward function can take more than 12 hours to evaluate. We are convinced that with more time and experiments, this problem is solvable with the infrastructure we build.
+* The subsequent and optional goals, such as incorporating sensor noise to make the communication even more realistic or adding a second robot, were also not attained, as they would have complicated the continuous training process even more.
 
 ### Lessons learned
 As not all of us had prior knowledge in the area of reinforcement learning, we decided to use an agile approach to this project. This allowed us to flexibly direct our work to the currently most important aspects of our project. Further, this summer only virtual teamwork was possible due to COVID-19. This was especially challenging and created some organizational overhead. We experienced that weekly meetings with stand-ups as well as sprints with a length of about two *### (TODO: three?) ###* weeks were optimal to balance teamwork, flexibility and long-term progress. Further, we learned a great deal about reinforcement learning projects and their computational requirements.
