@@ -1,12 +1,5 @@
 # Safe Reinforcement Learning 1
- - Mats Kipper
- - Jonas Dommes
- - Shanshan Yi
- - Fabian Peddinghaus
- - Rui Li
- - Wladimir Assmann
- - Per Joachims
-
+Mats Kipper | Jonas Dommes | Shanshan Yi | Fabian Peddinghaus | Rui Li | Wladimir Assmann | Per Joachims
 
 ## Project overview
 <!-- A **short** summary of your project topic. -->
@@ -17,11 +10,8 @@ At the start of our project our goal was to create a robot in webots that can le
 
 However, the complexity of a continuous world neccessitated lots of experiments with the reinforcement learning agent. Therefore, we decided to create an environment where we can flexibly change parameters both relating to the overall world and the way the agent interacts with the robot. Additionally, we enabled the robot to move in the checkerboard like tiled world.
 
-# Grid
 - reach target autonomosly in randomzied world (otherwise just memorization)
 - safety
-# Continuous
-
 - lots of options + flexibel
 
 ### Requirements
@@ -33,9 +23,9 @@ However, the complexity of a continuous world neccessitated lots of experiments 
 
 ### Approach
 In this project we focused on building an infrastructure to apply existing and well documented reinforcement learning algorithms to train and apply to Webots. Our approach was to work simultaneously on the Webots/controller and backend. Our project can roughly be seperated into three phases:
-* 1) Set up the whole communication from internal controller to external controller to backend. Build a FakeGym to generate learnings about both the process of creating a custom gym and reinforcement learning basics.
-* 2) Create a automation protocol to create randomized worlds. Improve the performance of the agent in the FakeGym.
-* 3) Create a grid-based Webots world to reduce the complexity for the agent and allow for transferable learnings made in a the FakeGym Conduct experiment in the continuous gym.
+1. Set up the whole communication from internal controller to external controller to backend. Build a FakeGym to generate learnings about both the process of creating a custom gym and reinforcement learning basics.
+2. Create a automation protocol to create randomized worlds. Improve the performance of the agent in the FakeGym.
+3. Create a grid-based Webots world to reduce the complexity for the agent and allow for transferable learnings made in a the FakeGym Conduct experiment in the continuous gym.
 <!-- How have you tried to meet the above requirements? What were your ideas? -->
 
 ## System architecture
@@ -91,7 +81,7 @@ Our *WbtGym* can be used with any algorithm from [stable-baselines](https://stab
 
 ## Summary
 <!-- Overview of the achieved **and** not attained goals. Why were some goals not reached? Too difficult or wrong time management? -->
-**Achieved goals**:
+In our project we have **achieved** the following goals:
 * Setup Webots world and the whole communication from internal controller to external controller to backend.
 * Incorporate a safety layer to fullfil the requirement of **safe** reinforcement learning environment where the robot does not crash even while training
 * Build a wrapper to use Webots as with the interface of the OpenAI gym, enabling us to train any algorithm from stable baselines.
@@ -99,9 +89,9 @@ Our *WbtGym* can be used with any algorithm from [stable-baselines](https://stab
 * Apply a PPO1 trained on the *Fakegym* on our *WbtGymGrid*.
 * Automatically train in our *WbtGym*.
 
-**Not attained goals**:
+Before this project, we all did not have a lot of exposure to reinforcement learning. Therefore, we might have started a bit too optimistic and have not **not attained** the following goals:
 * Successfully train a PPO1 in continuous randomized world. Compared to grid based worlds, the training in continuous environments takes a substantially larger amount of time and requires good hardware. For example, testing a small tweak in the reward function can take a night to evaluate. We are convinced that with more time and experiments, this problem is solvable with our infrastructure.
-* The subsequent goals such as incorporating sensor noise to make the communication even more realistic were not attained as they would have complicated the continuous training process even more.
+* The subsequent and optional goals such as incorporating sensor noise to make the communication even more realistic or adding a second robot were not attained as they would have complicated the continuous training process even more.
 
 ### Lessons learned
 <!-- What did you learn from the project? What decisions would you have made differently from your current perspective? -->
