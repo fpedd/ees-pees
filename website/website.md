@@ -62,7 +62,7 @@ To train a reinforcement learning agent, we need a substantial amount of trainin
 <!-- What does the environment look like in which your robot operates?
 *The same: **Why** did you choose this environment? -->
 
-![environment](./images/environment.png)
+![environment](./images/environment1.png)
 
 ### Algorithms
 As described in our software design, we build a custom environment following the interface of the OpenAI gym. The required functionality (see also: [https://stable-baselines.readthedocs.io/en/master/guide/custom_env.html](https://stable-baselines.readthedocs.io/en/master/guide/custom_env.html)) for custom environments are:
