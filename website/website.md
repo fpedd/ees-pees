@@ -65,7 +65,7 @@ To train a reinforcement learning agent, we need a substantial amount of trainin
 ![evironment](./images/environment.png)
 
 ### Algorithms
-As described in our software design, we build a custom environment following the interface of the OpenAI gym. The required functionality (see also: [custom_gym](https://stable-baselines.readthedocs.io/en/master/guide/custom_env.html)) for custom environments are:
+As described in our software design, we build a custom environment following the interface of the OpenAI gym. The required functionality (see also: [https://stable-baselines.readthedocs.io/en/master/guide/custom_env.html](https://stable-baselines.readthedocs.io/en/master/guide/custom_env.html)) for custom environments are:
 * *action_space* defines the possible actions for a robot, e.g. discrete of continuous actions. This is set in our action_class. We provide both options as well as the possibility to use a custom action class.
 * *observation_space* defines the size of the observation. Can be customized as well.
 * *step(action)* applies the action from the reinforcement learning agent to the environment. This is handled by mapping the action with the action_class and sending it via the external controller to Webots.
