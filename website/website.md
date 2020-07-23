@@ -5,7 +5,6 @@ Mats Kipper | Jonas Dommes | Shanshan Yin | Fabian Peddinghaus | Rui Li | Wladim
 In this project, we tackled the autonomous driving of a robot to a predetermined goal in the open-source robot simulation software [Webots](https://www.cyberbotics.com/). Our software tries to mimic realistic training by sending data via UDP/TCP between all components.
 <!-- A **short** summary of your project topic. -->
 
-
 ### Goals
 At the start of our project, our goal was to create a robot in Webots that learns to reach a target in an unknown environment. Furthermore, it was supposed to avoid crashes, even while training. We set the goal to simulate sensor noise and add solutions to handle communication failure.
 
@@ -18,9 +17,8 @@ However, the complexity of a continuous world necessitated lots of experiments w
 ### Requirements
 <!-- List the **necessary** and **optional** requirements that were set for your project.
 - Safe Exploration while training -->
- - webot ctrl, external ctrl and backend agent have to be divided (c/python) to simulate realistic behaviour
- - world with small gps target and obstacles
-
+- webot ctrl, external ctrl and backend agent have to be divided (c/python) to simulate realistic behaviour
+- world with small gps target and obstacles
 
 ### Approach
 In this project, we focused on building an infrastructure to apply existing and well-documented reinforcement learning algorithms to train and apply to Webots. Our approach was to work simultaneously on the Webots/controller and backend. Our project can roughly be separated into three phases:
@@ -36,9 +34,9 @@ To simulate the realistic behavior of a robot performing actions, we split our s
 To showcase our *communication*, let us examine how an action is generated and executed. The robot is randomly placed in a world and observes its environment using sensors. This sensor data is forwarded to the external controller via TCP/IP. The external controller formats and slightly extends the data and sends it via UDP/IP to the backend. In the backend an agent calculates a corresponding action maximizing a reward function. This action is sent to the external controller, who in turn interprets and forwards the action. The internal controller performs the action by setting motor speeds. This process is done iteratively until the robot reaches its predefined goal or we stop the run.
 
 Specifically, we have three patterns of communication between the backend and the external controller:
- * Send an action *or* ask for new data
- * Send an action *and* ask for new data after some number of Webots timesteps
- * Perform a grid move and get new data once this move is fully executed by PID controller
+* Send an action *or* ask for new data
+* Send an action *and* ask for new data after some number of Webots time steps
+* Perform a grid move and get new data once this move is fully executed by PID controller
 
 An action is a tuple (direction, speed), consisting of two floats in [-1, 1]. The external controller interprets the direction value as *steering* or *heading*. The former directly sets the steering angle of the robot, the latter defines a cardinal direction in which the robot should move. In the *heading* mode the external controller sets the steering angle accordingly. These different modes can be tested nicely via the keyboard-control in our scripts. Further, we can specify *absolute* or *relative* actions, where *absolute* means just forwarding the action while *relative* leads to changing the last action by the set amount.
 
@@ -56,7 +54,7 @@ To train a reinforcement learning agent, we need a substantial amount of trainin
 
 ### Environment design
 - grid based (simplification) world + obsracles + starting poits etc -> continuous/grid in same environment
--  important parameters
+- important parameters
 - randomized
 
 <!-- What does the environment look like in which your robot operates?
@@ -66,7 +64,7 @@ To train a reinforcement learning agent, we need a substantial amount of trainin
 
 ### Algorithms
 As described in our software design, we build a custom environment following the interface of the OpenAI gym. The required functionality (see also: [https://stable-baselines.readthedocs.io/en/master/guide/custom_env.html](https://stable-baselines.readthedocs.io/en/master/guide/custom_env.html)) for custom environments are:
-* *action_space* defines the possible actions for a robot, e.g. discrete of continuous actions. This is set in our action_class. We provide both options as well as the possibility to use a custom action class.
+* *action_space* defines the possible actions for a robot, e.g. discrete of continuous actions. This is set in our action_class. We provide both options and the possibility to use a custom action class.
 * *observation_space* defines the size of the observation. Can be customized as well.
 * *step(action)* applies the action from the reinforcement learning agent to the environment. This is handled by mapping the action with the action_class and sending it via the external controller to Webots.
 * *reset()* is used to randomly create new worlds where the robot can train in after the current run has ended.
@@ -75,7 +73,7 @@ As described in our software design, we build a custom environment following the
 
 Further, we included the option to use a custom reward function with the evaluate_class as parameter for the WbtGym.
 
-Our *WbtGym* can be used with any algorithm from [stable-baselines](https://stable-baselines.readthedocs.io/). After numerous experiments in our *FakeGym* - in turn a extension of the OpenAI gym - we decided to use the *PPO1* algorithm for training.
+Our *WbtGym* can be used with any algorithm from [stable-baselines](https://stable-baselines.readthedocs.io/). After numerous experiments in our *FakeGym* - in turn an extension of the OpenAI gym - we decided to use the *PPO1* algorithm for training.
 <!-- Write an introduction to the **most essential** algorithms or technologies in general that you have chosen for your project. -->
 
 <!-- Maybe with **short** code examples. -->
@@ -97,7 +95,7 @@ Before this project, we all did not have a lot of exposure to reinforcement lear
 ### Lessons learned
 <!-- What did you learn from the project? What decisions would you have made differently from your current perspective? -->
 As all of us did not have a lot of prior knowledge regarding reinforcement learning projects, we decided to take the agile approach to this project to flexibly direct our work to the most meaningful areas. Further, in this summer, only virtual teamwork was possible due to COVID-19. This was especially challenging and created some organizational overhead. We experienced that weekly meetings with stand-ups as well as sprints with a length of about two weeks were optimal to balance teamwork, flexibility and long-term progress. Further, we learned a great deal about tackling reinforcement learning projects their computational requirements.
-For this project, we naturally used git with GitHub. For some of us this was the first project with more than three team members and we could expand our knowledge, especially regarding branching and GitHub actions. This is an essential skill for our future work environment.
+For this project, we naturally used git with GitHub. For some of us this was the first project with more than three team members and we could expand our knowledge about git, especially regarding branching and GitHub actions. This is an essential skill for our future work environment.
 
 ### Future work
 <!-- What problems would you tackle if you would continue to work on the project? Are there things you might actually take up and work on in the future? This part is **optional**. -->
