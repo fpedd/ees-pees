@@ -5,31 +5,31 @@ Mats Kipper | Jonas Dommes | Shanshan Yin | Fabian Peddinghaus | Rui Li | Wladim
 In this project, we tackled the autonomous driving of a robot to a predetermined goal in the open-source robot simulation software [Webots](https://www.cyberbotics.com/). Our software tries to mimic realistic training by sending data via UDP/TCP between all components.
 
 ### Goals
-At the start of our project, our goal was to create a robot in Webots that learns to reach a target in an unknown environment. Furthermore, it was supposed to avoid crashes, even while training. We set the goal to simulate sensor noise and add solutions to handle communication failure.
+At the start of the project, our goal was to create a robot in Webots that learns to reach a target in an unknown environment. Furthermore, it was supposed to avoid crashes, even while training. We set the goal to simulate sensor noise and incorporate solutions to handle communication failure.
 
-However, the complexity of a continuous world necessitated lots of experiments with the reinforcement learning agent. Therefore, we decided to create an environment where we can flexibly change parameters both relating to the overall world and the way the agent interacts with the robot. Additionally, we enabled the robot to move in the checkerboard-like tiled world.
+However, the complexity of a continuous world required lots of experiments with the reinforcement learning agent. Therefore, we decided to create an environment where we can dynamically change parameters, both relating to the overall world and the way the agent interacts with the robot. Additionally, we enabled the robot to move in the checkerboard-like tiled world.
 
 ### Requirements
-In this project we were required to have seperated entities for the webot and external controller, both of which were supposed to be written in C/C++. Furthermore the backend, implemented in Python, was supposed to be the third independent part. The communication between them ought to happen using a networking interface. Using this the robot had to be able to reach a relatively small gps target in a world filled with obstacles, while acting "safe" in regard to not crashing into obstacles.
+In this project we were required to have seperate entities for the webot and external controller, both of which were supposed to be written in C/C++. Furthermore the backend, written in Python, was supposed to be the third independent part. The communication between them ought to happen using a networking interface. Using this, the robot had to be able to reach a relatively small gps target in a world filled with obstacles, while driving "safe". Safe in this context meant to not crash into obstacles.
 
 ### Approach
-In this project, we focused on building an infrastructure to apply existing and well-documented reinforcement learning algorithms to train and apply to Webots. Our approach was to work simultaneously on the Webots/controller and backend. Our project can roughly be separated into three phases:
-1. Set up the whole communication from the internal controller through the external controller to the backend. Build a FakeGym to generate learnings about both the process of creating a custom gym and reinforcement learning basics.
-2. Create an automation protocol to create randomized worlds and autonomously run the training. Improve the performance of the agent in the FakeGym.
+In this project, we focused on building an infrastructure to apply existing and well-documented reinforcement learning algorithms to train and apply *### apply ... apply :( ###* to Webots. Our approach was to simultaneously work on the Webots/controller and backend. Our project can roughly be separated into three phases:
+1. Set up the communication from internal controller through external controller to backend. Build a FakeGym to generate learnings about the process of creating a custom gym and reinforcement learning basics.
+2. Create an automation protocol to create *### create ... create :( ###* randomized worlds and autonomously run the training. Improve the performance of the agent in the FakeGym.
 3. Create a grid-based Webots world to reduce the complexity for the agent and allow for transferable learnings made in the FakeGym. Conduct experiments in the continuous gym. Implement safety logic in the external controller.
 
 ## System architecture
-To simulate the realistic behavior of a robot performing actions, we split our software into controllers - internal and external - and backend. The external controller communicates with the backend and sends commands to the internal controller, which merely executes them. In a real design, both would run on the robot hardware. The backend, running on an external server, is responsible for evaluating sensor data to generate actions. To simplify the learning process we build a wrapper around our whole architecture to create a custom extension of OpenAI Gym. This *WbtGym* can be used with any algorithm from [stable baselines](https://stable-baselines.readthedocs.io/).
+To simulate the realistic behavior of a robot performing actions, we split our software into a controller - internal and external - and backend part. The external controller communicates with the backend and sends commands to the internal controller, which merely executes them. In a "real world" design, both would run on the robots hardware. The backend, running on an external server, is responsible for evaluating sensor data and generating actions. To simplify the learning process we build a wrapper around our whole architecture to create a custom extension of OpenAI Gym. This *WbtGym* can be used with any algorithm from [stable baselines](https://stable-baselines.readthedocs.io/).
 
 ### Software design
-To showcase our *communication*, let us examine how an action is generated and executed. The robot is randomly placed in a world and observes its environment using sensors. This sensor data is forwarded to the external controller via TCP/IP. The external controller formats and slightly extends the data and sends it via UDP/IP to the backend. In the backend an agent calculates a corresponding action maximizing a reward function. This action is sent to the external controller, who in turn interprets and forwards the action. The internal controller performs the action by setting motor speeds. This process is done iteratively until the robot reaches its predefined goal or we stop the run.
+To showcase our *communication*, we will now examine how an action is generated and executed: The robot is randomly placed in a world and observes its environment using sensors. This sensor data is forwarded to the external controller via TCP/IP. The external controller formats and augments the data. It then sends the data via UDP/IP to the backend. In the backend the reinforcement learning agent calculates a corresponding action, while maximizing the reward function. This action is sent to the external controller, who in turn interprets and forwards the action to the robot. The internal controller performs the action by setting the robots motor speeds. This process is done iteratively until the robot reaches its goal or the run is stoped.
 
-Specifically, we have three patterns of communication between the backend and the external controller:
+Specifically, we have three patterns of communication between backend and external controller:
 * Send an action *or* ask for new data
 * Send an action *and* ask for new data after some number of Webots time steps
 * Perform a grid move and get new data once this move is fully executed by PID controller
 
-An action is a tuple (direction, speed), consisting of two floats in [-1, 1]. The external controller interprets the direction value as *steering* or *heading*. The former directly sets the steering angle of the robot, the latter defines a cardinal direction in which the robot should move. In the *heading* mode the external controller sets the steering angle accordingly. These different modes can be tested nicely via the keyboard-control in our scripts. Further, we can specify *absolute* or *relative* actions, where *absolute* means just forwarding the action while *relative* leads to changing the last action by a set amount.
+An action is a tuple (direction, speed), consisting of two floats in [-1, 1]. The external controller interprets the direction value as *steering* or *heading*. The former directly sets the steering angle of the robot, the latter defines a cardinal direction in which the robot should move. In the *heading* mode the external controller then sets the steering angle accordingly. The different modes can be tested by executing our scripts and using the arrow keys on a keyboard. Further, we can specify *absolute* or *relative* actions, where *absolute* means just forwarding the action while *relative* leads to a change of the last action by a set amount.
 
 ![diagram](./images/software_design_small.png)
 
@@ -40,15 +40,15 @@ We wanted our robot to behave similar to a self driving car. Therefore, we build
 To observe the environment of the robot we used different sensors:
 * A lidar sensor on top, similar to those used for autonomous cars, to detect obstacles in all directions.
 * A compass to determine the direction the robot is pointing at.
-* A gps module to determine the robots current position and speed.
+* A GPS module to determine the robots current position and speed.
 * A sensor to determine the current position of the steering axle.
 In the following picture only the lidar sensor on top is visible.
 
 ![robot](./images/robot_design_small.png)
 
 ### Environment design
-Our worlds are randomly generated based on a grid system. The robot and the target are both placed in the middle of a tile. Obstacles are boxes the same size as a tile and placed within ones. This allowes us to use the same worlds for our grid-based and continuous approaches. It also assures that there is enough space between to obstacles for the robot to move through. This constitutes a simplification that was neccessary to use transfer learning from the *FakeGym* and therefore speed up the training process substantially.
-The backend can control both the world size and the number of obstacles. Additionally it is possible to use a constant seed to generate a specific world multiple times. However using the same environment for learning leads to the robot to merely memorize its surrounding and a path to the goal, instead of generalizing to be able to solve unknown situations aswell.
+Our worlds are randomly generated based on a grid system. The robot and the target are both placed in the middle of a tile. Obstacles are boxes with the same size as a tile. This allows us to use the same worlds for our grid-based and continuous approaches. It also assures that there is enough space between to obstacles for the robot to move through. This constitutes a simplification that was necessary in order to use transfer learning from the *FakeGym* and therefore speed up the training process substantially.
+The backend can control both the world size and the number of obstacles. Additionally it is possible to use a constant seed to generate a specific world multiple times. However, using the same environment for learning leads to the robot to merely memorize its surrounding and a path to the goal, instead of generalizing. Generalizing is important, as it allows the robot to be able to solve unknown environments as well.
 
 ![environment](./images/environment1_small.png)
 
@@ -79,8 +79,8 @@ Before this project, we all did not have a lot of exposure to reinforcement lear
 * The subsequent and optional goals such as incorporating sensor noise to make the communication even more realistic or adding a second robot were not attained as they would have complicated the continuous training process even more.
 
 ### Lessons learned
-As all of us did not have a lot of prior knowledge regarding reinforcement learning projects, we decided to take the agile approach to this project to flexibly direct our work to the most meaningful areas. Further, in this summer, only virtual teamwork was possible due to COVID-19. This was especially challenging and created some organizational overhead. We experienced that weekly meetings with stand-ups as well as sprints with a length of about two (TODO: three?) weeks were optimal to balance teamwork, flexibility and long-term progress. Further, we learned a great deal about tackling reinforcement learning projects and their computational requirements.
-For this project, we naturally used git with GitHub. For some of us this was the first project with more than three team members and we could expand our knowledge about git, especially regarding branching and GitHub actions. This is an essential skill for our future work environment.
+As not all of us had prior knowledge in the area of reinforcement learning, we decided to use an agile approach to this project. This allowed us to flexibly direct our work to the currently most important aspects of our project. Further, this summer only virtual teamwork was possible due to COVID-19. This was especially challenging and created some organizational overhead. We experienced that weekly meetings with stand-ups as well as sprints with a length of about two *### (TODO: three?) ###* weeks were optimal to balance teamwork, flexibility and long-term progress. Further, we learned a great deal about reinforcement learning projects and their computational requirements.
+For this project, we used the version control software Git in conjunction with GitHub. For some of us, this was the first larger project, meaning more than three team members, and we were able expand our knowledge about git and GitHub, especially regarding branching and GitHub actions. This is an essential skill for our future work environments.
 
 ### Future work
 If we were to continue this project, we would further try to solve the problem of reaching the target in a continuous world with continuous actions and observations. Further, it would be challenging and interesting to increase the complexity of the world even further and come closer to modeling realistic self-driving cars.
