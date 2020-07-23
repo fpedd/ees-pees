@@ -84,7 +84,7 @@ Our *WbtGym* can be used with any algorithm from [stable-baselines](https://stab
 <!-- Overview of the achieved **and** not attained goals. Why were some goals not reached? Too difficult or wrong time management? -->
 In our project we have **achieved** the following goals:
 * Setup Webots world and the whole communication from the internal controller to the external controller to the backend.
-* Incorporate a safety layer to fullfill the requirement of **safe** reinforcement learning environment where the robot does not crash even while training
+* Incorporate a safety layer to fulfill the requirement of **safe** reinforcement learning environment where the robot does not crash even while training
 * Build a wrapper around Webots with the interface of the OpenAI gym, enabling us to train any algorithm from stable baselines.
 * Build a *FakeGym* to generate learnings, train models, and apply transfer learning.
 * Apply a PPO1 trained on the *Fakegym* on our *WbtGymGrid*.
