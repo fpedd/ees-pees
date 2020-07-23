@@ -26,7 +26,7 @@ However, the complexity of a continuous world necessitated lots of experiments w
 In this project, we focused on building an infrastructure to apply existing and well-documented reinforcement learning algorithms to train and apply to Webots. Our approach was to work simultaneously on the Webots/controller and backend. Our project can roughly be separated into three phases:
 1. Set up the whole communication from the internal controller to the external controller to the backend. Build a FakeGym to generate learnings about both the process of creating a custom gym and reinforcement learning basics.
 2. Create an automation protocol to create randomized worlds. Improve the performance of the agent in the FakeGym.
-3. Create a grid-based Webots world to reduce the complexity for the agent and allow for transferable learnings made in the FakeGym conduct experiment in the continuous gym.
+3. Create a grid-based Webots world to reduce the complexity for the agent and allow for transferable learnings made in the FakeGym. Conduct experiments in the continuous gym.
 <!-- How have you tried to meet the above requirements? What were your ideas? -->
 
 ## System architecture
