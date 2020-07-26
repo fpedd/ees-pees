@@ -45,7 +45,7 @@ To observe the environment, the robot uses the following sensors:
 * A sensor to monitor the current position of the steering axle.
 In the following picture only the lidar sensor on top is visible.
 
-![robot](./images/robot_design_small.png)
+![robot](./images/robot_design_small_smaller.png)
 
 ### Environment design
 Our worlds are randomly generated based on a grid system. The robot and the target are both placed in the middle of a tile. Obstacles are exclusively boxes. This allows us to use the same worlds for our grid-based and continuous approaches. It also assures that there is enough space between to obstacles for the robot to move through. This constitutes a simplification that was necessary in order to use transfer learning from the *FakeGym* and therefore speed up the training process substantially.
@@ -83,7 +83,7 @@ Prior to this project, none of us had experience with reinforcement learning pro
 ### Lessons learned
 As none of us had prior knowledge in the area of reinforcement learning, we decided to use an agile approach to this project. This allowed us to flexibly direct our work to the currently most important aspects of our project. Further, this summer only virtual teamwork was possible due to COVID-19. This was especially challenging and created some organizational overhead. We experienced that weekly meetings with stand-ups as well as sprints with a length of about three weeks were optimal to balance teamwork, flexibility and long-term progress. Further, we learned a great deal about reinforcement learning projects and their computational requirements.
 
-For this project, we used the version control software Git in conjunction with GitHub. For some of us, this was the first larger project, meaning more than three team members, and we were able expand our knowledge about Git and GitHub, especially regarding branching and GitHub actions. This is an essential skill for our future work environments.
+For this project, we used the version control software Git in conjunction with GitHub. For some of us, this was the first larger project, meaning more than three team members, and we were able to expand our knowledge about Git and GitHub, especially regarding branching and GitHub actions. This is an essential skill for our future work environments.
 
 ### Future work
 If we were to continue this project, we would further try to solve the problem of reaching the target in a continuous world with continuous actions and observations. Further, it would be challenging and interesting to increase the complexity of the world even further and come closer to modeling realistic self-driving cars.

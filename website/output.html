@@ -18,77 +18,77 @@
         <h1>Safe Reinforcement Learning 1</h1>
 <p>Mats Kipper | Jonas Dommes | Shanshan Yin | Fabian Peddinghaus | Rui Li | Wladimir Assmann | Per Joachims</p>
 <h2>Project overview</h2>
-<p>In this project, we tackled the autonomous driving of a robot to a predetermined goal in the open-source robot simulation software <a rel="nofollow" href="https://www.cyberbotics.com/">Webots</a>. Our software tries to mimic realistic training by sending data via UDP/TCP between all components.</p>
+<p>In this project we tackled the autonomous driving of a robot to a predetermined goal in the open-source robot simulation software <a rel="nofollow" href="https://www.cyberbotics.com/">Webots</a>. Our software tries to mimic realistic training by sending data via UDP/TCP between all components.</p>
 <h3>Goals</h3>
-<p>At the start of our project, our goal was to create a robot in Webots that learns to reach a target in an unknown environment. Furthermore, it was supposed to avoid crashes, even while training. We set the goal to simulate sensor noise and add solutions to handle communication failure.</p>
-<p>However, the complexity of a continuous world necessitated lots of experiments with the reinforcement learning agent. Therefore, we decided to create an environment where we can flexibly change parameters both relating to the overall world and the way the agent interacts with the robot. Additionally, we enabled the robot to move in the checkerboard-like tiled world.</p>
+<p>At the start of the project, our goal was to create a robot in Webots that learns to reach a target in an unknown environment. Furthermore, it was supposed to avoid crashes, even while training. We set the goal to simulate sensor noise and incorporate solutions to handle communication failure.</p>
+<p>However, the complexity of reinforcement learning in a continuous world requires time consuming experiments. Therefore, we decided to create an environment where we can dynamically change parameters, both relating to the overall world and the way the agent interacts with the robot. Additionally, we enabled the robot to make grid moves in a checkerboard-like world.</p>
 <h3>Requirements</h3>
-<p>In this project we were required to have seperated entities for the webot and external controller, both of which were supposed to be written in C/C++. Furthermore the backend, implemented in Python, was supposed to be the third independent part. The communication between them ought to happen using a networking interface. Using this the robot had to be able to reach a relatively small gps target in a world filled with obstacles, while acting &quot;safe&quot; in regard to not crashing into obstacles.</p>
+<p>In this project we were required to have separate entities for the Webots and external controller, both supposed to be written in C/C++. Furthermore, the backend, written in Python, was supposed to be the third independent part. The communication between all components ought to happen using a network interface. Using this, the robot had to be able to reach a relatively small GPS target in a world filled with obstacles, while driving <em>safely</em>. Safe in this context is meant to not crash into obstacles.</p>
 <h3>Approach</h3>
-<p>In this project, we focused on building an infrastructure to apply existing and well-documented reinforcement learning algorithms to train and apply to Webots. Our approach was to work simultaneously on the Webots/controller and backend. Our project can roughly be separated into three phases:</p>
+<p>In this project we focused on building an infrastructure to use existing and well-documented reinforcement learning algorithms to train and apply to Webots. Our approach was to simultaneously work on Webots/controller and backend. Our project can roughly be separated into three phases:</p>
 <ol>
-<li>Set up the whole communication from the internal controller through the external controller to the backend. Build a FakeGym to generate learnings about both the process of creating a custom gym and reinforcement learning basics.</li>
-<li>Create an automation protocol to create randomized worlds and autonomously run the training. Improve the performance of the agent in the FakeGym.</li>
-<li>Create a grid-based Webots world to reduce the complexity for the agent and allow for transferable learnings made in the FakeGym. Conduct experiments in the continuous gym. Implement safety logic in the external controller.</li>
+<li>Set up the communication from internal controller through external controller to backend. Build a <em>FakeGym</em> to generate learnings about both the process of creating a custom gym and reinforcement learning basics.</li>
+<li>Create an automation protocol to initialize randomized worlds and autonomously run the training. Improve the performance of the agent in the <em>FakeGym</em>.</li>
+<li>Create a grid-based Webots world to reduce the complexity for the agent and allow for transferable learnings made in the <em>FakeGym</em>. Conduct experiments in the continuous gym. Implement safety logic in the external controller.</li>
 </ol>
 <h2>System architecture</h2>
-<p>To simulate the realistic behavior of a robot performing actions, we split our software into controllers - internal and external - and backend. The external controller communicates with the backend and sends commands to the internal controller, which merely executes them. In a real design, both would run on the robot hardware. The backend, running on an external server, is responsible for evaluating sensor data to generate actions. To simplify the learning process we build a wrapper around our whole architecture to create a custom extension of OpenAI Gym. This <em>WbtGym</em> can be used with any algorithm from <a rel="nofollow" href="https://stable-baselines.readthedocs.io/">stable baselines</a>.</p>
+<p>To simulate the realistic behavior of a robot performing actions, we split our software into a controller - internal and external - and backend part. The external controller communicates with the backend and sends commands to the internal controller, which merely executes them. In a real world design, both would run on the robot's hardware. The backend, running on an external server, is responsible for evaluating sensor data and generating actions. To simplify the learning process we build a wrapper around our whole architecture to create a custom extension of OpenAI gym. This <em>WbtGym</em> can be used with any algorithm from <a rel="nofollow" href="https://stable-baselines.readthedocs.io/">stable baselines</a>.</p>
 <h3>Software design</h3>
-<p>To showcase our <em>communication</em>, let us examine how an action is generated and executed. The robot is randomly placed in a world and observes its environment using sensors. This sensor data is forwarded to the external controller via TCP/IP. The external controller formats and slightly extends the data and sends it via UDP/IP to the backend. In the backend an agent calculates a corresponding action maximizing a reward function. This action is sent to the external controller, who in turn interprets and forwards the action. The internal controller performs the action by setting motor speeds. This process is done iteratively until the robot reaches its predefined goal or we stop the run.</p>
-<p>Specifically, we have three patterns of communication between the backend and the external controller:</p>
+<p>To showcase our <em>communication</em>, we will now examine how an action is generated and executed: The robot is randomly placed in a world and observes its environment using sensors. This sensor data is forwarded to the external controller via TCP/IP. The external controller formats and augments the data. It then sends the data via UDP/IP to the backend. In the backend the reinforcement learning agent calculates a corresponding action in order to maximize a reward function. This action is sent to the external controller, who in turn interprets and forwards the action to the robot. The internal controller performs the action by setting the robot's motor speed and steering angle. This process is done iteratively until the robot reaches its goal or the run is stopped.</p>
+<p>Specifically, we have three patterns of communication between backend and external controller:</p>
 <ul>
 <li>Send an action <em>or</em> ask for new data</li>
 <li>Send an action <em>and</em> ask for new data after some number of Webots time steps</li>
-<li>Perform a grid move and get new data once this move is fully executed by PID controller</li>
+<li>Perform a grid move and get new data once this move is fully executed by the <em>drive logic</em></li>
 </ul>
-<p>An action is a tuple (direction, speed), consisting of two floats in [-1, 1]. The external controller interprets the direction value as <em>steering</em> or <em>heading</em>. The former directly sets the steering angle of the robot, the latter defines a cardinal direction in which the robot should move. In the <em>heading</em> mode the external controller sets the steering angle accordingly. These different modes can be tested nicely via the keyboard-control in our scripts. Further, we can specify <em>absolute</em> or <em>relative</em> actions, where <em>absolute</em> means just forwarding the action while <em>relative</em> leads to changing the last action by a set amount.</p>
+<p>An action is a tuple (direction, speed), consisting of two floats in [-1, 1]. The external controller interprets the direction value as <em>steering</em> or <em>heading</em>. The former directly sets the steering angle of the robot, the latter defines a cardinal direction in which the robot should move. In the <em>heading</em> mode the external controller then sets the steering angle accordingly. The different modes can be tested by executing our scripts and using the arrow keys on a keyboard. Further, we can specify <em>absolute</em> or <em>relative</em> actions, where <em>absolute</em> means just forwarding the action while <em>relative</em> leads to a change of the last action by a set amount.</p>
 <p><img src="./images/software_design_small.png" alt="diagram" /></p>
-<p>To train a reinforcement learning agent, we need a substantial amount of training runs. Even in our - quite simple - FakeGym the robot requires about 500 to 1,000 different environments to learn. To generate random worlds, we created an <em>automation</em> protocol between the backend and the internal controller. Using this we can start all components and create a random world in Webots with a set amount of obstacles and size. More importantly, we can end a training run and reset the world when we need to. This way our <em>WbtGym</em> resembles the OpenAI Gym's.</p>
+<p>To train a reinforcement learning agent, we need a substantial amount of training runs. Even in our - quite simple - <em>FakeGym</em> the robot requires about 500 to 1,000 different environments to learn. To generate random worlds, we created an <em>automation</em> protocol between the backend and the internal controller. Using this we can start all components and create a random world in Webots with a set amount of obstacles and and a specific size. More importantly, we can end a training run and reset the world when we need to. This way our <em>WbtGym</em> resembles the OpenAI gym.</p>
 <h3>Robot design</h3>
-<p>We wanted our robot to behave similar to a self driving car. Therefore, we build it with a drive axle and a steering axle. This way the robot does not need to stop to turn which leads to smooth driving. While this made solving the grid-based environment more difficult, we did not want to change our initial design. Instead, we implemented a &quot;drive logic&quot; that made the robot drive from tile to tile.
-To observe the environment of the robot we used different sensors:</p>
+<p>Our aim was for the robot to behave similar to a self-driving car. Therefore, we build it with a drive axle and a steering axle. This way the robot does not need to stop to turn which leads to smooth driving. While this made solving the grid-based environment more difficult, we did not want to change our initial design. Instead, we implemented a <em>drive logic</em> that made the robot drive from tile to tile.</p>
+<p>To observe the environment, the robot uses the following sensors:</p>
 <ul>
 <li>A lidar sensor on top, similar to those used for autonomous cars, to detect obstacles in all directions.</li>
-<li>A compass to determine the direction the robot is pointing at.</li>
-<li>A gps module to determine the robots current position and speed.</li>
-<li>A sensor to determine the current position of the steering axle.
+<li>A compass to identify the direction the robot is pointing at.</li>
+<li>A GPS module to determine the robots current position and speed.</li>
+<li>A sensor to monitor the current position of the steering axle.
 In the following picture only the lidar sensor on top is visible.</li>
 </ul>
-<p><img src="./images/robot_design_small.png" alt="robot" /></p>
+<p><img src="./images/robot_design_small_smaller.png" alt="robot" /></p>
 <h3>Environment design</h3>
-<p>Our worlds are randomly generated based on a grid system. The robot and the target are both placed in the middle of a tile. Obstacles are boxes the same size as a tile and placed within ones. This allowes us to use the same worlds for our grid-based and continuous approaches. It also assures that there is enough space between to obstacles for the robot to move through. This constitutes a simplification that was neccessary to use transfer learning from the <em>FakeGym</em> and therefore speed up the training process substantially.
-The backend can control both the world size and the number of obstacles. Additionally it is possible to use a constant seed to generate a specific world multiple times. However using the same environment for learning leads to the robot to merely memorize its surrounding and a path to the goal, instead of generalizing to be able to solve unknown situations aswell.</p>
+<p>Our worlds are randomly generated based on a grid system. The robot and the target are both placed in the middle of a tile. Obstacles are exclusively boxes. This allows us to use the same worlds for our grid-based and continuous approaches. It also assures that there is enough space between to obstacles for the robot to move through. This constitutes a simplification that was necessary in order to use transfer learning from the <em>FakeGym</em> and therefore speed up the training process substantially.</p>
+<p>Using the same environment for learning leads to the robot to merely memorize its surrounding and a path to the goal, instead of generalizing. Therefore, the backend can randomly reset the environment with the same world size and number of obstacles, but placed differently. Generalizing is important, as it allows the robot to be able to solve unknown environments as well.</p>
 <p><img src="./images/environment1_small.png" alt="environment" /></p>
 <h3>Algorithms</h3>
 <p>As described in our software design, we build a custom environment following the interface of the OpenAI gym. The required functionality (see also: <a rel="nofollow" href="https://stable-baselines.readthedocs.io/en/master/guide/custom_env.html">stable-baselines custom environments</a>) for custom environments consists of:</p>
 <ul>
-<li><em>action_space</em> defines the possible actions for a robot, e.g. discrete of continuous actions. This is set in our action_class. We provide both options and the possibility to use a custom action class.</li>
+<li><em>action_space</em> defines the possible actions for the robot, e.g. discrete or continuous actions. This is set in our <em>action_class</em>. We provide both options and the possibility to use a custom <em>action_class</em>.</li>
 <li><em>observation_space</em> defines the size of the observation. Can be customized as well.</li>
 <li><em>step(action)</em> applies the action from the reinforcement learning agent to the environment. This is handled by mapping the action with the action_class and sending it via the external controller to Webots.</li>
 <li><em>reset()</em> is used to randomly create new worlds where the robot can train in after the current run has ended.</li>
-<li><em>render()</em> normally renders the environment. This is not needed for us.</li>
-<li><em>close()</em> terminates the training.</li>
+<li><em>render()</em> normally renders the environment. This is not needed here.</li>
+<li><em>close()</em> terminates the environment.</li>
 </ul>
-<p>Further, we included the option to use a custom reward function with the evaluate_class as parameter for the WbtGym.</p>
-<p>Our <em>WbtGym</em> can be used with any algorithm from <a rel="nofollow" href="https://stable-baselines.readthedocs.io/">stable-baselines</a>. After numerous experiments in our <em>FakeGym</em> - in turn an extension of the OpenAI gym - we decided to use the <em>PPO1</em> algorithm for training.</p>
+<p>Further, we included the option to use a custom reward function with the <em>evaluate_class</em> as parameter for the <em>WbtGym</em>.</p>
+<p>Our <em>WbtGym</em> can be used with any algorithm from <a rel="nofollow" href="https://stable-baselines.readthedocs.io/">stable-baselines</a>. After numerous experiments in our <em>FakeGym</em> - an extension of the OpenAI gym - we decided to use the <em>PPO1</em> algorithm for training.</p>
 <h2>Summary</h2>
 <p>In our project we have <strong>achieved</strong> the following goals:</p>
 <ul>
-<li>Setup Webots world and the whole communication from the internal controller to the external controller to the backend.</li>
-<li>Incorporate a safety layer to fulfill the requirement of <strong>safe</strong> reinforcement learning environment where the robot does not crash even while training</li>
+<li>Setup the Webots world and the communication from internal controller to external controller to backend.</li>
+<li>Incorporate a safety layer to fulfill the requirement of <strong>safe</strong> reinforcement learning where the robot does not crash, even while training.</li>
 <li>Build a wrapper around Webots with the interface of the OpenAI gym, enabling us to train any algorithm from stable baselines.</li>
-<li>Build a <em>FakeGym</em> to generate learnings, train models, and apply transfer learning.</li>
+<li>Build a <em>FakeGym</em> to generate learnings, train models and apply transfer learning.</li>
 <li>Apply a PPO1 trained on the <em>Fakegym</em> on our <em>WbtGymGrid</em>.</li>
 <li>Automatically train in our <em>WbtGym</em>.</li>
 </ul>
-<p>Before this project, we all did not have a lot of exposure to reinforcement learning. Therefore, we might have started a bit too optimistic and have <strong>not attained</strong> the following goals:</p>
+<p>Prior to this project, none of us had experience with reinforcement learning projects. Therefore, we might have started a bit too optimistic and sadly were not able to achieve the following goals:</p>
 <ul>
 <li>Successfully train a PPO1 in a continuous randomized world. Compared to grid based worlds, training in continuous environments takes a substantially larger amount of time and requires good hardware. For example, testing a small tweak in the reward function can take more than a night to evaluate. We are convinced that with more time and experiments, this problem is solvable with the infrastructure we build.</li>
-<li>The subsequent and optional goals such as incorporating sensor noise to make the communication even more realistic or adding a second robot were not attained as they would have complicated the continuous training process even more.</li>
+<li>The subsequent and optional goals, such as incorporating sensor noise to make the communication even more realistic or adding a second robot, were also not attained, as they would have complicated the continuous training process even more.</li>
 </ul>
 <h3>Lessons learned</h3>
-<p>As all of us did not have a lot of prior knowledge regarding reinforcement learning projects, we decided to take the agile approach to this project to flexibly direct our work to the most meaningful areas. Further, in this summer, only virtual teamwork was possible due to COVID-19. This was especially challenging and created some organizational overhead. We experienced that weekly meetings with stand-ups as well as sprints with a length of about two (TODO: three?) weeks were optimal to balance teamwork, flexibility and long-term progress. Further, we learned a great deal about tackling reinforcement learning projects and their computational requirements.
-For this project, we naturally used git with GitHub. For some of us this was the first project with more than three team members and we could expand our knowledge about git, especially regarding branching and GitHub actions. This is an essential skill for our future work environment.</p>
+<p>As none of us had prior knowledge in the area of reinforcement learning, we decided to use an agile approach to this project. This allowed us to flexibly direct our work to the currently most important aspects of our project. Further, this summer only virtual teamwork was possible due to COVID-19. This was especially challenging and created some organizational overhead. We experienced that weekly meetings with stand-ups as well as sprints with a length of about three weeks were optimal to balance teamwork, flexibility and long-term progress. Further, we learned a great deal about reinforcement learning projects and their computational requirements.</p>
+<p>For this project, we used the version control software Git in conjunction with GitHub. For some of us, this was the first larger project, meaning more than three team members, and we were able expand our knowledge about Git and GitHub, especially regarding branching and GitHub actions. This is an essential skill for our future work environments.</p>
 <h3>Future work</h3>
 <p>If we were to continue this project, we would further try to solve the problem of reaching the target in a continuous world with continuous actions and observations. Further, it would be challenging and interesting to increase the complexity of the world even further and come closer to modeling realistic self-driving cars.</p>
 
